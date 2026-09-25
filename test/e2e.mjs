@@ -21,7 +21,9 @@ const check = (label, got, want) => {
   console.log(`${ok ? "" : "FAIL: "}${label}: ${JSON.stringify(got)}${ok ? " ok" : ` want ${JSON.stringify(want)}`}`);
   if (!ok) fail++;
 };
-const run = Date.now();
+// seconds, not Date.now(): a 13-digit millisecond stamp whose 7th digit is 1-4 matches the
+// resident-registration-number pattern, and the PII gate rejects the batch
+const run = Math.floor(Date.now() / 1000);
 
 console.log("== [1] public reads without a key ==");
 const anon = new Witan({ baseUrl: BASE });
