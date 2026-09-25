@@ -6,6 +6,8 @@
 //   const hits = await w.search("redis pipelining", { mode: "semantic" });
 //   const done = await w.projects.contribute("my-agent-state", records, { wait: 15, idempotencyKey: runId });
 //   const page = await w.projects.query("my-agent-state", "SELECT * FROM records ORDER BY key");
+//   const m = await w.projects.manifest("agent-api-observatory", { verify: pinnedKeys });   // from w.keys(), once
+//   await w.projects.promote("scratch", { from: new Witan({ baseUrl: "http://127.0.0.1:8686", apiKey: "node" }) });
 
 export interface WitanOptions {
   /** API origin. Falls back to WITAN_BASE_URL, then http://localhost:3000. */
@@ -145,7 +147,68 @@ export interface Manifest {
   schema?: { hash: string; fields: SchemaField[]; allowExtra: boolean };
   createdAt?: string;
   urlExpiresAt: string;
+  /** The origin's signature over the manifest without its URLs; nodes pass it through. */
+  signature?: ManifestSignature;
   [key: string]: unknown;
+}
+export interface ManifestSignature {
+  alg: "Ed25519";
+  kid: string;
+  origin: string;
+  /** base64 */
+  sig: string;
+}
+/** GET /.well-known/witan-keys — the keys an origin signs version manifests with. */
+export interface SigningKeys {
+  origin: string;
+  keys: { kid: string; alg: "Ed25519"; publicKey: string }[];
+}
+export interface CreateProjectInput {
+  slug: string;
+  title: string;
+  readme: string;
+  schemaDef: { fields: SchemaField[]; allowExtra?: boolean };
+  license?: string;
+  tags?: string[];
+  access?: "public" | "paid";
+  visibility?: "public" | "private";
+}
+export interface PushOptions {
+  /** Where the records come from and how they were measured. */
+  sourceDeclaration?: string;
+  /** Wait until the contribution is merged or rejected, and merge its final state into the result. */
+  wait?: boolean;
+  /** How long `wait` waits. Default 10 minutes. */
+  timeoutMs?: number;
+  /** Bytes per uploaded part; at least 5 MiB (the object store's rule). Default 8 MiB. */
+  partSize?: number;
+  /** Parts uploaded at once. Default 4. */
+  concurrency?: number;
+  /** gzip the upload where the runtime has CompressionStream. Default true. */
+  compress?: boolean;
+}
+export interface PushResult {
+  contributionId: string;
+  /** Parts uploaded, bytes sent (after compression) and records in the upload. */
+  parts: number;
+  bytes: number;
+  records: number;
+  /** With `wait`: the contribution's final state. */
+  status?: ContributionStatus;
+  acceptedCount?: number | null;
+  mergedVersion?: number | null;
+  verdict?: unknown;
+  [key: string]: unknown;
+}
+export interface PromoteOptions {
+  /** A client pointed at the node (wtn serve) that holds the local project; any apiKey for a tokenless node. */
+  from: Witan;
+  /** The project here that receives the records; the same slug by default. It must exist. */
+  to?: string;
+  sourceDeclaration?: string;
+  /** Wait for this origin's verdict. Default true. */
+  wait?: boolean;
+  timeoutMs?: number;
 }
 export interface Diff {
   project: string;
@@ -227,6 +290,13 @@ export class PaymentRequiredError extends WitanError {
     if (body.quota !== undefined) this.quota = body.quota;
   }
 }
+/** A manifest whose signature is missing where required, from other keys, or does not match. */
+export class SignatureError extends WitanError {
+  constructor(message: string) {
+    super(0, message);
+    this.name = "SignatureError";
+  }
+}
 
 type Query = Record<string, string | number | boolean | undefined | null>;
 interface RequestInit2 {
@@ -242,6 +312,8 @@ interface RequestInit2 {
 
 const RETRY_STATUS = new Set([429, 502, 503, 504]);
 const DEFAULT_BASE_URL = "http://localhost:3000";
+const MIN_PART_SIZE = 5 * 1024 * 1024; // S3 multipart rule for every part but the last
+const MAX_PARTS = 1000;
 
 function env(name: string): string | undefined {
   const p = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
@@ -265,7 +337,7 @@ export class Witan {
     if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.1.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.2.0";
     this.projects = new Projects(this);
   }
 
@@ -347,6 +419,14 @@ export class Witan {
     const { data } = await this.request<Credits>("GET", "/credits", { auth: true, idempotent: true });
     return data;
   }
+  /**
+   * The keys this origin signs version manifests with. Fetch them once where you trust the origin
+   * and keep them with your agent's config; `verifyManifest` then checks copies from anywhere.
+   */
+  async keys(): Promise<SigningKeys> {
+    const { data } = await this.request<SigningKeys>("GET", "/.well-known/witan-keys", { idempotent: true });
+    return data;
+  }
 
   // ---------- transport ----------
 
@@ -397,6 +477,29 @@ export class Witan {
     }
     throw lastError instanceof Error ? lastError : new WitanError(0, String(lastError));
   }
+
+  /** PUT one part to its presigned URL (the signature is in the URL: no Authorization header). Returns the ETag. */
+  async putPart(url: string, data: Uint8Array): Promise<string> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= this.retries; attempt++) {
+      if (attempt > 0) await sleep(300 * 2 ** (attempt - 1));
+      let res: Response;
+      try {
+        res = await this.fetchImpl(url, { method: "PUT", body: bytes(data), signal: timeoutSignal(Math.max(this.timeoutMs, 120_000)) });
+      } catch (e) {
+        lastError = e;
+        continue;
+      }
+      if (res.ok) {
+        const etag = res.headers.get("etag");
+        if (!etag) throw new WitanError(res.status, "object store returned no ETag for the part");
+        return etag.replace(/"/g, "");
+      }
+      lastError = new WitanError(res.status, `part upload failed: HTTP ${res.status}`, await parseBody(res));
+      if (!(res.status >= 500 || res.status === 429)) break;
+    }
+    throw lastError instanceof Error ? lastError : new WitanError(0, String(lastError));
+  }
 }
 
 export class Projects {
@@ -418,11 +521,17 @@ export class Projects {
     });
     return data;
   }
-  /** The version manifest with 15-minute part URLs — how a whole version is pulled. */
-  async manifest(slug: string, opts: { version?: number } = {}): Promise<Manifest> {
+  /**
+   * The version manifest with 15-minute part URLs — how a whole version is pulled. With `verify`
+   * (keys pinned from `keys()`), the origin's signature is checked first and a manifest that is
+   * unsigned, signed by other keys or altered throws `SignatureError` — so a node or a mirror can
+   * serve it and only the origin needs trusting.
+   */
+  async manifest(slug: string, opts: { version?: number; verify?: SigningKeys } = {}): Promise<Manifest> {
     const { data } = await this.c.request<Manifest>("GET", `/projects/${enc(slug)}/manifest`, {
       query: { version: opts.version }, auth: true, idempotent: true,
     });
+    if (opts.verify) await verifyManifest(data, opts.verify, { require: true });
     return data;
   }
   /** SQL on the server over a version's parts as the table `records` (read-only, up to 1000 rows). */
@@ -469,6 +578,96 @@ export class Projects {
       if (c.status === "merged" || c.status === "rejected" || Date.now() >= deadline) return c;
     }
   }
+  /**
+   * Create a dataset project. On the origin the client's key must be an operator token (wto_...);
+   * pointed at a node (wtn serve) this makes a local project the node takes writes for.
+   */
+  async create(input: CreateProjectInput): Promise<ProjectDetail & { local?: boolean }> {
+    const { data } = await this.c.request<ProjectDetail & { local?: boolean }>("POST", "/projects", { body: input, auth: true });
+    return data;
+  }
+  /**
+   * Upload records as one contribution through the object store — for batches beyond contribute's
+   * 500 records / 512 KB. The records are written as JSON lines, gzipped where the runtime has
+   * CompressionStream, and PUT in parts (5 MiB or more) straight to presigned URLs; the api never
+   * sees the bytes. The upload is held in memory — a function's memory bounds what one push sends.
+   */
+  async push(
+    slug: string,
+    records: Iterable<Record<string, unknown>> | AsyncIterable<Record<string, unknown>>,
+    opts: PushOptions = {},
+  ): Promise<PushResult> {
+    const encoder = new TextEncoder();
+    const lines: Uint8Array[] = [];
+    let count = 0;
+    for await (const rec of records) {
+      lines.push(encoder.encode(JSON.stringify(rec) + "\n"));
+      count++;
+    }
+    if (count === 0) throw new WitanError(0, "nothing to push: no records");
+    const CS = (globalThis as { CompressionStream?: new (format: string) => TransformStream<Uint8Array, Uint8Array> }).CompressionStream;
+    const gzip = opts.compress !== false && typeof CS === "function";
+    const body = gzip ? await pipeBytes(concat(lines), new CS!("gzip")) : concat(lines);
+    let partSize = Math.max(opts.partSize ?? 8 * 1024 * 1024, MIN_PART_SIZE);
+    let parts = Math.max(1, Math.ceil(body.length / partSize));
+    if (parts > MAX_PARTS) {
+      partSize = Math.ceil(body.length / MAX_PARTS);
+      parts = Math.ceil(body.length / partSize);
+    }
+    const { data: init } = await this.c.request<{ uploadId: string; expiresAt?: string; parts: { n: number; url: string }[] }>(
+      "POST", `/projects/${enc(slug)}/uploads`, {
+        body: { bytes: body.length, parts, sourceDeclaration: opts.sourceDeclaration, compression: gzip ? "gzip" : "none" },
+        auth: true,
+      });
+    const urls = new Map(init.parts.map((p) => [p.n, p.url]));
+    const etags: string[] = new Array(parts);
+    let next = 0;
+    let failed: unknown;
+    const worker = async () => {
+      while (failed === undefined && next < parts) {
+        const i = next++;
+        const url = urls.get(i + 1);
+        try {
+          if (!url) throw new WitanError(0, `the upload has no URL for part ${i + 1}`);
+          etags[i] = await this.c.putPart(url, body.subarray(i * partSize, (i + 1) * partSize));
+        } catch (e) {
+          failed ??= e; // the first failure stops the others from starting more parts
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(Math.max(1, opts.concurrency ?? 4), parts) }, worker));
+    if (failed !== undefined) throw failed;
+    const { data: done } = await this.c.request<{ contributionId: string; [key: string]: unknown }>(
+      "POST", `/projects/${enc(slug)}/uploads/${enc(init.uploadId)}/complete`, {
+        body: { etags: etags.map((etag, i) => ({ n: i + 1, etag })) }, auth: true,
+      });
+    const result: PushResult = { ...done, parts, bytes: body.length, records: count };
+    if (!opts.wait) return result;
+    const final = await this.waitContribution(slug, done.contributionId, { timeoutMs: opts.timeoutMs });
+    return { ...result, ...final };
+  }
+  /**
+   * Send a node's local project — its latest version — to a project on this origin (`to`, the same
+   * slug by default; it must exist). The records stream from the node's export and go up as one
+   * `push`, through this origin's gates; records already here are dropped as duplicates, so
+   * promoting again sends only what is new (all duplicates → rejected by the dedup gate: up to date).
+   */
+  async promote(slug: string, opts: PromoteOptions): Promise<PushResult & { promoted: { from: string; version: number; to: string; node: string } }> {
+    const node = opts.from;
+    const detail = (await node.projects.get(slug)) as ProjectDetail & { local?: boolean };
+    if (!detail.local) {
+      throw new WitanError(0, `${slug} is not a local project on ${node.baseUrl} — only projects created on a node are promoted`);
+    }
+    const version = detail.latestVersion;
+    if (!version) throw new WitanError(0, `${slug} has no version on ${node.baseUrl} yet`);
+    const to = opts.to ?? slug;
+    const result = await this.push(to, node.projects.export(slug, version), {
+      sourceDeclaration: opts.sourceDeclaration ?? `Promoted from a WITAN node: local project ${slug} v${version}.`,
+      wait: opts.wait ?? true,
+      timeoutMs: opts.timeoutMs,
+    });
+    return { ...result, promoted: { from: slug, version, to, node: node.baseUrl } };
+  }
   /** Every record of a version, streamed from the server's jsonl.gz export. Counts the parts' bytes as egress. */
   async *export(slug: string, version: number): AsyncGenerator<Record<string, unknown>, void, undefined> {
     const res = await this.c.send("GET", `/projects/${enc(slug)}/export`, { query: { version }, auth: true, idempotent: true, timeoutMs: 600_000 });
@@ -498,6 +697,93 @@ export class Projects {
   }
 }
 
+/**
+ * Check a manifest's signature against keys pinned from `Witan.keys()` — wherever the manifest came
+ * from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
+ * no signature (versions written on a node are the node's own); throws `SignatureError` when it is
+ * signed for another origin, with a key not among `keys`, or does not match — and, with `require`,
+ * when it is unsigned. Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
+ */
+export async function verifyManifest(
+  manifest: Record<string, unknown>,
+  keys: SigningKeys,
+  opts: { require?: boolean } = {},
+): Promise<"verified" | "unsigned"> {
+  const what = `${String(manifest.project ?? "?")} v${String(manifest.version ?? "?")}`;
+  const sig = manifest.signature as ManifestSignature | undefined;
+  if (!sig || typeof sig !== "object") {
+    if (opts.require) throw new SignatureError(`${what} is not signed — only versions an origin published carry a signature`);
+    return "unsigned";
+  }
+  const origin = String(sig.origin ?? "").replace(/\/+$/, "");
+  if (origin !== keys.origin.replace(/\/+$/, "")) {
+    throw new SignatureError(`${what} is signed by ${origin}, and these keys are ${keys.origin}'s`);
+  }
+  const key = keys.keys.find((k) => k.kid === sig.kid);
+  if (!key) throw new SignatureError(`${what} is signed with key ${sig.kid}, which is not one of ${origin}'s pinned keys`);
+  if (sig.alg !== "Ed25519" || key.alg !== "Ed25519") throw new SignatureError(`${what} uses ${sig.alg}; only Ed25519 is supported`);
+  const subtle = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto?.subtle;
+  if (!subtle) throw new WitanError(0, "this runtime has no WebCrypto (crypto.subtle) to verify signatures with");
+  let publicKey: CryptoKey;
+  try {
+    publicKey = await subtle.importKey("raw", bytes(fromBase64(key.publicKey)), { name: "Ed25519" }, false, ["verify"]);
+  } catch (e) {
+    throw new WitanError(0, `this runtime's WebCrypto cannot use Ed25519 keys (${String(e)})`);
+  }
+  let ok = false;
+  try {
+    ok = await subtle.verify({ name: "Ed25519" }, publicKey, bytes(fromBase64(sig.sig)),
+      bytes(new TextEncoder().encode(signedStatement(manifest, origin))));
+  } catch {
+    ok = false;
+  }
+  if (!ok) throw new SignatureError(`${what} does not match ${origin}'s signature — the manifest was altered or corrupted`);
+  return "verified";
+}
+
+/** The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON. */
+export function signedStatement(manifest: Record<string, unknown>, origin: string): string {
+  const { signature: _s, urlExpiresAt: _u, paid: _p, ...content } = manifest;
+  if (Array.isArray(content.parts)) {
+    content.parts = (content.parts as Record<string, unknown>[]).map(({ url: _url, ...part }) => part);
+  }
+  return stableStringify({ v: 1, origin, manifest: content });
+}
+
+// The origin's stableStringify (api/src/worker/record-hash.ts): sorted keys, no whitespace.
+function stableStringify(v: unknown): string {
+  if (Array.isArray(v)) return `[${v.map(stableStringify).join(",")}]`;
+  if (v && typeof v === "object") {
+    const keys = Object.keys(v as Record<string, unknown>).sort();
+    return `{${keys.map((k) => `${JSON.stringify(k)}:${stableStringify((v as Record<string, unknown>)[k])}`).join(",")}}`;
+  }
+  return JSON.stringify(v);
+}
+
+// Our Uint8Arrays always sit on a plain ArrayBuffer; TypeScript 5.7+ types web APIs as wanting exactly
+// that (not SharedArrayBuffer), which Uint8Array without a type argument does not promise.
+function bytes(u: Uint8Array): Uint8Array<ArrayBuffer> {
+  return u as Uint8Array<ArrayBuffer>;
+}
+function fromBase64(s: string): Uint8Array {
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function concat(chunks: Uint8Array[]): Uint8Array {
+  const out = new Uint8Array(chunks.reduce((n, c) => n + c.length, 0));
+  let at = 0;
+  for (const c of chunks) {
+    out.set(c, at);
+    at += c.length;
+  }
+  return out;
+}
+async function pipeBytes(data: Uint8Array, through: TransformStream<Uint8Array, Uint8Array>): Promise<Uint8Array> {
+  const stream = new Blob([bytes(data)]).stream().pipeThrough(through);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
 function enc(s: string): string {
   return encodeURIComponent(s);
 }

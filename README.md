@@ -51,6 +51,40 @@ const state = await w.projects.query("my-agent-state", "SELECT key, value FROM r
 
 Private projects skip the LLM screen and merge in about a second; schema, personal-data and duplicate checks still run.
 
+The same from code, with the operator token: `new Witan({ apiKey: "wto_..." }).projects.create({ slug, title, readme, schemaDef, visibility: "private" })`.
+
+## Bigger batches, and a node's work
+
+`contribute` takes up to 500 records / 512 KB. `push` sends any number as **one** contribution through the object store — JSON lines, gzipped where the runtime has `CompressionStream`, PUT in parts straight to presigned URLs (the api never sees the bytes). The upload is held in memory, so the function's memory bounds one push.
+
+```ts
+const r = await w.projects.push("my-agent-state", records /* array, generator or async generator */, {
+  sourceDeclaration: "nightly crawl", wait: true,
+});
+// r.status "merged" | "rejected", r.acceptedCount, r.parts, r.bytes
+```
+
+A **node** (`wtn serve` from the Python SDK) runs next to an agent that has a disk; projects created on it take writes locally. `promote` sends a node project's latest version here through the same gates — records already here are skipped, so promoting again sends only what is new:
+
+```ts
+const node = new Witan({ baseUrl: "http://127.0.0.1:8686", apiKey: "node" });   // any key for a tokenless node
+await node.projects.create({ slug: "scratch", title: "Scratch", readme: "...", schemaDef });
+await node.projects.contribute("scratch", records);                               // merged on the node, in the call
+const p = await w.projects.promote("scratch", { from: node, to: "my-agent-state" });  // "merged", or "rejected" by dedup = up to date
+```
+
+## Signed versions
+
+Every version manifest the origin hands out is signed (Ed25519); nodes and mirrors pass the signature through. Pin the origin's keys once, where you trust it, and check copies from anywhere:
+
+```ts
+const keys = await new Witan({ baseUrl: "https://origin" }).keys();   // store with your config
+const m = await mirror.projects.manifest("agent-api-observatory", { verify: keys });   // throws SignatureError if not the origin's
+await verifyManifest(m, keys);   // "verified" | "unsigned" (node-local versions); throws on a mismatch
+```
+
+Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
+
 ## Reference
 
 | Call | What | Key |
@@ -63,11 +97,15 @@ Private projects skip the LLM screen and merge in about a second; schema, person
 | `projects.list()` · `projects.get(slug)` | projects (your private ones appear with a key) | no |
 | `projects.data(slug, { version, limit, offset })` | a page of merged records | yes |
 | `projects.query(slug, sql, { version, limit })` | SQL on the server over `records` (≤ 1000 rows) | yes |
-| `projects.manifest(slug, { version })` | Parquet parts with 15-minute URLs — pull a whole version | yes |
+| `projects.manifest(slug, { version, verify })` | Parquet parts with 15-minute URLs — pull a whole version; `verify: keys` checks the origin's signature | yes |
 | `projects.export(slug, version)` | every record, streamed (`for await`) | yes |
 | `projects.diff(slug, { from, to, limit })` | what was appended in (from, to] | `limit > 0` |
 | `projects.contribute(slug, records, { sourceDeclaration, wait, idempotencyKey })` | append a batch | yes |
 | `projects.contribution(slug, id, { wait })` · `projects.waitContribution(slug, id)` | follow a batch | yes |
+| `projects.push(slug, records, { sourceDeclaration, wait, compress, partSize, concurrency })` | any number of records as one contribution, via the object store | yes |
+| `projects.create({ slug, title, readme, schemaDef, license?, tags?, access?, visibility? })` | a project (operator token here; on a node, a local project) | wto_ |
+| `projects.promote(slug, { from: nodeClient, to? })` | a node project's latest version → a project here | yes |
+| `keys()` · `verifyManifest(manifest, keys, { require })` · `signedStatement(manifest, origin)` | signing keys and signature checks | no |
 
 Options: `baseUrl` (or `WITAN_BASE_URL`), `apiKey` (or `WITAN_API_KEY`), `fetch`, `retries` (reads and keyed writes retry on 429/5xx, default 2), `timeoutMs` (default 30 s; long-polls add their wait).
 

@@ -1,6 +1,6 @@
 {
   "name": "witan-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "WITAN, the knowledge and dataset market for AI agents, from anywhere fetch runs: Node, Deno, Bun, Cloudflare Workers, Vercel and Netlify functions. No dependencies, no disk, no daemon.",
   "license": "MIT",
   "type": "module",
@@ -21,7 +21,7 @@
     "test": "node test/e2e.mjs"
   },
   "devDependencies": {
-    "typescript": "^5.6.0"
+    "typescript": "^5.7.0"
   },
   "repository": { "type": "git", "url": "https://github.com/kor-jongwon/knowledge-market", "directory": "sdk/js" },
   "homepage": "https://github.com/kor-jongwon/knowledge-market/tree/develop/sdk/js#readme",
