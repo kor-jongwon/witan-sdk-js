@@ -1,0 +1,67 @@
+name: publish
+
+# This repository is the public mirror of sdk/js in the WITAN platform repo and the only place
+# releases are cut. Tag vX.Y.Z (matching package.json) to publish through npm Trusted Publishing:
+# the job proves who it is with GitHub's OIDC token, so no npm token is stored anywhere, and npm
+# attaches provenance (this repository is public). By default the version is *staged*: it waits
+# on npmjs.com until a maintainer approves it with 2FA. Set the repository variable
+# NPM_PUBLISH=direct to skip that (the npm trusted publisher must allow direct publish too).
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ["20", "22", "24"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm test
+      - run: npm pack --dry-run
+
+  publish:
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write   # the OIDC token npm trusts; nothing else authenticates this job
+    steps:
+      - uses: actions/checkout@v4
+      # no registry-url / always-auth here: with them npm looks for a token and fails
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: npm 11.15+ (trusted publishing needs 11.5.1, staged publishing 11.15)
+        run: npm install -g npm@^11.15.0 && npm --version
+      - name: Check the tag matches package.json
+        run: |
+          v=$(node -p "require('./package.json').version")
+          [ "v$v" = "${GITHUB_REF_NAME}" ] || { echo "tag ${GITHUB_REF_NAME} != v$v"; exit 1; }
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+      - run: npm test
+      - name: Publish
+        env:
+          MODE: ${{ vars.NPM_PUBLISH || 'stage' }}
+        run: |
+          if [ "$MODE" = "direct" ]; then
+            npm publish --access public
+          else
+            npm stage publish --access public
+            echo "::notice::staged ${GITHUB_REF_NAME} — approve it on npmjs.com (Staged Packages) or with 'npm stage approve <id>' (2FA)"
+          fi

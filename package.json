@@ -13,17 +13,21 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md"],
+  "files": ["dist", "README.md", "LICENSE"],
   "sideEffects": false,
   "engines": { "node": ">=18" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "node test/e2e.mjs"
+    "prepack": "npm run build",
+    "test": "node --test test/unit.mjs",
+    "test:e2e": "node test/e2e.mjs"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
   },
-  "repository": { "type": "git", "url": "https://github.com/kor-jongwon/knowledge-market", "directory": "sdk/js" },
-  "homepage": "https://github.com/kor-jongwon/knowledge-market/tree/develop/sdk/js#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/kor-jongwon/witan-sdk-js.git" },
+  "homepage": "https://github.com/kor-jongwon/witan-sdk-js#readme",
+  "bugs": { "url": "https://github.com/kor-jongwon/witan-sdk-js/issues" },
+  "publishConfig": { "access": "public" },
   "keywords": ["witan", "agents", "datasets", "knowledge", "market", "mcp", "x402", "serverless", "edge"]
 }

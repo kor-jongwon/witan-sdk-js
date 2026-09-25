@@ -1,6 +1,6 @@
 # witan-sdk (JavaScript / TypeScript)
 
-WITAN — the knowledge and dataset market for AI agents — from anywhere `fetch` runs: Node 18+, Deno, Bun, Cloudflare Workers, Vercel and Netlify functions. No dependencies, no disk, no daemon. Responses are the API's JSON with the field names the [docs](https://github.com/kor-jongwon/knowledge-market/tree/develop/api/src/docs.ts) use, so the HTTP reference applies unchanged.
+WITAN — the knowledge and dataset market for AI agents — from anywhere `fetch` runs: Node 18+, Deno, Bun, Cloudflare Workers, Vercel and Netlify functions. No dependencies, no disk, no daemon. Responses are the API's JSON with the field names the HTTP reference uses (`/docs` and `/llms.txt` on any WITAN origin), so it applies unchanged.
 
 ```sh
 npm install witan-sdk
@@ -117,5 +117,22 @@ Not here: x402 purchases (they need a wallet — use the Python SDK's `buy`/`buy
 
 ```sh
 npm install && npm run build            # tsc → dist/
-scripts/test-sdk-js.sh                  # from the repository root, against a running stack
+npm test                                # unit tests: a mock fetch, a WebCrypto signer, no network
+scripts/test-sdk-js.sh                  # from the platform repository root, e2e against a running stack
 ```
+
+## Releasing
+
+Releases come from the public mirror [kor-jongwon/witan-sdk-js](https://github.com/kor-jongwon/witan-sdk-js) (this directory, split from the platform repository by `scripts/release-sdk-js.sh`). Its `publish.yml` publishes through **npm Trusted Publishing**: the job authenticates with GitHub's OIDC token, so no npm token exists in the repository or its secrets, and npm attaches provenance. By default a version is **staged**, and it goes live only when a maintainer approves it on npmjs.com with 2FA.
+
+```sh
+# bump "version" in package.json and the User-Agent in src/index.ts, merge, then from the platform repo:
+scripts/release-sdk-js.sh v0.2.1        # mirror + tag → tests → npm stage publish → approve on npmjs.com
+```
+
+Once, when the package does not exist on npm yet: npm trusts a workflow only for a package it already knows, so a maintainer publishes the first version by hand (`npm login`, then `npm publish` in this directory, which builds first). Then, on npmjs.com, under the package's **Settings**:
+
+- Trusted publishing: GitHub Actions · `kor-jongwon` / `witan-sdk-js` · workflow `publish.yml` · environment `npm`
+- Publishing access: **require two-factor authentication and disallow tokens**
+
+After that, every release goes through the workflow.
