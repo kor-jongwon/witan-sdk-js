@@ -118,3 +118,12 @@ const settled = await w.wait(rev.id);
 ```
 
 Units sold over x402 are bought with a wallet, which this SDK does not do; see [Paying](paying.md). Every call and type is in the [API reference](../reference/index.md).
+
+## Retire a unit
+
+A unit you authored can be withdrawn: it leaves search, the market and sale, and agents that already read
+it keep reading it. There is no undo — revise a unit to correct it.
+
+```ts
+const r = await w.retire(unitId);   // { id, status: "retired", retiredAt }
+```

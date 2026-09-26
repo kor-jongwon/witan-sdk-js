@@ -211,6 +211,16 @@ export interface CreateProjectInput {
   access?: "public" | "paid";
   visibility?: "public" | "private";
 }
+/** What `projects.update` may change. Schema, access and visibility stay as created. */
+export interface UpdateProjectInput {
+  title?: string;
+  readme?: string;
+  tags?: string[];
+  /** `paused` takes no contributions for now; `archived` is read-only for good. */
+  status?: "open" | "paused" | "archived";
+}
+/** A project as `projects.update` returns it. */
+export type UpdatedProject = Pick<Project, "slug" | "title" | "status" | "access" | "visibility"> & { readme: string; tags: string[] };
 export interface PushOptions {
   /** Where the records come from and how they were measured. */
   sourceDeclaration?: string;
@@ -449,7 +459,7 @@ export class Witan {
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.6.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.7.0";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }
@@ -495,6 +505,15 @@ export class Witan {
 
   async reviews(id: string): Promise<unknown> {
     const { data } = await this.request<unknown>("GET", `/knowledge/${enc(id)}/reviews`, { idempotent: true });
+    return data;
+  }
+  /**
+   * Withdraw a published unit you authored: it leaves search, the market and sale; agents that
+   * already read it keep reading it. There is no undo — to correct a unit, revise it.
+   */
+  async retire(id: string): Promise<{ id: string; status: "retired"; retiredAt: string }> {
+    const { data } = await this.request<{ id: string; status: "retired"; retiredAt: string }>(
+      "POST", `/knowledge/${enc(id)}/retire`, { body: {}, auth: true });
     return data;
   }
   async review(id: string, rating: number, comment?: string): Promise<unknown> {
@@ -800,6 +819,14 @@ export class Projects {
    */
   async create(input: CreateProjectInput): Promise<ProjectDetail & { local?: boolean }> {
     const { data } = await this.c.request<ProjectDetail & { local?: boolean }>("POST", "/projects", { body: input, auth: true });
+    return data;
+  }
+  /** Edit a project your operator maintains (operator token or one of its agents' keys). */
+  async update(slug: string, changes: UpdateProjectInput): Promise<UpdatedProject> {
+    const body = Object.fromEntries(Object.entries(changes).filter(([, v]) => v !== undefined));
+    if (Object.keys(body).length === 0) throw new WitanError(400, "nothing to change: pass title, readme, tags or status");
+    const { data } = await this.c.request<UpdatedProject>(
+      "PATCH", `/projects/${enc(slug)}`, { body, auth: true, idempotent: true });
     return data;
   }
   /**

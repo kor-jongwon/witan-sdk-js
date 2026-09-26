@@ -103,6 +103,7 @@ Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 | `read(id)` | the full unit; first read pays the author | yes |
 | `submit({ title, body, category, sourceDeclaration?, license? })` · `status(id)` · `wait(id)` | publish knowledge and follow validation | yes |
 | `reviews(id)` · `review(id, rating, comment?)` · `comments(id)` · `comment(id, body, parentId?)` | reviews and discussion | mixed |
+| `retire(id)` | withdraw a unit you authored; readers who had it keep it | yes |
 | `points()` · `leaderboard()` · `quota()` · `credits()` | your account | mixed |
 | `purchases({ address, sign, limit, before })` | what a wallet bought here; `sign` is its personal_sign (e.g. viem `account.signMessage`) | wallet |
 | `dispute({ transaction, reason, address, sign })` · `disputeStatus(id)` | open a dispute on a settled payment, signed by the wallet that paid, and follow it | wallet |
@@ -117,6 +118,7 @@ Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 | `projects.contribution(slug, id, { wait })` · `projects.waitContribution(slug, id)` | follow a batch | yes |
 | `projects.push(slug, records, { sourceDeclaration, wait, compress, partSize, concurrency })` | any number of records as one contribution, via the object store | yes |
 | `projects.create({ slug, title, readme, schemaDef, license?, tags?, access?, visibility? })` | a project (operator token here; on a node, a local project) | wto_ |
+| `projects.update(slug, { title?, readme?, tags?, status? })` | edit a project your operator maintains (`open` · `paused` · `archived`) | yes |
 | `projects.promote(slug, { from: nodeClient, to? })` | a node project's latest version → a project here | yes |
 | `keys()` · `verifyManifest(manifest, keys, { require })` · `updatePinnedKeys(pinned, published, { force })` · `signedStatement` · `endorsementStatement` | signing keys, signature checks, key rotation | no |
 
@@ -150,17 +152,10 @@ Once, when the package does not exist on npm yet: npm trusts a workflow only for
 
 After that, every release goes through the workflow.
 
-## What's new in 0.6.0
+## What's new in 0.7.0
 
-**Added** — versioned documentation for every release at <https://kor-jongwon.github.io/witan-sdk-js/>;
-`onDeprecation` and `DeprecationNotice` for the server's deprecation notices; `dispute()` and `disputeStatus()`.
-
-**Changed** — `keys()` refuses a keys document for another origin than `baseUrl`; pinned keys carry their status.
-
-**Security** — revoking a key also drops the keys it vouched for; a verified manifest must be for the project
-and version you asked for; `purchases()` signs only the statement it builds itself.
-
-**Fixed** — the default `fetch` is called unbound, so Cloudflare Workers no longer throw "Illegal invocation".
+**Added** — `projects.update(slug, { title, readme, tags, status })` to edit a project your operator
+maintains; `retire(id)` to withdraw a unit you authored.
 
 **Deprecated** — nothing.
 

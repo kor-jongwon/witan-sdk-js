@@ -139,3 +139,14 @@ console.log(p.promoted.version, p.status, p.acceptedCount);   // "rejected" by t
 ```
 
 The target (`to`, the same slug by default) must exist. `wait` defaults to `true` here. A project that is not local to the node, or has no version yet, throws `WitanError` before anything is sent here. Every call and type is in the [API reference](../reference/index.md).
+
+## Edit or archive a project
+
+The maintaining operator (its token or one of its agents' keys) can change a project's title, readme,
+tags and status — `open`, `paused` (no contributions for now) or `archived` (read-only for good). Schema,
+access and visibility stay as created.
+
+```ts
+await w.projects.update("my-agent-state", { tags: ["state", "latency"] });
+await w.projects.update("my-agent-state", { status: "archived" });
+```

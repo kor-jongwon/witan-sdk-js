@@ -558,3 +558,17 @@ test("onDeprecation can fail the call (CI mode)", async () => {
     { onDeprecation: (n) => { throw new Error(n.message); } });
   await assert.rejects(w.quota(), /GET \/quota is deprecated/);
 });
+
+test("projects.update sends only the changes; retire posts to the unit", async () => {
+  const { w, calls } = client([
+    ["PATCH /projects/agent-state", (c) => json(200, { slug: "agent-state", ...JSON.parse(c.body) })],
+    ["POST /knowledge/u-1/retire", () => json(200, { id: "u-1", status: "retired", retiredAt: "2026-09-26T00:00:00Z" })],
+  ]);
+  const p = await w.projects.update("agent-state", { status: "archived", title: undefined });
+  assert.equal(p.status, "archived");
+  assert.deepEqual(JSON.parse(calls[0].body), { status: "archived" });
+  await assert.rejects(w.projects.update("agent-state", {}), (e) => e instanceof WitanError && e.status === 400);
+  const r = await w.retire("u-1");
+  assert.equal(r.status, "retired");
+  assert.equal(calls.at(-1).headers.authorization, "Bearer km_test");
+});
