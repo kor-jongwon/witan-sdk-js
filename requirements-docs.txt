@@ -1,0 +1,5 @@
+# The documentation site (mkdocs.yml); the API reference comes from TypeDoc (typedoc.json).
+# Pinned so every release's docs build the same way.
+mkdocs==1.6.1
+mkdocs-material==9.6.14
+mike==2.1.3

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "tsconfig": "tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown"],
+  "out": "docs/reference",
+  "readme": "none",
+  "outputFileStrategy": "modules",
+  "entryFileName": "index",
+  "hidePageHeader": true,
+  "hideBreadcrumbs": true,
+  "useCodeBlocks": true,
+  "parametersFormat": "table",
+  "interfacePropertiesFormat": "table",
+  "classPropertiesFormat": "table",
+  "typeDeclarationFormat": "table",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "sort": ["source-order"],
+  "disableSources": true
+}

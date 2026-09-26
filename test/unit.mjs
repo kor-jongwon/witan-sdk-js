@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  PaymentRequiredError, SignatureError, Witan, WitanError, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
+  PaymentRequiredError, SignatureError, Witan, WitanError, deprecationNotice, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
 } from "../dist/index.js";
 
 const BASE = "http://api.test";
@@ -116,12 +116,43 @@ test("manifest({ verify }) checks before returning", async () => {
   await assert.rejects(w.projects.manifest("p", { verify: keys }), SignatureError);
 });
 
+test("manifest({ verify }) refuses a validly signed manifest of another project or version", async () => {
+  const { keys, sign } = await signer();
+  const m = await sign(manifest()); // project p, version 3
+  const { w } = client([["GET /projects/*", () => json(200, m)]]);
+  await assert.rejects(w.projects.manifest("q", { verify: keys }), (e) => e instanceof SignatureError && /got a manifest of p v3/.test(e.message));
+  await assert.rejects(w.projects.manifest("p", { version: 2, verify: keys }), SignatureError);
+  assert.equal((await w.projects.manifest("p", { version: 3, verify: keys })).version, 3);
+});
+
+test("the signed statement leaves out an attached x402 receipt, as it does paid", async () => {
+  const { keys, sign } = await signer();
+  const m = await sign(manifest());
+  assert.equal(await verifyManifest({ ...m, paid: true, x402: { success: true, transaction: "0x" + "ab".repeat(32) } }, keys), "verified");
+});
+
 test("keys() reads /.well-known/witan-keys without a key", async () => {
   const { keys } = await signer();
   const m = mock([["GET /.well-known/witan-keys", () => json(200, keys)]]);
-  const anon = new Witan({ baseUrl: BASE, fetch: m.fetch });
+  const anon = new Witan({ baseUrl: ORIGIN, fetch: m.fetch });
   assert.deepEqual(await anon.keys(), keys);
   assert.equal(m.calls[0].headers.authorization, undefined);
+  for (const same of ["https://ORIGIN.test", "https://origin.test:443/"]) {
+    assert.deepEqual(await new Witan({ baseUrl: same, fetch: m.fetch }).keys(), keys);
+  }
+});
+
+test("keys() refuses a document for another origin unless told whom the server speaks for", async () => {
+  const { keys } = await signer(); // origin https://origin.test
+  const m = mock([["GET /.well-known/witan-keys", () => json(200, keys)]]);
+  for (const base of [BASE, "http://origin.test", "https://origin.test:8443", "https://origin.test.evil"]) {
+    await assert.rejects(new Witan({ baseUrl: base, fetch: m.fetch }).keys(), SignatureError, base);
+  }
+  const proxied = new Witan({ baseUrl: BASE, fetch: m.fetch });
+  assert.deepEqual(await proxied.keys({ origin: ORIGIN + "/" }), keys); // a proxy for the origin
+  await assert.rejects(proxied.keys({ origin: "https://elsewhere.test" }), SignatureError);
+  const bare = mock([["GET /.well-known/witan-keys", () => json(200, { keys: keys.keys })]]);
+  await assert.rejects(new Witan({ baseUrl: ORIGIN, fetch: bare.fetch }).keys(), SignatureError); // no origin at all
 });
 
 // ---- transport ----------------------------------------------------------------------------
@@ -132,6 +163,17 @@ test("errors: 404 is WitanError, 402 is PaymentRequiredError with the pay URL", 
   ]);
   await assert.rejects(w.projects.get("missing"), (e) => e instanceof WitanError && e.status === 404 && e.message === "project not found");
   await assert.rejects(w.projects.data("paid"), (e) => e instanceof PaymentRequiredError && e.pay === "http://pay.test/x" && e.price === "$0.10");
+});
+
+test("fetch is called unbound: Workers and browsers refuse another `this`", async () => {
+  const m = mock([["GET /projects", () => json(200, { projects: [] })], ["GET /purchases/statement", () => json(500, {})]]);
+  function strictFetch(input, init) {
+    if (this !== undefined && this !== globalThis) throw new TypeError("Illegal invocation");
+    return m.fetch(input, init);
+  }
+  const w = new Witan({ baseUrl: BASE, payUrl: "http://pay.test", fetch: strictFetch, retries: 0 });
+  assert.deepEqual(await w.projects.list(), []);
+  await assert.rejects(w.purchases({ address: "0x" + "00".repeat(20), sign: async () => "0x" }), (e) => e instanceof WitanError && e.status === 500);
 });
 
 test("a call that needs a key throws before any request", async () => {
@@ -323,12 +365,28 @@ test("revoked keys are refused, and so is what they vouched for", async () => {
   assert.equal(await verifyManifest(await signedBy(k0), keys), "verified");
 });
 
-test("updatePinnedKeys adds what pinned keys endorse, refuses the rest, marks revocations", async () => {
+test("a key pinned through a revoked key is refused too", async () => {
+  const [k0, k1] = await Promise.all([keyPair(), keyPair()]);
+  const keys = { origin: ORIGIN, keys: [{ ...k0.ref, status: "revoked" }, { ...k1.ref, endorsedBy: k0.ref.kid }] };
+  await assert.rejects(verifyManifest(await signedBy(k1), keys), /pinned through a key/);
+});
+
+test("retired keys still verify what they signed, and vouch for their successor", async () => {
+  const [k0, k1] = await Promise.all([keyPair(), keyPair()]);
+  const keys = { origin: ORIGIN, keys: [{ ...k0.ref, status: "retired" }] };
+  assert.equal(await verifyManifest(await signedBy(k0), keys), "verified"); // a copy from before the rotation
+  assert.equal(await verifyManifest(await signedBy(k1, [await endorse(k0, k1)]), keys), "verified");
+});
+
+test("updatePinnedKeys adds what pinned keys endorse, refuses the rest, marks revocations and retirements", async () => {
   const [k0, k1, k2, k3] = await Promise.all([keyPair(), keyPair(), keyPair(), keyPair()]);
   const r1 = await updatePinnedKeys(pins(k0), published(k2, { retired: [k0, k1], endorsements: [await endorse(k0, k1), await endorse(k1, k2)] }));
   assert.deepEqual(r1.added.sort(), [k1.ref.kid, k2.ref.kid].sort());
   assert.deepEqual(r1.refused, []);
+  assert.equal("ignored" in r1, false);
+  assert.equal(r1.keys.keys.find((k) => k.kid === k0.ref.kid).status, "retired");
   assert.equal(await verifyManifest(await signedBy(k2), r1.keys), "verified"); // no chain needed any more
+  assert.equal(await verifyManifest(await signedBy(k0), r1.keys), "verified"); // retired: what it signed still verifies
   const r2 = await updatePinnedKeys(r1.keys, published(k3, { revoked: [k2] }));
   assert.deepEqual(r2.revoked, [k2.ref.kid]);
   assert.deepEqual(r2.refused, [k3.ref.kid]);
@@ -339,12 +397,37 @@ test("updatePinnedKeys adds what pinned keys endorse, refuses the rest, marks re
   await assert.rejects(updatePinnedKeys(pins(k0), { ...published(k1), origin: "https://elsewhere.test" }), SignatureError);
 });
 
+test("updatePinnedKeys: an emergency revocation of the current key applies at once", async () => {
+  const [k0, k1, k2] = await Promise.all([keyPair(), keyPair(), keyPair()]);
+  const r1 = await updatePinnedKeys(pins(k0), published(k1, { retired: [k0], endorsements: [await endorse(k0, k1)] }));
+  // k1 leaked: the origin revokes it and signs with k2, which nothing still trusted endorses
+  const r2 = await updatePinnedKeys(r1.keys, published(k2, { retired: [k0], revoked: [k1] }));
+  assert.deepEqual(r2.revoked, [k1.ref.kid]);
+  assert.deepEqual(r2.refused, [k2.ref.kid]);
+  await assert.rejects(verifyManifest(await signedBy(k1), r2.keys), /revoked/);
+  await assert.rejects(verifyManifest(await signedBy(k2, [await endorse(k1, k2)]), r2.keys), /no endorsement leads/);
+  assert.equal(await verifyManifest(await signedBy(k0), r2.keys), "verified");
+});
+
+test("updatePinnedKeys: a revocation reaches the keys pinned through the revoked key", async () => {
+  const [k0, k1, k2, k3] = await Promise.all([keyPair(), keyPair(), keyPair(), keyPair()]);
+  const r1 = await updatePinnedKeys(pins(k0, k3), published(k1, { retired: [k0, k3], endorsements: [await endorse(k0, k1)] }));
+  assert.equal(r1.keys.keys.find((k) => k.kid === k1.ref.kid).endorsedBy, k0.ref.kid);
+  const r2 = await updatePinnedKeys(r1.keys, published(k2, { retired: [k3], revoked: [k0], endorsements: [await endorse(k3, k2)] }));
+  assert.deepEqual(r2.revoked, [k0.ref.kid]);
+  assert.deepEqual(r2.added, [k2.ref.kid]);
+  await assert.rejects(verifyManifest(await signedBy(k1), r2.keys), /pinned through a key/);
+  assert.equal(await verifyManifest(await signedBy(k2), r2.keys), "verified");
+});
+
 // ---- purchases ------------------------------------------------------------------------------
+const NOW = Math.floor(Date.now() / 1000);
+
 test("purchases: the wallet signs the statement the pay service issues; no API key goes there", async () => {
   const wallet = "0xAbCdEf0000000000000000000000000000000001";
-  const issued = `WITAN purchase history\nwallet: ${wallet.toLowerCase()}\norigin: http://pay.test\ntime: 1000`;
+  const issued = `WITAN purchase history\nwallet: ${wallet.toLowerCase()}\norigin: http://pay.test\ntime: ${NOW}`;
   const m = mock([
-    ["GET /purchases/statement", (c) => json(200, { statement: issued, wallet: c.url.searchParams.get("wallet"), time: 1000, expiresIn: 300 })],
+    ["GET /purchases/statement", (c) => json(200, { statement: issued, wallet: c.url.searchParams.get("wallet"), time: NOW, expiresIn: 300 })],
     ["GET /purchases", (c) => json(200, { wallet: c.headers["x-witan-wallet"], purchases: [{ id: "4", kind: "unit", unit: { id: "u", title: "t" } }], next: null })],
   ]);
   const w = new Witan({ baseUrl: BASE, apiKey: "km_test", payUrl: "http://pay.test", fetch: m.fetch });
@@ -356,20 +439,77 @@ test("purchases: the wallet signs the statement the pay service issues; no API k
   const [statementCall, listCall] = m.calls;
   assert.equal(statementCall.url.host, "pay.test");
   assert.equal(statementCall.url.searchParams.get("wallet"), wallet.toLowerCase());
-  assert.equal(listCall.headers["x-witan-time"], "1000");
+  assert.equal(listCall.headers["x-witan-time"], String(NOW));
   assert.equal(listCall.headers["x-witan-signature"], "0x" + "cd".repeat(65));
   assert.equal(listCall.url.searchParams.get("limit"), "5");
   for (const c of m.calls) assert.equal(c.headers.authorization, undefined);
 });
 
 test("purchases: a refused signature throws WitanError(401)", async () => {
+  const wallet = "0x" + "00".repeat(20);
   const m = mock([
-    ["GET /purchases/statement", () => json(200, { statement: "s", time: 1 })],
+    ["GET /purchases/statement", () => json(200, { statement: `WITAN purchase history\nwallet: ${wallet}\norigin: http://pay.test\ntime: ${NOW}`, time: NOW })],
     ["GET /purchases", () => json(401, { error: "the signature is not this wallet's" })],
   ]);
   const w = new Witan({ baseUrl: BASE, payUrl: "http://pay.test", fetch: m.fetch });
-  await assert.rejects(w.purchases({ address: "0x" + "00".repeat(20), sign: async () => "0x00" }),
+  await assert.rejects(w.purchases({ address: wallet, sign: async () => "0x00" }),
     (e) => e instanceof WitanError && e.status === 401 && /not this wallet/.test(e.message));
+});
+
+test("purchases: the wallet signs nothing but WITAN's statement, and only a fresh one", async () => {
+  const wallet = "0x" + "00".repeat(20);
+  const text = (t, origin = "http://pay.test") => `WITAN purchase history\nwallet: ${wallet}\norigin: ${origin}\ntime: ${t}`;
+  const cases = [
+    [{ statement: "Transfer all funds to 0xbad", time: NOW }, /something other/],
+    [{ statement: text(NOW, "http://evil.test"), time: NOW }, /something other/],
+    [{ statement: text(NOW - 3600), time: NOW - 3600 }, /clock/],
+    [{ statement: text(NOW), time: String(NOW) }, /without a time/],
+  ];
+  for (const [issued, why] of cases) {
+    const m = mock([["GET /purchases/statement", () => json(200, issued)], ["GET /purchases", () => json(200, {})]]);
+    const w = new Witan({ baseUrl: BASE, payUrl: "http://pay.test", fetch: m.fetch });
+    const signed = [];
+    await assert.rejects(w.purchases({ address: wallet, sign: async (t) => { signed.push(t); return "0x00"; } }), why);
+    assert.deepEqual(signed, []);
+    assert.equal(m.calls.length, 1);
+  }
+});
+
+// ---- disputes -------------------------------------------------------------------------------
+test("dispute: signed by the paying wallet over WITAN's statement, posted to the pay service", async () => {
+  const wallet = "0x" + "12".repeat(20);
+  const tx = "0x" + "ab".repeat(32);
+  const statement = `WITAN dispute\ntransaction: ${tx}\nwallet: ${wallet}\norigin: http://pay.test\ntime: ${NOW}`;
+  const m = mock([
+    ["GET /disputes/statement", (c) => json(200, { statement, time: NOW, expiresIn: 300, asked: Object.fromEntries(c.url.searchParams) })],
+    ["POST /disputes", () => json(201, { id: "d-1", status: "open", kind: "dataset", amountMicro: 100000 })],
+    ["GET /disputes/d-1", () => json(200, { id: "d-1", status: "refunded", refundTx: "0x" + "cd".repeat(32) })],
+  ]);
+  const w = new Witan({ baseUrl: BASE, apiKey: "km_test", payUrl: "http://pay.test/", fetch: m.fetch });
+  const signed = [];
+  const d = await w.dispute({ transaction: tx.toUpperCase().replace("0X", "0x"), reason: "parts were corrupt", address: wallet.toUpperCase().replace("0X", "0x"),
+    sign: async (text) => { signed.push(text); return "0x" + "ef".repeat(65); } });
+  assert.equal(d.id, "d-1");
+  assert.deepEqual(signed, [statement]);
+  const [asked, posted] = m.calls;
+  assert.deepEqual(Object.fromEntries(asked.url.searchParams), { transaction: tx, wallet });
+  assert.equal(posted.method, "POST");
+  assert.equal(posted.headers["content-type"], "application/json");
+  assert.deepEqual(JSON.parse(posted.body), { transaction: tx, reason: "parts were corrupt", wallet, time: NOW, signature: "0x" + "ef".repeat(65) });
+  for (const c of m.calls) assert.equal(c.headers.authorization, undefined);
+  assert.equal((await w.disputeStatus("d-1")).status, "refunded");
+});
+
+test("dispute: a statement for another transaction is not signed; a bad hash is refused before any request", async () => {
+  const wallet = "0x" + "12".repeat(20);
+  const other = `WITAN dispute\ntransaction: 0x${"cd".repeat(32)}\nwallet: ${wallet}\norigin: http://pay.test\ntime: ${NOW}`;
+  const m = mock([["GET /disputes/statement", () => json(200, { statement: other, time: NOW })], ["POST /disputes", () => json(201, {})]]);
+  const w = new Witan({ baseUrl: BASE, payUrl: "http://pay.test", fetch: m.fetch });
+  const sign = async () => { throw new Error("must not sign"); };
+  await assert.rejects(w.dispute({ transaction: "0x" + "ab".repeat(32), reason: "x", address: wallet, sign }), /something other/);
+  assert.equal(m.calls.filter((c) => c.method === "POST").length, 0);
+  await assert.rejects(w.dispute({ transaction: "not-a-tx", reason: "x", address: wallet, sign }), /settlement tx hash/);
+  assert.equal(m.calls.length, 1);
 });
 
 test("projects.buy posts the version with the key; short of credits it is a PaymentRequiredError", async () => {
@@ -382,4 +522,39 @@ test("projects.buy posts the version with the key; short of credits it is a Paym
   assert.equal(r.chargedMicro, 100000);
   assert.equal(calls[0].headers.authorization, "Bearer km_test");
   await assert.rejects(w.projects.buy("paid-one", { version: 4 }), (e) => e instanceof PaymentRequiredError && /not enough credits/.test(e.message));
+});
+
+test("a deprecated route is reported once, with its sunset and migration link", async () => {
+  const notices = [];
+  const headers = {
+    deprecation: "@1790812800",
+    sunset: "Wed, 30 Jun 2027 00:00:00 GMT",
+    link: '<https://witan.example/docs/points>; rel="deprecation"; type="text/html"',
+  };
+  const { w } = client([["GET /points", () => json(200, { points: 1 }, headers)]], { onDeprecation: (n) => notices.push(n) });
+  await w.points();
+  await w.points();
+  assert.equal(notices.length, 1);
+  assert.equal(notices[0].method, "GET");
+  assert.equal(notices[0].path, "/points");
+  assert.equal(notices[0].since, "2026-10-01");
+  assert.equal(notices[0].sunset, "2027-06-30");
+  assert.equal(notices[0].link, "https://witan.example/docs/points");
+  assert.match(notices[0].message, /GET \/points is deprecated since 2026-10-01 and stops working on 2027-06-30/);
+});
+
+test("deprecationNotice: absent, false and bare true", () => {
+  const u = "http://api.test/search?q=x";
+  assert.equal(deprecationNotice("GET", u, new Headers()), undefined);
+  assert.equal(deprecationNotice("GET", u, new Headers({ deprecation: "false" })), undefined);
+  const n = deprecationNotice("GET", u, new Headers({ deprecation: "true" }));
+  assert.equal(n.path, "/search");
+  assert.equal(n.since, undefined);
+  assert.match(n.message, /GET \/search is deprecated\./);
+});
+
+test("onDeprecation can fail the call (CI mode)", async () => {
+  const { w } = client([["GET /quota", () => json(200, { storage: {} }, { deprecation: "@1790812800" })]],
+    { onDeprecation: (n) => { throw new Error(n.message); } });
+  await assert.rejects(w.quota(), /GET \/quota is deprecated/);
 });

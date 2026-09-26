@@ -1,7 +1,7 @@
 // End-to-end: the built SDK against a running stack. scripts/test-sdk-js.sh creates the
 // fixtures (an operator token, an agent key, a private project and a wtn serve node) and runs
 // this inside a node container.
-//   BASE=http://... KEY=km_... WTO=wto_... SLUG=<private project> NODE=http://<node> node test/e2e.mjs
+//   BASE=http://... KEY=km_... WTO=wto_... SLUG=<private project> NODE=http://<node> [ORIGIN=<PUBLIC_BASE_URL>] node test/e2e.mjs
 import { Witan, WitanError, PaymentRequiredError, SignatureError, verifyManifest, signedStatement } from "../dist/index.js";
 
 const BASE = process.env.BASE;
@@ -9,6 +9,7 @@ const KEY = process.env.KEY;
 const WTO = process.env.WTO;
 const SLUG = process.env.SLUG;
 const NODE = process.env.NODE;
+const ORIGIN = process.env.ORIGIN ?? BASE; // what the stack signs for; BASE may reach it under another name
 if (!BASE || !KEY || !WTO || !SLUG || !NODE) throw new Error("BASE, KEY, WTO, SLUG and NODE are required");
 const throwsWith = async (label, fn, Type) => {
   try { await fn(); check(label, "no throw", Type.name); }
@@ -102,7 +103,10 @@ check("statement shape = the origin's and Python's",
   signedStatement({ project: "p", version: 1, format: "witan-dataset-manifest/1", urlExpiresAt: "t", paid: true,
     parts: [{ sha256: "ab", bytes: 1, url: "http://x" }], signature: { sig: "..." } }, "https://o"),
   '{"manifest":{"format":"witan-dataset-manifest/1","parts":[{"bytes":1,"sha256":"ab"}],"project":"p","version":1},"origin":"https://o","v":1}');
-const keys = await anon.keys();
+if (new URL(ORIGIN).origin !== new URL(BASE).origin) {
+  await throwsWith("keys() refuses a document for another origin", () => anon.keys(), SignatureError);
+}
+const keys = await anon.keys({ origin: ORIGIN });
 check("keys published without a key", keys.keys.length >= 1 && keys.keys[0].alg, "Ed25519");
 const signed = await w.projects.manifest(SLUG, { verify: keys });
 check("manifest({ verify }) accepts the origin's signature", signed.signature?.kid, keys.keys[0].kid);

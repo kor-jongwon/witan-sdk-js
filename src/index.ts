@@ -24,6 +24,25 @@ export interface WitanOptions {
   timeoutMs?: number;
   /** Sent as User-Agent where the runtime allows it. */
   userAgent?: string;
+  /**
+   * Called once per route (per process) when the server answers a route with a `Deprecation`
+   * header. Default: `console.warn(notice.message)`. Throw from it to fail a CI run on deprecations.
+   */
+  onDeprecation?: (notice: DeprecationNotice) => void;
+}
+
+/** A route the SDK called is deprecated on the server (RFC 9745 `Deprecation`, RFC 8594 `Sunset`). */
+export interface DeprecationNotice {
+  method: string;
+  path: string;
+  /** When the route was deprecated (YYYY-MM-DD), if the server said. */
+  since?: string;
+  /** When it stops working (YYYY-MM-DD), if the server said. */
+  sunset?: string;
+  /** Where the migration is described (`Link: <...>; rel="deprecation"`). */
+  link?: string;
+  /** One line saying all of the above. */
+  message: string;
 }
 
 export interface SearchHit {
@@ -174,12 +193,14 @@ export interface ManifestSignature {
   chain?: ChainLink[];
 }
 /** GET /.well-known/witan-keys — the keys an origin signs version manifests with — and, as kept by
- * a client, the keys it pinned. */
+ * a client, the keys it pinned. A retired key keeps verifying what it signed before the rotation; a
+ * revoked key counts for nothing, and neither does a key pinned through it (`endorsedBy`). */
 export interface SigningKeys {
   origin: string;
-  keys: (KeyRef & { status?: "current" | "retired" | "revoked"; endorsedBy?: string })[];
+  keys: PinnedKey[];
   endorsements?: { kid: string; by: string; sig: string }[];
 }
+export type PinnedKey = KeyRef & { status?: "current" | "retired" | "revoked"; endorsedBy?: string };
 export interface CreateProjectInput {
   slug: string;
   title: string;
@@ -275,6 +296,18 @@ export interface Purchase {
   /** while a dispute can still be opened */
   disputeUntil: string | null;
 }
+/** A dispute on a settled payment, as the pay service reports it. */
+export interface Dispute {
+  id: string;
+  status: string;
+  kind?: "unit" | "dataset" | "credits";
+  amountMicro?: number;
+  transaction?: string;
+  reason?: string;
+  refundMicro?: number | null;
+  refundTx?: string | null;
+  [key: string]: unknown;
+}
 export interface Quota {
   storage: { usedBytes: number; limitBytes: number };
   egress: { usedBytes: number; limitBytes: number; periodStart: string };
@@ -334,8 +367,9 @@ export class SignatureError extends WitanError {
   }
 }
 
-type Query = Record<string, string | number | boolean | undefined | null>;
-interface RequestInit2 {
+export type Query = Record<string, string | number | boolean | undefined | null>;
+/** Options of `request()` and `send()`, the raw calls behind every method. */
+export interface RequestInit2 {
   query?: Query;
   body?: unknown;
   /** The call needs an agent key; throws before the request when none is configured. */
@@ -357,25 +391,66 @@ function env(name: string): string | undefined {
 }
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
+/** `@1790812800` (RFC 9745) or an HTTP-date (RFC 8594) as YYYY-MM-DD. */
+function headerDate(value: string | null): string | undefined {
+  if (!value) return undefined;
+  const v = value.trim();
+  const ms = v.startsWith("@") ? Number(v.slice(1)) * 1000 : Date.parse(v);
+  return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : undefined;
+}
+
+function deprecationLink(header: string | null): string | undefined {
+  for (const part of (header ?? "").split(",")) {
+    const m = /^\s*<([^>]*)>\s*;(.*)$/.exec(part);
+    if (!m) continue;
+    for (const rel of m[2].matchAll(/rel\s*=\s*"?([^";]*)"?/gi)) {
+      if (rel[1].toLowerCase().split(/\s+/).includes("deprecation")) return m[1];
+    }
+  }
+  return undefined;
+}
+
+/** The deprecation a response announces, if any. */
+export function deprecationNotice(method: string, url: string | URL, headers: Headers): DeprecationNotice | undefined {
+  const raw = headers.get("deprecation");
+  if (raw === null || raw.trim().toLowerCase() === "false") return undefined;
+  const path = new URL(String(url)).pathname;
+  const since = headerDate(raw);
+  const sunset = headerDate(headers.get("sunset"));
+  const link = deprecationLink(headers.get("link"));
+  let message = `WITAN API: ${method} ${path} is deprecated`;
+  if (since) message += ` since ${since}`;
+  if (sunset) message += ` and stops working on ${sunset}`;
+  if (link) message += `; see ${link}`;
+  message += ". Upgrade witan-sdk (npm i witan-sdk@latest) or follow the migration note.";
+  return { method, path, ...(since ? { since } : {}), ...(sunset ? { sunset } : {}), ...(link ? { link } : {}), message };
+}
+
+const seenDeprecations = new Set<string>();
+
 export class Witan {
   readonly baseUrl: string;
   readonly apiKey: string | undefined;
   readonly payUrl: string;
   readonly projects: Projects;
-  private readonly fetchImpl: typeof fetch;
+  private readonly fetchImpl: (input: string | URL, init?: RequestInit) => Promise<Response>;
   private readonly retries: number;
   private readonly timeoutMs: number;
   private readonly userAgent: string;
+  private readonly onDeprecation: (notice: DeprecationNotice) => void;
 
   constructor(opts: WitanOptions = {}) {
     this.baseUrl = (opts.baseUrl ?? env("WITAN_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
     this.apiKey = opts.apiKey ?? env("WITAN_API_KEY") ?? undefined;
     this.payUrl = (opts.payUrl ?? env("WITAN_PAY_URL") ?? "http://localhost:3001").replace(/\/+$/, "");
-    this.fetchImpl = opts.fetch ?? globalThis.fetch;
-    if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
+    const f = opts.fetch ?? globalThis.fetch;
+    if (typeof f !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
+    // Called unbound: Workers and browsers throw "Illegal invocation" when fetch runs with another `this`.
+    this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.5.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.6.0";
+    this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }
 
@@ -460,9 +535,10 @@ export class Witan {
   /**
    * What a wallet bought here, newest first: units, dataset versions and credit packs, with the
    * settlement transaction, status and dispute state. A purchase is anonymous, so the wallet proves
-   * it is the buyer: the pay service issues a short statement and `sign` — your wallet's
-   * personal_sign, e.g. viem's `account.signMessage({ message })` — signs it; only the signature is
-   * sent. Page with `before: next`.
+   * it is the buyer: the SDK builds WITAN's short statement, checks it against the one the pay
+   * service issued (so the wallet signs nothing else), and `sign` — your wallet's personal_sign,
+   * e.g. viem's `account.signMessage({ message })` — signs it; only the signature is sent. Page
+   * with `before: next`.
    */
   async purchases(opts: { address: string; sign: (statement: string) => Promise<string>; limit?: number; before?: string }): Promise<{
     wallet: string;
@@ -470,20 +546,53 @@ export class Witan {
     next: string | null;
   }> {
     const address = opts.address.toLowerCase();
-    const issued = (await parseBody(await this.payFetch(`/purchases/statement?wallet=${enc(address)}`))) as { statement: string; time: number };
-    const signature = await opts.sign(issued.statement);
+    const origin = payOrigin(this.payUrl);
+    const issued = await parseBody(await this.payFetch(`/purchases/statement?wallet=${enc(address)}`));
+    const time = checkedTime(issued, (t) => purchaseStatement(address, origin, t));
+    const signature = await opts.sign(purchaseStatement(address, origin, time));
     const query = new URLSearchParams({ limit: String(opts.limit ?? 50), ...(opts.before ? { before: opts.before } : {}) });
     const res = await this.payFetch(`/purchases?${query}`, {
       "x-witan-wallet": address,
-      "x-witan-time": String(issued.time),
+      "x-witan-time": String(time),
       "x-witan-signature": signature,
     });
     return (await parseBody(res)) as { wallet: string; purchases: Purchase[]; next: string | null };
   }
 
-  /** A GET to the pay service — no API key there; non-2xx throws like any call. */
-  private async payFetch(path: string, headers: Record<string, string> = {}): Promise<Response> {
-    const res = await this.fetchImpl(this.payUrl + path, { headers: { accept: "application/json", ...headers }, signal: timeoutSignal(this.timeoutMs) });
+  /**
+   * Dispute a settled x402 payment (a purchase or a credit pack) within 7 days. `transaction` is the
+   * settlement tx hash (the purchase's PAYMENT-RESPONSE, or `transaction` in `purchases()`). Only the
+   * wallet that paid can: the SDK builds WITAN's dispute statement, checks it against the one the pay
+   * service issued, and `sign` (personal_sign, as for `purchases`) signs it; only the signature is
+   * sent. After review the refund goes back on-chain to that wallet — follow it with `disputeStatus`.
+   */
+  async dispute(opts: { transaction: string; reason: string; address: string; sign: (statement: string) => Promise<string> }): Promise<Dispute> {
+    const transaction = opts.transaction.trim().toLowerCase();
+    if (!/^0x[0-9a-f]{64}$/.test(transaction)) throw new WitanError(0, "transaction must be the settlement tx hash (0x + 64 hex)");
+    const address = opts.address.toLowerCase();
+    const origin = payOrigin(this.payUrl);
+    const issued = await parseBody(await this.payFetch(`/disputes/statement?${new URLSearchParams({ transaction, wallet: address })}`));
+    const time = checkedTime(issued, (t) => disputeStatement(transaction, address, origin, t));
+    const signature = await opts.sign(disputeStatement(transaction, address, origin, time));
+    const res = await this.payFetch("/disputes", {}, { transaction, reason: opts.reason, wallet: address, time, signature });
+    return (await parseBody(res)) as Dispute;
+  }
+
+  /** Where a dispute stands: `{ id, status, kind, amountMicro, transaction, reason, refundMicro, refundTx, ... }`. */
+  async disputeStatus(id: string): Promise<Dispute> {
+    return (await parseBody(await this.payFetch(`/disputes/${enc(id)}`))) as Dispute;
+  }
+
+  /** A call to the pay service (GET, or POST with a JSON body) — no API key there; non-2xx throws like any call. */
+  private async payFetch(path: string, headers: Record<string, string> = {}, body?: unknown): Promise<Response> {
+    const method = body === undefined ? "GET" : "POST";
+    const res = await this.fetchImpl(this.payUrl + path, {
+      method,
+      headers: { accept: "application/json", ...(body === undefined ? {} : { "content-type": "application/json" }), ...headers },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      signal: timeoutSignal(this.timeoutMs),
+    });
+    this.noteDeprecation(method, this.payUrl + path, res);
     if (!res.ok) throw await toError(res);
     return res;
   }
@@ -492,10 +601,17 @@ export class Witan {
    * The keys this origin signs version manifests with. Fetch them once where you trust the origin
    * and keep them with your agent's config; `verifyManifest` then checks copies from anywhere,
    * following a key rotation through the signature's endorsements. To refresh the stored keys
-   * later without trusting whatever the server says, pass both to `updatePinnedKeys`.
+   * later without trusting whatever the server says, pass both to `updatePinnedKeys`. The document
+   * must be for `baseUrl`'s own origin (scheme, host, port) — a server reached through a proxy under
+   * another URL is accepted by naming the origin it speaks for: `keys({ origin: "https://..." })`.
    */
-  async keys(): Promise<SigningKeys> {
+  async keys(opts: { origin?: string } = {}): Promise<SigningKeys> {
     const { data } = await this.request<SigningKeys>("GET", "/.well-known/witan-keys", { idempotent: true });
+    const expect = opts.origin ?? this.baseUrl;
+    const claimed = data && typeof data === "object" ? String(data.origin ?? "") : "";
+    if (originOf(claimed) === null || originOf(claimed) !== originOf(expect)) {
+      throw new SignatureError(`these keys are for ${claimed || "(no origin)"}, not ${expect.replace(/\/+$/, "")} — accept them only if that server speaks for ${claimed || "it"} (a proxy): keys({ origin: ${JSON.stringify(claimed)} })`);
+    }
     return data;
   }
 
@@ -539,6 +655,7 @@ export class Witan {
         lastError = e;
         continue;
       }
+      this.noteDeprecation(method, url, res);
       if (res.ok) return res;
       if (RETRY_STATUS.has(res.status) && attempt < attempts - 1) {
         lastError = await toError(res);
@@ -547,6 +664,16 @@ export class Witan {
       throw await toError(res);
     }
     throw lastError instanceof Error ? lastError : new WitanError(0, String(lastError));
+  }
+
+  /** Once per route per process: tell `onDeprecation` the server has scheduled this route for removal. */
+  private noteDeprecation(method: string, url: string | URL, res: Response): void {
+    const notice = deprecationNotice(method, url, res.headers);
+    if (!notice) return;
+    const key = `${method} ${notice.link ?? notice.path}`;
+    if (seenDeprecations.has(key)) return;
+    seenDeprecations.add(key);
+    this.onDeprecation(notice);
   }
 
   /** PUT one part to its presigned URL (the signature is in the URL: no Authorization header). Returns the ETag. */
@@ -596,13 +723,20 @@ export class Projects {
    * The version manifest with 15-minute part URLs — how a whole version is pulled. With `verify`
    * (keys pinned from `keys()`), the origin's signature is checked first and a manifest that is
    * unsigned, signed by other keys or altered throws `SignatureError` — so a node or a mirror can
-   * serve it and only the origin needs trusting.
+   * serve it and only the origin needs trusting. It must also be the manifest asked for: `slug`, and
+   * `version` when one is given.
    */
   async manifest(slug: string, opts: { version?: number; verify?: SigningKeys } = {}): Promise<Manifest> {
     const { data } = await this.c.request<Manifest>("GET", `/projects/${enc(slug)}/manifest`, {
       query: { version: opts.version }, auth: true, idempotent: true,
     });
-    if (opts.verify) await verifyManifest(data, opts.verify, { require: true });
+    if (opts.verify) {
+      await verifyManifest(data, opts.verify, { require: true });
+      // a validly signed manifest of another project or version must not stand in for this one
+      if (data.project !== slug || (opts.version !== undefined && data.version !== opts.version)) {
+        throw new SignatureError(`asked for ${slug} v${opts.version ?? "latest"}, got a manifest of ${String(data.project)} v${String(data.version)} — refusing it`);
+      }
+    }
     return data;
   }
   /**
@@ -783,9 +917,10 @@ export class Projects {
  * Check a manifest's signature against keys pinned from `Witan.keys()` — wherever the manifest came
  * from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
  * no signature (versions written on a node are the node's own); throws `SignatureError` when it is
- * signed for another origin, with a key that is revoked or that neither is pinned nor is reached by
- * the signature's endorsements from a pinned key, or does not match — and, with `require`, when it
- * is unsigned. Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
+ * signed for another origin, with a key that is revoked (or pinned through a revoked key) or neither
+ * pinned nor reached by the signature's endorsements from a pinned key, or does not match — and,
+ * with `require`, when it is unsigned. A retired key still verifies what it signed.
+ * Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
  */
 export async function verifyManifest(
   manifest: Record<string, unknown>,
@@ -803,10 +938,15 @@ export async function verifyManifest(
     throw new SignatureError(`${what} is signed by ${origin}, and these keys are ${keys.origin}'s`);
   }
   if (sig.alg !== "Ed25519") throw new SignatureError(`${what} uses ${sig.alg}; only Ed25519 is supported`);
-  const revoked = new Set(keys.keys.filter((k) => k.status === "revoked").map((k) => k.kid));
-  if (revoked.has(sig.kid)) throw new SignatureError(`${what} is signed with key ${sig.kid}, which ${origin} revoked`);
-  const known = new Map<string, KeyRef>(keys.keys.filter((k) => k.status !== "revoked").map((k) => [k.kid, k]));
-  let key = known.get(sig.kid);
+  const revoked = revokedKids(keys.keys);
+  if (revoked.has(sig.kid)) {
+    const own = keys.keys.some((k) => k.kid === sig.kid && k.status === "revoked");
+    throw new SignatureError(own
+      ? `${what} is signed with key ${sig.kid}, which ${origin} revoked`
+      : `${what} is signed with key ${sig.kid}, which was pinned through a key ${origin} revoked`);
+  }
+  const known = new Map<string, PinnedKey>(keys.keys.filter((k) => !revoked.has(k.kid)).map((k) => [k.kid, k]));
+  let key: PinnedKey | undefined = known.get(sig.kid);
   if (!key) {
     const learned = await walkEndorsements(origin, Array.isArray(sig.chain) ? sig.chain : [], known, revoked, sig.kid, what);
     key = learned.find((k) => k.kid === sig.kid);
@@ -821,9 +961,10 @@ export async function verifyManifest(
 }
 
 /**
- * Refresh keys you pinned with a fresh `keys()` document, without trusting it blindly: a new key
- * is added only when a pinned key endorsed it (directly or through a chain); keys the origin marks
- * revoked are marked revoked; anything else is `refused` — unless `force` (re-pinning by hand,
+ * Refresh keys you pinned with a fresh `keys()` document (which checked it is the origin's own):
+ * the keys it marks revoked or retired are marked so here, and a revoked key takes every key pinned
+ * through it along. A new key is added only when a pinned key that still counts endorsed it
+ * (directly or through a chain); anything else is `refused` — unless `force` (re-pinning by hand,
  * after checking the key id with the operator). Store the returned `keys` in place of the old.
  */
 export async function updatePinnedKeys(
@@ -832,42 +973,80 @@ export async function updatePinnedKeys(
   opts: { force?: boolean } = {},
 ): Promise<{ keys: SigningKeys; added: string[]; refused: string[]; revoked: string[] }> {
   const origin = pinned.origin.replace(/\/+$/, "");
-  if (published.origin.replace(/\/+$/, "") !== origin) {
+  if (originOf(published.origin) === null || originOf(published.origin) !== originOf(origin)) {
     throw new SignatureError(`these keys are ${published.origin}'s, not ${origin}'s`);
   }
+  const statusOf = new Map(published.keys.map((k) => [k.kid, k.status]));
   const revokedNow = new Set(published.keys.filter((k) => k.status === "revoked").map((k) => k.kid));
-  const marked: string[] = [];
-  const entries = pinned.keys.map((k) => {
-    if (revokedNow.has(k.kid) && k.status !== "revoked") {
-      marked.push(k.kid);
-      return { ...k, status: "revoked" as const };
-    }
-    return k;
-  });
-  const revoked = new Set([...revokedNow, ...entries.filter((k) => k.status === "revoked").map((k) => k.kid)]);
-  const known = new Map<string, KeyRef>(entries.filter((k) => k.status !== "revoked").map((k) => [k.kid, k]));
   const live = published.keys.filter((k) => k.status !== "revoked");
   const byKid = new Map(live.map((k) => [k.kid, k]));
   const links: ChainLink[] = (published.endorsements ?? [])
     .filter((e) => byKid.has(e.kid))
     .map((e) => ({ kid: e.kid, alg: "Ed25519", publicKey: byKid.get(e.kid)!.publicKey, by: e.by, sig: e.sig }));
-  const learned = await walkEndorsements(origin, links, known, revoked, null, `${origin}'s published keys`);
-  const learnedIds = new Set(learned.map((k) => k.kid));
-  let refused = live.filter((k) => !known.has(k.kid) && !learnedIds.has(k.kid));
-  const forced: KeyRef[] = [];
+  const revoked: string[] = [];
+  let entries: PinnedKey[] = pinned.keys.map((k): PinnedKey => {
+    if (revokedNow.has(k.kid) && k.status !== "revoked") {
+      revoked.push(k.kid);
+      return { ...k, status: "revoked" };
+    }
+    if (statusOf.get(k.kid) === "retired" && k.status !== "revoked") return { ...k, status: "retired" };
+    return k;
+  });
+  const cut = revokedKids(entries);
+  const known = new Map<string, KeyRef>(entries.filter((k) => !cut.has(k.kid)).map((k) => [k.kid, k]));
+  const reached = await walkEndorsements(origin, links, known, cut, null, `${origin}'s published keys`);
+  const have = new Set(entries.map((k) => k.kid));
+  const learned = reached.filter((k) => !have.has(k.kid)).map((k) => withStatus(k, statusOf.get(k.kid)));
+  entries = [...entries, ...learned];
+  const after = revokedKids(entries);
+  const counted = new Set(entries.filter((k) => !after.has(k.kid)).map((k) => k.kid));
+  let refused = live.filter((k) => !counted.has(k.kid));
+  const forced: PinnedKey[] = [];
   if (opts.force) {
     for (const k of refused) {
       if ((await kidOf(k.publicKey)) !== k.kid) throw new SignatureError(`${origin} published key ${k.kid} under the wrong id`);
-      forced.push({ kid: k.kid, alg: "Ed25519", publicKey: k.publicKey });
+      forced.push(withStatus({ kid: k.kid, alg: "Ed25519", publicKey: k.publicKey }, k.status));
     }
+    const again = new Set(forced.map((k) => k.kid)); // a key pinned through a revoked one is re-rooted by hand
+    entries = [...entries.filter((k) => !again.has(k.kid)), ...forced];
     refused = [];
   }
   return {
-    keys: { origin, keys: [...entries, ...learned, ...forced.map((k) => ({ ...k }))] },
+    keys: { origin, keys: entries },
     added: [...learned, ...forced].map((k) => k.kid),
     refused: refused.map((k) => k.kid),
-    revoked: marked,
+    revoked,
   };
+}
+
+/** `scheme://host[:port]` of a URL (lowercase host, default port dropped), or null when it is not one. */
+function originOf(url: string): string | null {
+  try {
+    const o = new URL(url).origin;
+    return o === "null" ? null : o;
+  } catch {
+    return null;
+  }
+}
+
+/** The pinned keys that no longer count: revoked, or pinned through an endorsement by such a key —
+ * whatever a revoked key vouched for goes with it. */
+function revokedKids(keys: PinnedKey[]): Set<string> {
+  const out = new Set(keys.filter((k) => k.status === "revoked").map((k) => k.kid));
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const k of keys) {
+      if (!out.has(k.kid) && k.endorsedBy !== undefined && out.has(k.endorsedBy)) {
+        out.add(k.kid);
+        grew = true;
+      }
+    }
+  }
+  return out;
+}
+
+function withStatus<K extends KeyRef>(k: K, status: PinnedKey["status"]): K & { status?: "current" | "retired" } {
+  return status === "current" || status === "retired" ? { ...k, status } : k;
 }
 
 /** What an endorsement signs: {v, type, origin, key} in the origin's stable JSON. */
@@ -907,6 +1086,36 @@ async function walkEndorsements(
   return learned;
 }
 
+// ---- statements a wallet signs for the pay service: built here, never taken from the server ----
+const STATEMENT_WINDOW_S = 300; // how long the pay service accepts a signed statement (pay/src/purchases.ts)
+
+/** The pay service's origin as its statements name it (PUBLIC_PAY_URL without a trailing slash). */
+function payOrigin(payUrl: string): string {
+  const u = new URL(payUrl);
+  return `${u.protocol}//${u.host}${u.pathname.replace(/\/+$/, "")}`;
+}
+function purchaseStatement(wallet: string, origin: string, time: number): string {
+  return `WITAN purchase history\nwallet: ${wallet.toLowerCase()}\norigin: ${origin}\ntime: ${time}`;
+}
+function disputeStatement(transaction: string, wallet: string, origin: string, time: number): string {
+  return `WITAN dispute\ntransaction: ${transaction.toLowerCase()}\nwallet: ${wallet.toLowerCase()}\norigin: ${origin}\ntime: ${time}`;
+}
+/** The `time` of a statement the pay service issued, once the statement it sent is exactly the one
+ * `build` makes for that time and the time is within the service's window. */
+function checkedTime(issued: unknown, build: (time: number) => string): number {
+  const r = (issued && typeof issued === "object" ? issued : {}) as { statement?: unknown; time?: unknown };
+  const time = r.time;
+  if (typeof time !== "number" || !Number.isInteger(time)) throw new WitanError(0, "the pay service issued a statement without a time");
+  const skew = Math.abs(Date.now() / 1000 - time);
+  if (skew > STATEMENT_WINDOW_S) {
+    throw new WitanError(0, `the pay service's statement is ${Math.round(skew)} s away from this machine's clock (the limit is ${STATEMENT_WINDOW_S} s) — check the clock`);
+  }
+  if (r.statement !== build(time)) {
+    throw new WitanError(0, "the pay service asked the wallet to sign something other than WITAN's statement for this origin and wallet — refusing to sign (is payUrl the service's public URL?)");
+  }
+  return time;
+}
+
 function webCrypto(): SubtleCrypto {
   const subtle = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto?.subtle;
   if (!subtle) throw new WitanError(0, "this runtime has no WebCrypto (crypto.subtle) to verify signatures with");
@@ -941,9 +1150,11 @@ async function kidOf(publicKey: string): Promise<string> {
   return [...digest.slice(0, 8)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-/** The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON. */
+/** The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON.
+ * Left out, as the origin leaves them out: signature, urlExpiresAt, paid and part URLs — and the x402
+ * receipt an SDK attaches to a bought manifest. */
 export function signedStatement(manifest: Record<string, unknown>, origin: string): string {
-  const { signature: _s, urlExpiresAt: _u, paid: _p, ...content } = manifest;
+  const { signature: _s, urlExpiresAt: _u, paid: _p, x402: _x, ...content } = manifest;
   if (Array.isArray(content.parts)) {
     content.parts = (content.parts as Record<string, unknown>[]).map(({ url: _url, ...part }) => part);
   }
