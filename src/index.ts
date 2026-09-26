@@ -337,7 +337,7 @@ export class Witan {
     if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.2.1";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.2.2";
     this.projects = new Projects(this);
   }
 

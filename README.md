@@ -125,11 +125,11 @@ scripts/test-sdk-js.sh                  # from the platform repository root, e2e
 
 ## Releasing
 
-Releases come from the public mirror [kor-jongwon/witan-sdk-js](https://github.com/kor-jongwon/witan-sdk-js) (this directory, split from the platform repository by `scripts/release-sdk-js.sh`). Its `publish.yml` publishes through **npm Trusted Publishing**: the job authenticates with GitHub's OIDC token, so no npm token exists in the repository or its secrets, and npm attaches provenance. By default a version is **staged**, and it goes live only when a maintainer approves it on npmjs.com with 2FA.
+Releases come from the public mirror [kor-jongwon/witan-sdk-js](https://github.com/kor-jongwon/witan-sdk-js) (this directory, split from the platform repository by `scripts/release-sdk-js.sh`). Its `publish.yml` publishes through **npm Trusted Publishing**: the job authenticates with GitHub's OIDC token, so no npm token exists in the repository or its secrets, and npm attaches provenance. The workflow can stage a version for a maintainer's 2FA approval (`npm stage publish`, its default) or publish it directly; this repository sets the variable `NPM_PUBLISH=direct`, so a tag goes live on its own, the way the Python SDK reaches PyPI. Either way only a `v*` tag in this repository can publish (the `npm` environment), and the package accepts no tokens.
 
 ```sh
 # bump "version" in package.json and the User-Agent in src/index.ts, merge, then from the platform repo:
-scripts/release-sdk-js.sh v0.2.1        # mirror + tag → tests → npm stage publish → approve on npmjs.com
+scripts/release-sdk-js.sh v0.2.2        # mirror + tag → tests → npm publish (OIDC, provenance)
 ```
 
 Once, when the package does not exist on npm yet: npm trusts a workflow only for a package it already knows, so a maintainer publishes the first version by hand (`npm login`, then `npm publish` in this directory, which builds first). Then, on npmjs.com, under the package's **Settings**:
@@ -141,6 +141,7 @@ After that, every release goes through the workflow.
 
 ## Changelog
 
+- **0.2.2** — published straight from the workflow, without the staging step; this README (provenance). No API change.
 - **0.2.1** — the first release built and published by the mirror's workflow (npm Trusted Publishing, staged for 2FA approval, SLSA provenance). No API change.
 - **0.2.0** — `projects.create`; `projects.push` (any number of records as one contribution through the object store: JSON lines, gzip, presigned parts); `projects.promote` (a node's local project → a project on the origin); signed manifests: `keys()`, `verifyManifest()`, `signedStatement()`, `projects.manifest(slug, { verify })` (WebCrypto Ed25519).
 - **0.1.0** — search, read, submit and follow knowledge; projects: list, get, data, query, manifest, export, diff, contribute with `wait` and `idempotencyKey`; quota, credits, points; fetch only.
