@@ -108,9 +108,12 @@ def build_legacy(tag: str, tree: Path) -> None:
               f"with the API reference generated from its own source. The guides start with 0.6.0 — "
               f"see the version selector.\n\n")
     (src / "index.md").write_text(banner + readme, encoding="utf-8")
-    subprocess.run(["npx", "typedoc", "--options", str(ROOT / "typedoc.json"),
-                    "--entryPoints", str(tree / "src" / "index.ts"), "--tsconfig", str(tree / "tsconfig.json"),
-                    "--out", str(src / "reference")], cwd=ROOT, check=True, capture_output=True, text=True)
+    # TypeDoc runs inside the tag's tree, so the options' relative paths (entry point, tsconfig)
+    # name the tag's source; its packages come from the current checkout.
+    (tree / "node_modules").symlink_to(ROOT / "node_modules", target_is_directory=True)
+    shutil.copy(ROOT / "typedoc.json", tree / "typedoc.json")
+    subprocess.run([str(ROOT / "node_modules" / ".bin" / "typedoc"), "--options", "typedoc.json",
+                    "--out", str(src / "reference")], cwd=tree, check=True, capture_output=True, text=True)
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     (src / "changelog.md").write_text(notes_up_to(changelog, semver(tag)), encoding="utf-8")
     # The look comes from the current tree, the words and the code from the tag.
