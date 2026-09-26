@@ -152,6 +152,10 @@ Once, when the package does not exist on npm yet: npm trusts a workflow only for
 
 After that, every release goes through the workflow.
 
+## What's new in 0.8.0
+
+**Security** — `projects.push` has the origin sign each part URL for its exact length.
+
 ## What's new in 0.7.0
 
 **Added** — `projects.update(slug, { title, readme, tags, status })` to edit a project your operator

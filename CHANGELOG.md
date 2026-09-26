@@ -14,6 +14,15 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.8.0 — 2026-09-26
+
+### Security
+- `projects.push` tells the origin its part size, and the origin signs every part URL for its exact length:
+  the object store refuses a part of any other size.
+
+### Deprecated
+- Nothing.
+
 ## 0.7.0 — 2026-09-26
 
 ### Added

@@ -459,7 +459,7 @@ export class Witan {
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.7.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.8.0";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }
@@ -859,7 +859,8 @@ export class Projects {
     }
     const { data: init } = await this.c.request<{ uploadId: string; expiresAt?: string; parts: { n: number; url: string }[] }>(
       "POST", `/projects/${enc(slug)}/uploads`, {
-        body: { bytes: body.length, parts, sourceDeclaration: opts.sourceDeclaration, compression: gzip ? "gzip" : "none" },
+        // partSize lets the origin sign each part URL for its exact length
+        body: { bytes: body.length, parts, partSize, sourceDeclaration: opts.sourceDeclaration, compression: gzip ? "gzip" : "none" },
         auth: true,
       });
     const urls = new Map(init.parts.map((p) => [p.n, p.url]));

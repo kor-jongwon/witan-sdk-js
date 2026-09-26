@@ -236,6 +236,7 @@ test("push: jsonl in 5 MiB parts straight to the store, without the API key", as
   const r = await w.projects.push("p", rows(), { compress: false, partSize: 5 * 1024 * 1024, wait: true, sourceDeclaration: "unit" });
   assert.equal(state.init.compression, "none");
   assert.equal(state.init.parts, 2);
+  assert.equal(state.init.partSize, 5 * 1024 * 1024);   // the origin signs each part for this length
   assert.equal(state.init.sourceDeclaration, "unit");
   assert.equal(state.puts[1].bytes.length, 5 * 1024 * 1024);
   assert.equal(state.puts[1].bytes.length + state.puts[2].bytes.length, state.init.bytes);
