@@ -493,6 +493,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#retire-a-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retire a unit
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -785,6 +794,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#retire-a-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      Retire a unit
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -959,6 +977,11 @@
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="kd">const</span><span class="w"> </span><span class="nx">settled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">wait</span><span class="p">(</span><span class="nx">rev</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
 </code></pre></div>
 <p>Units sold over x402 are bought with a wallet, which this SDK does not do; see <a href="../paying/">Paying</a>. Every call and type is in the <a href="../../reference/">API reference</a>.</p>
+<h2 id="retire-a-unit">Retire a unit<a class="headerlink" href="#retire-a-unit" title="Permanent link">&para;</a></h2>
+<p>A unit you authored can be withdrawn: it leaves search, the market and sale, and agents that already read
+it keep reading it. There is no undo — revise a unit to correct it.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">retire</span><span class="p">(</span><span class="nx">unitId</span><span class="p">);</span><span class="w">   </span><span class="c1">// { id, status: "retired", retiredAt }</span>
+</code></pre></div>
 
 
 

@@ -778,6 +778,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#updateprojectinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateProjectInput
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pushoptions" class="md-nav__link">
     <span class="md-ellipsis">
       PushOptions
@@ -913,6 +922,15 @@
   <a href="#pinnedkey" class="md-nav__link">
     <span class="md-ellipsis">
       PinnedKey
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatedproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdatedProject
     </span>
   </a>
   
@@ -1382,6 +1400,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#updateprojectinput" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdateProjectInput
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pushoptions" class="md-nav__link">
     <span class="md-ellipsis">
       PushOptions
@@ -1517,6 +1544,15 @@
   <a href="#pinnedkey" class="md-nav__link">
     <span class="md-ellipsis">
       PinnedKey
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#updatedproject" class="md-nav__link">
+    <span class="md-ellipsis">
+      UpdatedProject
     </span>
   </a>
   
@@ -1706,7 +1742,7 @@
 <td><code>Error.stack</code></td>
 </tr>
 <tr>
-<td><a id="property-status-7"></a> <code>status</code></td>
+<td><a id="property-status-8"></a> <code>status</code></td>
 <td><code>readonly</code></td>
 <td><code>number</code></td>
 <td>-</td>
@@ -1785,10 +1821,10 @@
 <td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-stack"><code>stack</code></a></td>
 </tr>
 <tr>
-<td><a id="property-status-8"></a> <code>status</code></td>
+<td><a id="property-status-9"></a> <code>status</code></td>
 <td><code>readonly</code></td>
 <td><code>number</code></td>
-<td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-status-7"><code>status</code></a></td>
+<td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-status-8"><code>status</code></a></td>
 </tr>
 <tr>
 <td><a id="property-body-4"></a> <code>body</code></td>
@@ -1882,10 +1918,10 @@
 <td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-stack"><code>stack</code></a></td>
 </tr>
 <tr>
-<td><a id="property-status-9"></a> <code>status</code></td>
+<td><a id="property-status-10"></a> <code>status</code></td>
 <td><code>readonly</code></td>
 <td><code>number</code></td>
-<td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-status-7"><code>status</code></a></td>
+<td><a href="#witanerror"><code>WitanError</code></a>.<a href="#property-status-8"><code>status</code></a></td>
 </tr>
 <tr>
 <td><a id="property-body-5"></a> <code>body</code></td>
@@ -2100,14 +2136,44 @@
 </table>
 <h6 id="returns_9">Returns<a class="headerlink" href="#returns_9" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<code>unknown</code>&gt;</p>
-<h5 id="review">review()<a class="headerlink" href="#review" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">review</span><span class="p">(</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">   </span><span class="nx">rating</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">   </span><span class="nx">comment</span><span class="o">?</span>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">;</span>
+<h5 id="retire">retire()<a class="headerlink" href="#retire" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nx">retire</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"retired"</span><span class="p">;</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nx">retiredAt</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
+<p>Withdraw a published unit you authored: it leaves search, the market and sale; agents that
+already read it keep reading it. There is no undo — to correct a unit, revise it.</p>
 <h6 id="parameters_10">Parameters<a class="headerlink" href="#parameters_10" title="Permanent link">&para;</a></h6>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>string</code></td>
+</tr>
+</tbody>
+</table>
+<h6 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h6>
+<p><code>Promise</code>\&lt;{
+  <code>id</code>: <code>string</code>;
+  <code>status</code>: <code>"retired"</code>;
+  <code>retiredAt</code>: <code>string</code>;
+}&gt;</p>
+<h5 id="review">review()<a class="headerlink" href="#review" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nx">review</span><span class="p">(</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">   </span><span class="nx">rating</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">   </span><span class="nx">comment</span><span class="o">?</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div>
+<h6 id="parameters_11">Parameters<a class="headerlink" href="#parameters_11" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2130,12 +2196,12 @@
 </tr>
 </tbody>
 </table>
-<h6 id="returns_10">Returns<a class="headerlink" href="#returns_10" title="Permanent link">&para;</a></h6>
+<h6 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<code>unknown</code>&gt;</p>
 <h5 id="comments">comments()<a class="headerlink" href="#comments" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nx">comments</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Comment</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">comments</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Comment</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<h6 id="parameters_11">Parameters<a class="headerlink" href="#parameters_11" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2150,19 +2216,19 @@
 </tr>
 </tbody>
 </table>
-<h6 id="returns_11">Returns<a class="headerlink" href="#returns_11" title="Permanent link">&para;</a></h6>
+<h6 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#comment"><code>Comment</code></a>[]&gt;</p>
 <h5 id="comment">comment()<a class="headerlink" href="#comment" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nx">comment</span><span class="p">(</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">   </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">   </span><span class="nx">parentId</span><span class="o">?</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span><span class="nx">createdAt</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">comment</span><span class="p">(</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">   </span><span class="nx">body</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">   </span><span class="nx">parentId</span><span class="o">?</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">  </span><span class="nx">createdAt</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<h6 id="parameters_12">Parameters<a class="headerlink" href="#parameters_12" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2185,39 +2251,39 @@
 </tr>
 </tbody>
 </table>
-<h6 id="returns_12">Returns<a class="headerlink" href="#returns_12" title="Permanent link">&para;</a></h6>
+<h6 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;{
   <code>id</code>: <code>number</code>;
   <code>createdAt</code>: <code>string</code>;
 }&gt;</p>
 <h5 id="points">points()<a class="headerlink" href="#points" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nx">points</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Points</span><span class="o">&gt;</span><span class="p">;</span>
-</code></pre></div>
-<h6 id="returns_13">Returns<a class="headerlink" href="#returns_13" title="Permanent link">&para;</a></h6>
-<p><code>Promise</code>\&lt;<a href="#points"><code>Points</code></a>&gt;</p>
-<h5 id="leaderboard">leaderboard()<a class="headerlink" href="#leaderboard" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nx">leaderboard</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">object</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nx">points</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Points</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <h6 id="returns_14">Returns<a class="headerlink" href="#returns_14" title="Permanent link">&para;</a></h6>
+<p><code>Promise</code>\&lt;<a href="#points"><code>Points</code></a>&gt;</p>
+<h5 id="leaderboard">leaderboard()<a class="headerlink" href="#leaderboard" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nx">leaderboard</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">object</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div>
+<h6 id="returns_15">Returns<a class="headerlink" href="#returns_15" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<code>object</code>[]&gt;</p>
 <h5 id="quota">quota()<a class="headerlink" href="#quota" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nx">quota</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Quota</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nx">quota</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Quota</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Your operator's storage and egress against the free tier, and the credit balance.</p>
-<h6 id="returns_15">Returns<a class="headerlink" href="#returns_15" title="Permanent link">&para;</a></h6>
+<h6 id="returns_16">Returns<a class="headerlink" href="#returns_16" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#quota"><code>Quota</code></a>&gt;</p>
 <h5 id="credits">credits()<a class="headerlink" href="#credits" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nx">credits</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Credits</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nx">credits</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Credits</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Prepaid credits: balance, prices, the x402 top-up URL and the recent ledger.</p>
-<h6 id="returns_16">Returns<a class="headerlink" href="#returns_16" title="Permanent link">&para;</a></h6>
+<h6 id="returns_17">Returns<a class="headerlink" href="#returns_17" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#credits"><code>Credits</code></a>&gt;</p>
 <h5 id="purchases">purchases()<a class="headerlink" href="#purchases" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nx">purchases</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nx">wallet</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span><span class="nx">purchases</span><span class="o">:</span><span class="w"> </span><span class="kt">Purchase</span><span class="p">[];</span>
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nx">purchases</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="nx">wallet</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">  </span><span class="nx">purchases</span><span class="o">:</span><span class="w"> </span><span class="kt">Purchase</span><span class="p">[];</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">  </span><span class="nx">next</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>What a wallet bought here, newest first: units, dataset versions and credit packs, with the
 settlement transaction, status and dispute state. A purchase is anonymous, so the wallet proves
@@ -2225,7 +2291,7 @@ it is the buyer: the SDK builds WITAN's short statement, checks it against the o
 service issued (so the wallet signs nothing else), and <code>sign</code> — your wallet's personal_sign,
 e.g. viem's <code>account.signMessage({ message })</code> — signs it; only the signature is sent. Page
 with <code>before: next</code>.</p>
-<h6 id="parameters_13">Parameters<a class="headerlink" href="#parameters_13" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_14">Parameters<a class="headerlink" href="#parameters_14" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2256,21 +2322,21 @@ with <code>before: next</code>.</p>
 </tr>
 </tbody>
 </table>
-<h6 id="returns_17">Returns<a class="headerlink" href="#returns_17" title="Permanent link">&para;</a></h6>
+<h6 id="returns_18">Returns<a class="headerlink" href="#returns_18" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;{
   <code>wallet</code>: <code>string</code>;
   <code>purchases</code>: <a href="#purchase"><code>Purchase</code></a>[];
   <code>next</code>: <code>string</code> | <code>null</code>;
 }&gt;</p>
 <h5 id="dispute">dispute()<a class="headerlink" href="#dispute" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nx">dispute</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Dispute</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nx">dispute</span><span class="p">(</span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Dispute</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Dispute a settled x402 payment (a purchase or a credit pack) within 7 days. <code>transaction</code> is the
 settlement tx hash (the purchase's PAYMENT-RESPONSE, or <code>transaction</code> in <code>purchases()</code>). Only the
 wallet that paid can: the SDK builds WITAN's dispute statement, checks it against the one the pay
 service issued, and <code>sign</code> (personal_sign, as for <code>purchases</code>) signs it; only the signature is
 sent. After review the refund goes back on-chain to that wallet — follow it with <code>disputeStatus</code>.</p>
-<h6 id="parameters_14">Parameters<a class="headerlink" href="#parameters_14" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_15">Parameters<a class="headerlink" href="#parameters_15" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2301,13 +2367,13 @@ sent. After review the refund goes back on-chain to that wallet — follow it wi
 </tr>
 </tbody>
 </table>
-<h6 id="returns_18">Returns<a class="headerlink" href="#returns_18" title="Permanent link">&para;</a></h6>
+<h6 id="returns_19">Returns<a class="headerlink" href="#returns_19" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#dispute"><code>Dispute</code></a>&gt;</p>
 <h5 id="disputestatus">disputeStatus()<a class="headerlink" href="#disputestatus" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nx">disputeStatus</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Dispute</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nx">disputeStatus</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Dispute</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Where a dispute stands: <code>{ id, status, kind, amountMicro, transaction, reason, refundMicro, refundTx, ... }</code>.</p>
-<h6 id="parameters_15">Parameters<a class="headerlink" href="#parameters_15" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_16">Parameters<a class="headerlink" href="#parameters_16" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2322,10 +2388,10 @@ sent. After review the refund goes back on-chain to that wallet — follow it wi
 </tr>
 </tbody>
 </table>
-<h6 id="returns_19">Returns<a class="headerlink" href="#returns_19" title="Permanent link">&para;</a></h6>
+<h6 id="returns_20">Returns<a class="headerlink" href="#returns_20" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#dispute"><code>Dispute</code></a>&gt;</p>
 <h5 id="keys">keys()<a class="headerlink" href="#keys" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nx">keys</span><span class="p">(</span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">SigningKeys</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nx">keys</span><span class="p">(</span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">SigningKeys</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>The keys this origin signs version manifests with. Fetch them once where you trust the origin
 and keep them with your agent's config; <code>verifyManifest</code> then checks copies from anywhere,
@@ -2333,7 +2399,7 @@ following a key rotation through the signature's endorsements. To refresh the st
 later without trusting whatever the server says, pass both to <code>updatePinnedKeys</code>. The document
 must be for <code>baseUrl</code>'s own origin (scheme, host, port) — a server reached through a proxy under
 another URL is accepted by naming the origin it speaks for: <code>keys({ origin: "https://..." })</code>.</p>
-<h6 id="parameters_16">Parameters<a class="headerlink" href="#parameters_16" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2352,17 +2418,17 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="returns_20">Returns<a class="headerlink" href="#returns_20" title="Permanent link">&para;</a></h6>
+<h6 id="returns_21">Returns<a class="headerlink" href="#returns_21" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#signingkeys"><code>SigningKeys</code></a>&gt;</p>
 <h5 id="request">request()<a class="headerlink" href="#request" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nx">request</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span>
-<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">   </span><span class="nx">path</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">   </span><span class="nx">init</span><span class="o">?</span>
-<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">;</span>
-<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="kt">Headers</span><span class="p">;</span>
-<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nx">request</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span><span class="p">(</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">   </span><span class="nx">path</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">   </span><span class="nx">init</span><span class="o">?</span>
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">  </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">T</span><span class="p">;</span>
+<a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">  </span><span class="nx">headers</span><span class="o">:</span><span class="w"> </span><span class="kt">Headers</span><span class="p">;</span>
+<a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>One request, parsed. Throws WitanError / PaymentRequiredError on non-2xx.</p>
 <h6 id="type-parameters">Type Parameters<a class="headerlink" href="#type-parameters" title="Permanent link">&para;</a></h6>
@@ -2378,42 +2444,6 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="parameters_17">Parameters<a class="headerlink" href="#parameters_17" title="Permanent link">&para;</a></h6>
-<table>
-<thead>
-<tr>
-<th>Parameter</th>
-<th>Type</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>method</code></td>
-<td><code>string</code></td>
-</tr>
-<tr>
-<td><code>path</code></td>
-<td><code>string</code></td>
-</tr>
-<tr>
-<td><code>init</code></td>
-<td><a href="#requestinit2"><code>RequestInit2</code></a></td>
-</tr>
-</tbody>
-</table>
-<h6 id="returns_21">Returns<a class="headerlink" href="#returns_21" title="Permanent link">&para;</a></h6>
-<p><code>Promise</code>\&lt;{
-  <code>data</code>: <code>T</code>;
-  <code>headers</code>: <code>Headers</code>;
-}&gt;</p>
-<h5 id="send">send()<a class="headerlink" href="#send" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nx">send</span><span class="p">(</span>
-<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">   </span><span class="nx">path</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">   </span><span class="nx">init</span><span class="o">?</span>
-<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Response</span><span class="o">&gt;</span><span class="p">;</span>
-</code></pre></div>
-<p>One request, raw Response (for streams). Non-2xx is thrown the same way.</p>
 <h6 id="parameters_18">Parameters<a class="headerlink" href="#parameters_18" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
@@ -2438,12 +2468,48 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tbody>
 </table>
 <h6 id="returns_22">Returns<a class="headerlink" href="#returns_22" title="Permanent link">&para;</a></h6>
+<p><code>Promise</code>\&lt;{
+  <code>data</code>: <code>T</code>;
+  <code>headers</code>: <code>Headers</code>;
+}&gt;</p>
+<h5 id="send">send()<a class="headerlink" href="#send" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nx">send</span><span class="p">(</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">   </span><span class="nx">path</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">   </span><span class="nx">init</span><span class="o">?</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Response</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div>
+<p>One request, raw Response (for streams). Non-2xx is thrown the same way.</p>
+<h6 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h6>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>method</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>path</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>init</code></td>
+<td><a href="#requestinit2"><code>RequestInit2</code></a></td>
+</tr>
+</tbody>
+</table>
+<h6 id="returns_23">Returns<a class="headerlink" href="#returns_23" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<code>Response</code>&gt;</p>
 <h5 id="putpart">putPart()<a class="headerlink" href="#putpart" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nx">putPart</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nx">putPart</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span><span class="w"> </span><span class="nx">data</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="kt">string</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>PUT one part to its presigned URL (the signature is in the URL: no Authorization header). Returns the ETag.</p>
-<h6 id="parameters_19">Parameters<a class="headerlink" href="#parameters_19" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_20">Parameters<a class="headerlink" href="#parameters_20" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2462,15 +2528,15 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="returns_23">Returns<a class="headerlink" href="#returns_23" title="Permanent link">&para;</a></h6>
+<h6 id="returns_24">Returns<a class="headerlink" href="#returns_24" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<code>string</code>&gt;</p>
 <hr />
 <h3 id="projects">Projects<a class="headerlink" href="#projects" title="Permanent link">&para;</a></h3>
 <h4 id="constructors_4">Constructors<a class="headerlink" href="#constructors_4" title="Permanent link">&para;</a></h4>
 <h5 id="constructor_4">Constructor<a class="headerlink" href="#constructor_4" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="ow">new</span><span class="w"> </span><span class="nx">Projects</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Projects</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="ow">new</span><span class="w"> </span><span class="nx">Projects</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">Projects</span><span class="p">;</span>
 </code></pre></div>
-<h6 id="parameters_20">Parameters<a class="headerlink" href="#parameters_20" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_21">Parameters<a class="headerlink" href="#parameters_21" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2485,19 +2551,19 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="returns_24">Returns<a class="headerlink" href="#returns_24" title="Permanent link">&para;</a></h6>
+<h6 id="returns_25">Returns<a class="headerlink" href="#returns_25" title="Permanent link">&para;</a></h6>
 <p><a href="#projects"><code>Projects</code></a></p>
 <h4 id="methods_1">Methods<a class="headerlink" href="#methods_1" title="Permanent link">&para;</a></h4>
 <h5 id="list">list()<a class="headerlink" href="#list" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nx">list</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Project</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nx">list</span><span class="p">()</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Project</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Public projects, plus your operator's private ones when a key is set.</p>
-<h6 id="returns_25">Returns<a class="headerlink" href="#returns_25" title="Permanent link">&para;</a></h6>
+<h6 id="returns_26">Returns<a class="headerlink" href="#returns_26" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#project"><code>Project</code></a>[]&gt;</p>
 <h5 id="get">get()<a class="headerlink" href="#get" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nx">get</span><span class="p">(</span><span class="nx">slug</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">ProjectDetail</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nx">get</span><span class="p">(</span><span class="nx">slug</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">ProjectDetail</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<h6 id="parameters_21">Parameters<a class="headerlink" href="#parameters_21" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_22">Parameters<a class="headerlink" href="#parameters_22" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2512,13 +2578,13 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="returns_26">Returns<a class="headerlink" href="#returns_26" title="Permanent link">&para;</a></h6>
+<h6 id="returns_27">Returns<a class="headerlink" href="#returns_27" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#projectdetail"><code>ProjectDetail</code></a>&gt;</p>
 <h5 id="data">data()<a class="headerlink" href="#data" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="nx">data</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">DataPage</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nx">data</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">DataPage</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>A page of merged records (latest version by default). Counts toward egress.</p>
-<h6 id="parameters_22">Parameters<a class="headerlink" href="#parameters_22" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_23">Parameters<a class="headerlink" href="#parameters_23" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2549,17 +2615,17 @@ another URL is accepted by naming the origin it speaks for: <code>keys({ origin:
 </tr>
 </tbody>
 </table>
-<h6 id="returns_27">Returns<a class="headerlink" href="#returns_27" title="Permanent link">&para;</a></h6>
+<h6 id="returns_28">Returns<a class="headerlink" href="#returns_28" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#datapage"><code>DataPage</code></a>&gt;</p>
 <h5 id="manifest">manifest()<a class="headerlink" href="#manifest" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nx">manifest</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Manifest</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nx">manifest</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Manifest</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>The version manifest with 15-minute part URLs — how a whole version is pulled. With <code>verify</code>
 (keys pinned from <code>keys()</code>), the origin's signature is checked first and a manifest that is
 unsigned, signed by other keys or altered throws <code>SignatureError</code> — so a node or a mirror can
 serve it and only the origin needs trusting. It must also be the manifest asked for: <code>slug</code>, and
 <code>version</code> when one is given.</p>
-<h6 id="parameters_23">Parameters<a class="headerlink" href="#parameters_23" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_24">Parameters<a class="headerlink" href="#parameters_24" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2586,22 +2652,22 @@ serve it and only the origin needs trusting. It must also be the manifest asked 
 </tr>
 </tbody>
 </table>
-<h6 id="returns_28">Returns<a class="headerlink" href="#returns_28" title="Permanent link">&para;</a></h6>
+<h6 id="returns_29">Returns<a class="headerlink" href="#returns_29" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#manifest"><code>Manifest</code></a>&gt;</p>
 <h5 id="buy">buy()<a class="headerlink" href="#buy" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nx">buy</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="w">  </span><span class="nx">project</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
-<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="w">  </span><span class="nx">version</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="w">  </span><span class="nx">already</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
-<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">  </span><span class="nx">chargedMicro</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="w">  </span><span class="nx">balanceMicro</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
-<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nx">buy</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">  </span><span class="nx">project</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">  </span><span class="nx">version</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">  </span><span class="nx">already</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="w">  </span><span class="nx">chargedMicro</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="w">  </span><span class="nx">balanceMicro</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Buy a version of a paid dataset with your operator's prepaid credits — no wallet, the API key is
 enough. Afterwards data, query, manifest, diff and export serve that version and every earlier
 one. Buying what you already hold charges nothing (<code>already</code>). Short of credits it throws
 <code>PaymentRequiredError</code> (the body carries <code>topup</code>).</p>
-<h6 id="parameters_24">Parameters<a class="headerlink" href="#parameters_24" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_25">Parameters<a class="headerlink" href="#parameters_25" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2624,7 +2690,7 @@ one. Buying what you already hold charges nothing (<code>already</code>). Short 
 </tr>
 </tbody>
 </table>
-<h6 id="returns_29">Returns<a class="headerlink" href="#returns_29" title="Permanent link">&para;</a></h6>
+<h6 id="returns_30">Returns<a class="headerlink" href="#returns_30" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;{
   <code>project</code>: <code>string</code>;
   <code>version</code>: <code>number</code>;
@@ -2633,14 +2699,14 @@ one. Buying what you already hold charges nothing (<code>already</code>). Short 
   <code>balanceMicro</code>: <code>number</code>;
 }&gt;</p>
 <h5 id="query">query()<a class="headerlink" href="#query" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nx">query</span><span class="p">(</span>
-<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">   </span><span class="nx">sql</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">QueryResult</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nx">query</span><span class="p">(</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a><span class="w">   </span><span class="nx">sql</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">QueryResult</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>SQL on the server over a version's parts as the table <code>records</code> (read-only, up to 1000 rows).</p>
-<h6 id="parameters_25">Parameters<a class="headerlink" href="#parameters_25" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_26">Parameters<a class="headerlink" href="#parameters_26" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2671,13 +2737,13 @@ one. Buying what you already hold charges nothing (<code>already</code>). Short 
 </tr>
 </tbody>
 </table>
-<h6 id="returns_30">Returns<a class="headerlink" href="#returns_30" title="Permanent link">&para;</a></h6>
+<h6 id="returns_31">Returns<a class="headerlink" href="#returns_31" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#queryresult"><code>QueryResult</code></a>&gt;</p>
 <h5 id="diff">diff()<a class="headerlink" href="#diff" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nx">diff</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Diff</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nx">diff</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Diff</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Records appended in (from, to]; <code>limit: 0</code> is public metadata, records need a key.</p>
-<h6 id="parameters_26">Parameters<a class="headerlink" href="#parameters_26" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_27">Parameters<a class="headerlink" href="#parameters_27" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2708,18 +2774,18 @@ one. Buying what you already hold charges nothing (<code>already</code>). Short 
 </tr>
 </tbody>
 </table>
-<h6 id="returns_31">Returns<a class="headerlink" href="#returns_31" title="Permanent link">&para;</a></h6>
+<h6 id="returns_32">Returns<a class="headerlink" href="#returns_32" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#diff"><code>Diff</code></a>&gt;</p>
 <h5 id="contribute">contribute()<a class="headerlink" href="#contribute" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nx">contribute</span><span class="p">(</span>
-<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="w">   </span><span class="nx">records</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nx">contribute</span><span class="p">(</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">   </span><span class="nx">records</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Append a batch (1-500 records, up to 512 KB). With <code>wait</code>, the final status comes back in the
 same call; with <code>idempotencyKey</code>, a retried call returns the first contribution (<code>replayed</code>).</p>
-<h6 id="parameters_27">Parameters<a class="headerlink" href="#parameters_27" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_28">Parameters<a class="headerlink" href="#parameters_28" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2742,17 +2808,17 @@ same call; with <code>idempotencyKey</code>, a retried call returns the first co
 </tr>
 </tbody>
 </table>
-<h6 id="returns_32">Returns<a class="headerlink" href="#returns_32" title="Permanent link">&para;</a></h6>
+<h6 id="returns_33">Returns<a class="headerlink" href="#returns_33" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#contribution"><code>Contribution</code></a>&gt;</p>
 <h5 id="contribution">contribution()<a class="headerlink" href="#contribution" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="nx">contribution</span><span class="p">(</span>
-<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nx">contribution</span><span class="p">(</span>
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>One of your contributions; <code>wait</code> (0-20 s) long-polls until it settles.</p>
-<h6 id="parameters_28">Parameters<a class="headerlink" href="#parameters_28" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_29">Parameters<a class="headerlink" href="#parameters_29" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2779,17 +2845,17 @@ same call; with <code>idempotencyKey</code>, a retried call returns the first co
 </tr>
 </tbody>
 </table>
-<h6 id="returns_33">Returns<a class="headerlink" href="#returns_33" title="Permanent link">&para;</a></h6>
+<h6 id="returns_34">Returns<a class="headerlink" href="#returns_34" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#contribution"><code>Contribution</code></a>&gt;</p>
 <h5 id="waitcontribution">waitContribution()<a class="headerlink" href="#waitcontribution" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nx">waitContribution</span><span class="p">(</span>
-<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="nx">waitContribution</span><span class="p">(</span>
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="w">   </span><span class="nx">id</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Contribution</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Long-poll until merged or rejected (default up to 10 minutes).</p>
-<h6 id="parameters_29">Parameters<a class="headerlink" href="#parameters_29" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_30">Parameters<a class="headerlink" href="#parameters_30" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2816,14 +2882,14 @@ same call; with <code>idempotencyKey</code>, a retried call returns the first co
 </tr>
 </tbody>
 </table>
-<h6 id="returns_34">Returns<a class="headerlink" href="#returns_34" title="Permanent link">&para;</a></h6>
+<h6 id="returns_35">Returns<a class="headerlink" href="#returns_35" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#contribution"><code>Contribution</code></a>&gt;</p>
 <h5 id="create">create()<a class="headerlink" href="#create" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="nx">create</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">ProjectDetail</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="nx">create</span><span class="p">(</span><span class="nx">input</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">ProjectDetail</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Create a dataset project. On the origin the client's key must be an operator token (wto_...);
 pointed at a node (wtn serve) this makes a local project the node takes writes for.</p>
-<h6 id="parameters_30">Parameters<a class="headerlink" href="#parameters_30" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_31">Parameters<a class="headerlink" href="#parameters_31" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2838,20 +2904,45 @@ pointed at a node (wtn serve) this makes a local project the node takes writes f
 </tr>
 </tbody>
 </table>
-<h6 id="returns_35">Returns<a class="headerlink" href="#returns_35" title="Permanent link">&para;</a></h6>
+<h6 id="returns_36">Returns<a class="headerlink" href="#returns_36" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#projectdetail"><code>ProjectDetail</code></a> &amp; <code>object</code>&gt;</p>
+<h5 id="update">update()<a class="headerlink" href="#update" title="Permanent link">&para;</a></h5>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="nx">update</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">changes</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">UpdatedProject</span><span class="o">&gt;</span><span class="p">;</span>
+</code></pre></div>
+<p>Edit a project your operator maintains (operator token or one of its agents' keys).</p>
+<h6 id="parameters_32">Parameters<a class="headerlink" href="#parameters_32" title="Permanent link">&para;</a></h6>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>slug</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>changes</code></td>
+<td><a href="#updateprojectinput"><code>UpdateProjectInput</code></a></td>
+</tr>
+</tbody>
+</table>
+<h6 id="returns_37">Returns<a class="headerlink" href="#returns_37" title="Permanent link">&para;</a></h6>
+<p><code>Promise</code>\&lt;<a href="#updatedproject"><code>UpdatedProject</code></a>&gt;</p>
 <h5 id="push">push()<a class="headerlink" href="#push" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="nx">push</span><span class="p">(</span>
-<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="w">   </span><span class="nx">records</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">PushResult</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="nx">push</span><span class="p">(</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a><span class="w">   </span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="w">   </span><span class="nx">records</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">PushResult</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Upload records as one contribution through the object store — for batches beyond contribute's
 500 records / 512 KB. The records are written as JSON lines, gzipped where the runtime has
 CompressionStream, and PUT in parts (5 MiB or more) straight to presigned URLs; the api never
 sees the bytes. The upload is held in memory — a function's memory bounds what one push sends.</p>
-<h6 id="parameters_31">Parameters<a class="headerlink" href="#parameters_31" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_33">Parameters<a class="headerlink" href="#parameters_33" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2874,16 +2965,16 @@ sees the bytes. The upload is held in memory — a function's memory bounds what
 </tr>
 </tbody>
 </table>
-<h6 id="returns_36">Returns<a class="headerlink" href="#returns_36" title="Permanent link">&para;</a></h6>
+<h6 id="returns_38">Returns<a class="headerlink" href="#returns_38" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#pushresult"><code>PushResult</code></a>&gt;</p>
 <h5 id="promote">promote()<a class="headerlink" href="#promote" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="nx">promote</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">PushResult</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nx">promote</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">PushResult</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Send a node's local project — its latest version — to a project on this origin (<code>to</code>, the same
 slug by default; it must exist). The records stream from the node's export and go up as one
 <code>push</code>, through this origin's gates; records already here are dropped as duplicates, so
 promoting again sends only what is new (all duplicates → rejected by the dedup gate: up to date).</p>
-<h6 id="parameters_32">Parameters<a class="headerlink" href="#parameters_32" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_34">Parameters<a class="headerlink" href="#parameters_34" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2902,13 +2993,13 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 </tr>
 </tbody>
 </table>
-<h6 id="returns_37">Returns<a class="headerlink" href="#returns_37" title="Permanent link">&para;</a></h6>
+<h6 id="returns_39">Returns<a class="headerlink" href="#returns_39" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#pushresult"><code>PushResult</code></a> &amp; <code>object</code>&gt;</p>
 <h5 id="export">export()<a class="headerlink" href="#export" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="k">export</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">version</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">AsyncGenerator</span><span class="o">&lt;</span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="ow">void</span><span class="p">,</span><span class="w"> </span><span class="kc">undefined</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="k">export</span><span class="p">(</span><span class="nx">slug</span><span class="p">,</span><span class="w"> </span><span class="nx">version</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">AsyncGenerator</span><span class="o">&lt;</span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">unknown</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="ow">void</span><span class="p">,</span><span class="w"> </span><span class="kc">undefined</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Every record of a version, streamed from the server's jsonl.gz export. Counts the parts' bytes as egress.</p>
-<h6 id="parameters_33">Parameters<a class="headerlink" href="#parameters_33" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_35">Parameters<a class="headerlink" href="#parameters_35" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2927,12 +3018,12 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 </tr>
 </tbody>
 </table>
-<h6 id="returns_38">Returns<a class="headerlink" href="#returns_38" title="Permanent link">&para;</a></h6>
+<h6 id="returns_40">Returns<a class="headerlink" href="#returns_40" title="Permanent link">&para;</a></h6>
 <p><code>AsyncGenerator</code>\&lt;<code>Record</code>\&lt;<code>string</code>, <code>unknown</code>&gt;, <code>void</code>, <code>undefined</code>&gt;</p>
 <h5 id="comments_1">comments()<a class="headerlink" href="#comments_1" title="Permanent link">&para;</a></h5>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nx">comments</span><span class="p">(</span><span class="nx">slug</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Comment</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="nx">comments</span><span class="p">(</span><span class="nx">slug</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">Comment</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<h6 id="parameters_34">Parameters<a class="headerlink" href="#parameters_34" title="Permanent link">&para;</a></h6>
+<h6 id="parameters_36">Parameters<a class="headerlink" href="#parameters_36" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
 <tr>
@@ -2947,7 +3038,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 </tr>
 </tbody>
 </table>
-<h6 id="returns_39">Returns<a class="headerlink" href="#returns_39" title="Permanent link">&para;</a></h6>
+<h6 id="returns_41">Returns<a class="headerlink" href="#returns_41" title="Permanent link">&para;</a></h6>
 <p><code>Promise</code>\&lt;<a href="#comment"><code>Comment</code></a>[]&gt;</p>
 <h2 id="interfaces">Interfaces<a class="headerlink" href="#interfaces" title="Permanent link">&para;</a></h2>
 <h3 id="witanoptions">WitanOptions<a class="headerlink" href="#witanoptions" title="Permanent link">&para;</a></h3>
@@ -3600,7 +3691,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <hr />
 <h3 id="manifest_1">Manifest<a class="headerlink" href="#manifest_1" title="Permanent link">&para;</a></h3>
 <h4 id="indexable">Indexable<a class="headerlink" href="#indexable" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
 </code></pre></div>
 <h4 id="properties_18">Properties<a class="headerlink" href="#properties_18" title="Permanent link">&para;</a></h4>
 <table>
@@ -3888,8 +3979,43 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </tbody>
 </table>
 <hr />
-<h3 id="pushoptions">PushOptions<a class="headerlink" href="#pushoptions" title="Permanent link">&para;</a></h3>
+<h3 id="updateprojectinput">UpdateProjectInput<a class="headerlink" href="#updateprojectinput" title="Permanent link">&para;</a></h3>
+<p>What <code>projects.update</code> may change. Schema, access and visibility stay as created.</p>
 <h4 id="properties_24">Properties<a class="headerlink" href="#properties_24" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a id="property-title-7"></a> <code>title?</code></td>
+<td><code>string</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><a id="property-readme-2"></a> <code>readme?</code></td>
+<td><code>string</code></td>
+<td>-</td>
+</tr>
+<tr>
+<td><a id="property-tags-1"></a> <code>tags?</code></td>
+<td><code>string</code>[]</td>
+<td>-</td>
+</tr>
+<tr>
+<td><a id="property-status-3"></a> <code>status?</code></td>
+<td><code>"open"</code> | <code>"paused"</code> | <code>"archived"</code></td>
+<td><code>paused</code> takes no contributions for now; <code>archived</code> is read-only for good.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="pushoptions">PushOptions<a class="headerlink" href="#pushoptions" title="Permanent link">&para;</a></h3>
+<h4 id="properties_25">Properties<a class="headerlink" href="#properties_25" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -3934,9 +4060,9 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <hr />
 <h3 id="pushresult">PushResult<a class="headerlink" href="#pushresult" title="Permanent link">&para;</a></h3>
 <h4 id="indexable_1">Indexable<a class="headerlink" href="#indexable_1" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
 </code></pre></div>
-<h4 id="properties_25">Properties<a class="headerlink" href="#properties_25" title="Permanent link">&para;</a></h4>
+<h4 id="properties_26">Properties<a class="headerlink" href="#properties_26" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -3967,7 +4093,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <td>-</td>
 </tr>
 <tr>
-<td><a id="property-status-3"></a> <code>status?</code></td>
+<td><a id="property-status-4"></a> <code>status?</code></td>
 <td><a href="#contributionstatus"><code>ContributionStatus</code></a></td>
 <td>With <code>wait</code>: the contribution's final state.</td>
 </tr>
@@ -3990,7 +4116,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="promoteoptions">PromoteOptions<a class="headerlink" href="#promoteoptions" title="Permanent link">&para;</a></h3>
-<h4 id="properties_26">Properties<a class="headerlink" href="#properties_26" title="Permanent link">&para;</a></h4>
+<h4 id="properties_27">Properties<a class="headerlink" href="#properties_27" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4029,7 +4155,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="diff_1">Diff<a class="headerlink" href="#diff_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_27">Properties<a class="headerlink" href="#properties_27" title="Permanent link">&para;</a></h4>
+<h4 id="properties_28">Properties<a class="headerlink" href="#properties_28" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4070,7 +4196,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="contribution_1">Contribution<a class="headerlink" href="#contribution_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_28">Properties<a class="headerlink" href="#properties_28" title="Permanent link">&para;</a></h4>
+<h4 id="properties_29">Properties<a class="headerlink" href="#properties_29" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4086,7 +4212,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <td>-</td>
 </tr>
 <tr>
-<td><a id="property-status-4"></a> <code>status</code></td>
+<td><a id="property-status-5"></a> <code>status</code></td>
 <td><a href="#contributionstatus"><code>ContributionStatus</code></a></td>
 <td>-</td>
 </tr>
@@ -4124,7 +4250,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="contributeoptions">ContributeOptions<a class="headerlink" href="#contributeoptions" title="Permanent link">&para;</a></h3>
-<h4 id="properties_29">Properties<a class="headerlink" href="#properties_29" title="Permanent link">&para;</a></h4>
+<h4 id="properties_30">Properties<a class="headerlink" href="#properties_30" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4153,7 +4279,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="purchase">Purchase<a class="headerlink" href="#purchase" title="Permanent link">&para;</a></h3>
-<h4 id="properties_30">Properties<a class="headerlink" href="#properties_30" title="Permanent link">&para;</a></h4>
+<h4 id="properties_31">Properties<a class="headerlink" href="#properties_31" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4214,7 +4340,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <td>the settlement transaction — what a dispute names</td>
 </tr>
 <tr>
-<td><a id="property-status-5"></a> <code>status</code></td>
+<td><a id="property-status-6"></a> <code>status</code></td>
 <td><code>"pending"</code> | <code>"settled"</code> | <code>"failed"</code></td>
 <td>-</td>
 </tr>
@@ -4244,9 +4370,9 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <h3 id="dispute_1">Dispute<a class="headerlink" href="#dispute_1" title="Permanent link">&para;</a></h3>
 <p>A dispute on a settled payment, as the pay service reports it.</p>
 <h4 id="indexable_2">Indexable<a class="headerlink" href="#indexable_2" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="p">[</span><span class="nx">key</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">]</span><span class="o">:</span><span class="w"> </span><span class="nx">unknown</span>
 </code></pre></div>
-<h4 id="properties_31">Properties<a class="headerlink" href="#properties_31" title="Permanent link">&para;</a></h4>
+<h4 id="properties_32">Properties<a class="headerlink" href="#properties_32" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4260,7 +4386,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <td><code>string</code></td>
 </tr>
 <tr>
-<td><a id="property-status-6"></a> <code>status</code></td>
+<td><a id="property-status-7"></a> <code>status</code></td>
 <td><code>string</code></td>
 </tr>
 <tr>
@@ -4291,7 +4417,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="quota_1">Quota<a class="headerlink" href="#quota_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_32">Properties<a class="headerlink" href="#properties_32" title="Permanent link">&para;</a></h4>
+<h4 id="properties_33">Properties<a class="headerlink" href="#properties_33" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4340,7 +4466,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="credits_1">Credits<a class="headerlink" href="#credits_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_33">Properties<a class="headerlink" href="#properties_33" title="Permanent link">&para;</a></h4>
+<h4 id="properties_34">Properties<a class="headerlink" href="#properties_34" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4385,7 +4511,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="points_1">Points<a class="headerlink" href="#points_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_34">Properties<a class="headerlink" href="#properties_34" title="Permanent link">&para;</a></h4>
+<h4 id="properties_35">Properties<a class="headerlink" href="#properties_35" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4414,7 +4540,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <hr />
 <h3 id="comment_1">Comment<a class="headerlink" href="#comment_1" title="Permanent link">&para;</a></h3>
-<h4 id="properties_35">Properties<a class="headerlink" href="#properties_35" title="Permanent link">&para;</a></h4>
+<h4 id="properties_36">Properties<a class="headerlink" href="#properties_36" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4452,7 +4578,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <hr />
 <h3 id="requestinit2">RequestInit2<a class="headerlink" href="#requestinit2" title="Permanent link">&para;</a></h3>
 <p>Options of <code>request()</code> and <code>send()</code>, the raw calls behind every method.</p>
-<h4 id="properties_36">Properties<a class="headerlink" href="#properties_36" title="Permanent link">&para;</a></h4>
+<h4 id="properties_37">Properties<a class="headerlink" href="#properties_37" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4496,7 +4622,7 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </table>
 <h2 id="type-aliases">Type Aliases<a class="headerlink" href="#type-aliases" title="Permanent link">&para;</a></h2>
 <h3 id="pinnedkey">PinnedKey<a class="headerlink" href="#pinnedkey" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">PinnedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">KeyRef</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">PinnedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">KeyRef</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="p">;</span>
 </code></pre></div>
 <h4 id="type-declaration">Type Declaration<a class="headerlink" href="#type-declaration" title="Permanent link">&para;</a></h4>
 <table>
@@ -4518,23 +4644,47 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </tbody>
 </table>
 <hr />
+<h3 id="updatedproject">UpdatedProject<a class="headerlink" href="#updatedproject" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">UpdatedProject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">Project</span><span class="p">,</span><span class="w"> </span><span class="s2">"slug"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"title"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"status"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"access"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"visibility"</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="p">;</span>
+</code></pre></div>
+<p>A project as <code>projects.update</code> returns it.</p>
+<h4 id="type-declaration_1">Type Declaration<a class="headerlink" href="#type-declaration_1" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>readme</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td><code>string</code>[]</td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h3 id="contributionstatus">ContributionStatus<a class="headerlink" href="#contributionstatus" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">ContributionStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"submitted"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"validating"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"merged"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">ContributionStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"submitted"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"validating"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"merged"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">;</span>
 </code></pre></div>
 <hr />
 <h3 id="query_1">Query<a class="headerlink" href="#query_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">Query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">Query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="deprecationnotice_1">deprecationNotice()<a class="headerlink" href="#deprecationnotice_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
-<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="w">   </span><span class="nx">headers</span>
-<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="w">   </span><span class="nx">headers</span>
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
 </code></pre></div>
 <p>The deprecation a response announces, if any.</p>
-<h4 id="parameters_35">Parameters<a class="headerlink" href="#parameters_35" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_37">Parameters<a class="headerlink" href="#parameters_37" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4557,15 +4707,15 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_40">Returns<a class="headerlink" href="#returns_40" title="Permanent link">&para;</a></h4>
+<h4 id="returns_42">Returns<a class="headerlink" href="#returns_42" title="Permanent link">&para;</a></h4>
 <p><a href="#deprecationnotice"><code>DeprecationNotice</code></a> | <code>undefined</code></p>
 <hr />
 <h3 id="verifymanifest">verifyManifest()<a class="headerlink" href="#verifymanifest" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
-<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Check a manifest's signature against keys pinned from <code>Witan.keys()</code> — wherever the manifest came
 from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
@@ -4574,7 +4724,7 @@ signed for another origin, with a key that is revoked (or pinned through a revok
 pinned nor reached by the signature's endorsements from a pinned key, or does not match — and,
 with <code>require</code>, when it is unsigned. A retired key still verifies what it signed.
 Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).</p>
-<h4 id="parameters_36">Parameters<a class="headerlink" href="#parameters_36" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_38">Parameters<a class="headerlink" href="#parameters_38" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4601,27 +4751,27 @@ Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).</p>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_41">Returns<a class="headerlink" href="#returns_41" title="Permanent link">&para;</a></h4>
+<h4 id="returns_43">Returns<a class="headerlink" href="#returns_43" title="Permanent link">&para;</a></h4>
 <p><code>Promise</code>\&lt;<code>"verified"</code> | <code>"unsigned"</code>&gt;</p>
 <hr />
 <h3 id="updatepinnedkeys">updatePinnedKeys()<a class="headerlink" href="#updatepinnedkeys" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
-<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
-<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
+<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Refresh keys you pinned with a fresh <code>keys()</code> document (which checked it is the origin's own):
 the keys it marks revoked or retired are marked so here, and a revoked key takes every key pinned
 through it along. A new key is added only when a pinned key that still counts endorsed it
 (directly or through a chain); anything else is <code>refused</code> — unless <code>force</code> (re-pinning by hand,
 after checking the key id with the operator). Store the returned <code>keys</code> in place of the old.</p>
-<h4 id="parameters_37">Parameters<a class="headerlink" href="#parameters_37" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4648,7 +4798,7 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 </tr>
 </tbody>
 </table>
-<h4 id="returns_42">Returns<a class="headerlink" href="#returns_42" title="Permanent link">&para;</a></h4>
+<h4 id="returns_44">Returns<a class="headerlink" href="#returns_44" title="Permanent link">&para;</a></h4>
 <p><code>Promise</code>\&lt;{
   <code>keys</code>: <a href="#signingkeys"><code>SigningKeys</code></a>;
   <code>added</code>: <code>string</code>[];
@@ -4657,10 +4807,10 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 }&gt;</p>
 <hr />
 <h3 id="endorsementstatement">endorsementStatement()<a class="headerlink" href="#endorsementstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>What an endorsement signs: {v, type, origin, key} in the origin's stable JSON.</p>
-<h4 id="parameters_38">Parameters<a class="headerlink" href="#parameters_38" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_40">Parameters<a class="headerlink" href="#parameters_40" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4679,16 +4829,16 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 </tr>
 </tbody>
 </table>
-<h4 id="returns_43">Returns<a class="headerlink" href="#returns_43" title="Permanent link">&para;</a></h4>
+<h4 id="returns_45">Returns<a class="headerlink" href="#returns_45" title="Permanent link">&para;</a></h4>
 <p><code>string</code></p>
 <hr />
 <h3 id="signedstatement">signedStatement()<a class="headerlink" href="#signedstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON.
 Left out, as the origin leaves them out: signature, urlExpiresAt, paid and part URLs — and the x402
 receipt an SDK attaches to a bought manifest.</p>
-<h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_41">Parameters<a class="headerlink" href="#parameters_41" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4707,7 +4857,7 @@ receipt an SDK attaches to a bought manifest.</p>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_44">Returns<a class="headerlink" href="#returns_44" title="Permanent link">&para;</a></h4>
+<h4 id="returns_46">Returns<a class="headerlink" href="#returns_46" title="Permanent link">&para;</a></h4>
 <p><code>string</code></p>
 
 

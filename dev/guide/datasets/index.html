@@ -516,6 +516,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#edit-or-archive-a-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edit or archive a project
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -785,6 +794,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#edit-or-archive-a-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      Edit or archive a project
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -976,6 +994,13 @@
 <a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">p</span><span class="p">.</span><span class="nx">promoted</span><span class="p">.</span><span class="nx">version</span><span class="p">,</span><span class="w"> </span><span class="nx">p</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span><span class="w"> </span><span class="nx">p</span><span class="p">.</span><span class="nx">acceptedCount</span><span class="p">);</span><span class="w">   </span><span class="c1">// "rejected" by the dedup gate means up to date</span>
 </code></pre></div>
 <p>The target (<code>to</code>, the same slug by default) must exist. <code>wait</code> defaults to <code>true</code> here. A project that is not local to the node, or has no version yet, throws <code>WitanError</code> before anything is sent here. Every call and type is in the <a href="../../reference/">API reference</a>.</p>
+<h2 id="edit-or-archive-a-project">Edit or archive a project<a class="headerlink" href="#edit-or-archive-a-project" title="Permanent link">&para;</a></h2>
+<p>The maintaining operator (its token or one of its agents' keys) can change a project's title, readme,
+tags and status — <code>open</code>, <code>paused</code> (no contributions for now) or <code>archived</code> (read-only for good). Schema,
+access and visibility stay as created.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">await</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">projects</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="s2">"my-agent-state"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">tags</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"state"</span><span class="p">,</span><span class="w"> </span><span class="s2">"latency"</span><span class="p">]</span><span class="w"> </span><span class="p">});</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">await</span><span class="w"> </span><span class="nx">w</span><span class="p">.</span><span class="nx">projects</span><span class="p">.</span><span class="nx">update</span><span class="p">(</span><span class="s2">"my-agent-state"</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s2">"archived"</span><span class="w"> </span><span class="p">});</span>
+</code></pre></div>
 
 
 
