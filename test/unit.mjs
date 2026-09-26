@@ -3,7 +3,9 @@
 //   npm run build && npm test
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { PaymentRequiredError, SignatureError, Witan, WitanError, signedStatement, verifyManifest } from "../dist/index.js";
+import {
+  PaymentRequiredError, SignatureError, Witan, WitanError, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
+} from "../dist/index.js";
 
 const BASE = "http://api.test";
 const ORIGIN = "https://origin.test";
@@ -265,4 +267,74 @@ test("promote refuses projects that are not local to the node", async () => {
   const { w } = client([]);
   await assert.rejects(w.projects.promote("obs", { from: new Witan({ baseUrl: "http://node.test", apiKey: "node", fetch: node.fetch }) }),
     (e) => e instanceof WitanError && /not a local project/.test(e.message));
+});
+
+// ---- key rotation ---------------------------------------------------------------------------
+async function keyPair() {
+  const pair = await crypto.subtle.generateKey({ name: "Ed25519" }, true, ["sign", "verify"]);
+  const raw = new Uint8Array(await crypto.subtle.exportKey("raw", pair.publicKey));
+  const kid = [...new Uint8Array(await crypto.subtle.digest("SHA-256", raw))].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+  const ref = { kid, alg: "Ed25519", publicKey: b64(raw) };
+  const signText = async (text) => b64(new Uint8Array(await crypto.subtle.sign({ name: "Ed25519" }, pair.privateKey, new TextEncoder().encode(text))));
+  return { ref, signText };
+}
+const endorse = async (by, key, origin = ORIGIN) => ({ ...key.ref, by: by.ref.kid, sig: await by.signText(endorsementStatement(origin, key.ref)) });
+async function signedBy(key, chain) {
+  const m = manifest();
+  return { ...m, signature: { alg: "Ed25519", kid: key.ref.kid, origin: ORIGIN, sig: await key.signText(signedStatement(m, ORIGIN)), ...(chain ? { chain } : {}) } };
+}
+const pins = (...keys) => ({ origin: ORIGIN, keys: keys.map((k) => k.ref) });
+const published = (current, { retired = [], revoked = [], endorsements = [] } = {}) => ({
+  origin: ORIGIN,
+  keys: [{ ...current.ref, status: "current" }, ...retired.map((k) => ({ ...k.ref, status: "retired" })), ...revoked.map((k) => ({ ...k.ref, status: "revoked" }))],
+  endorsements: endorsements.map(({ kid, by, sig }) => ({ kid, by, sig })),
+});
+
+test("the endorsement statement is the origin's (and Python's)", () => {
+  assert.equal(endorsementStatement("https://o", { kid: "k", alg: "Ed25519", publicKey: "P" }),
+    '{"key":{"alg":"Ed25519","kid":"k","publicKey":"P"},"origin":"https://o","type":"witan-key-endorsement","v":1}');
+});
+
+test("verifyManifest follows a rotation through the signature's chain", async () => {
+  const [k0, k1, k2] = await Promise.all([keyPair(), keyPair(), keyPair()]);
+  const m = await signedBy(k2, [await endorse(k0, k1), await endorse(k1, k2)]);
+  assert.equal(await verifyManifest(m, pins(k0)), "verified");
+  const reversed = { ...m, signature: { ...m.signature, chain: [...m.signature.chain].reverse() } };
+  assert.equal(await verifyManifest(reversed, pins(k0)), "verified");
+});
+
+test("a chain no pinned key starts, or with an altered link, is refused", async () => {
+  const [k0, k1, k3] = await Promise.all([keyPair(), keyPair(), keyPair()]);
+  await assert.rejects(verifyManifest(await signedBy(k1, [await endorse(k3, k1)]), pins(k0)), /no endorsement leads/);
+  await assert.rejects(verifyManifest(await signedBy(k1), pins(k0)), /no endorsement leads/);
+  const forged = { ...(await endorse(k0, k1)), sig: (await endorse(k3, k1)).sig };
+  await assert.rejects(verifyManifest(await signedBy(k1, [forged]), pins(k0)), /does not verify/);
+  const elsewhere = await endorse(k0, k1, "https://elsewhere.test");
+  await assert.rejects(verifyManifest(await signedBy(k1, [elsewhere]), pins(k0)), /does not verify/);
+  const swapped = { ...(await endorse(k0, k1)), publicKey: k3.ref.publicKey };
+  await assert.rejects(verifyManifest(await signedBy(k1, [swapped]), pins(k0)), /malformed/);
+});
+
+test("revoked keys are refused, and so is what they vouched for", async () => {
+  const [k0, k1, k2] = await Promise.all([keyPair(), keyPair(), keyPair()]);
+  const keys = { origin: ORIGIN, keys: [k0.ref, { ...k1.ref, status: "revoked" }] };
+  await assert.rejects(verifyManifest(await signedBy(k1), keys), /revoked/);
+  await assert.rejects(verifyManifest(await signedBy(k2, [await endorse(k1, k2)]), keys), /no endorsement leads/);
+  assert.equal(await verifyManifest(await signedBy(k0), keys), "verified");
+});
+
+test("updatePinnedKeys adds what pinned keys endorse, refuses the rest, marks revocations", async () => {
+  const [k0, k1, k2, k3] = await Promise.all([keyPair(), keyPair(), keyPair(), keyPair()]);
+  const r1 = await updatePinnedKeys(pins(k0), published(k2, { retired: [k0, k1], endorsements: [await endorse(k0, k1), await endorse(k1, k2)] }));
+  assert.deepEqual(r1.added.sort(), [k1.ref.kid, k2.ref.kid].sort());
+  assert.deepEqual(r1.refused, []);
+  assert.equal(await verifyManifest(await signedBy(k2), r1.keys), "verified"); // no chain needed any more
+  const r2 = await updatePinnedKeys(r1.keys, published(k3, { revoked: [k2] }));
+  assert.deepEqual(r2.revoked, [k2.ref.kid]);
+  assert.deepEqual(r2.refused, [k3.ref.kid]);
+  await assert.rejects(verifyManifest(await signedBy(k2), r2.keys), /revoked/);
+  const r3 = await updatePinnedKeys(r2.keys, published(k3, { revoked: [k2] }), { force: true });
+  assert.deepEqual(r3.added, [k3.ref.kid]);
+  assert.equal(await verifyManifest(await signedBy(k3), r3.keys), "verified");
+  await assert.rejects(updatePinnedKeys(pins(k0), { ...published(k1), origin: "https://elsewhere.test" }), SignatureError);
 });

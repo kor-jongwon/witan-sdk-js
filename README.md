@@ -85,6 +85,14 @@ const m = await mirror.projects.manifest("agent-api-observatory", { verify: keys
 await verifyManifest(m, keys);   // "verified" | "unsigned" (node-local versions); throws on a mismatch
 ```
 
+When the origin rotates its key, the old key endorses the new one and the endorsement travels in every signature: `verifyManifest` follows it from the keys you pinned, so nothing breaks. To refresh the stored keys, apply a fresh document through `updatePinnedKeys` — it adds only endorsed keys, marks revoked ones, and reports anything else as `refused`:
+
+```ts
+const { keys: next, added, refused } = await updatePinnedKeys(pinnedKeys, await w.keys());
+// store `next`; `refused` is non-empty only if the origin re-keyed without an endorsement (a leaked key) —
+// check the key id with its operator, then updatePinnedKeys(pinnedKeys, published, { force: true })
+```
+
 Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 
 ## Reference
@@ -107,7 +115,7 @@ Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 | `projects.push(slug, records, { sourceDeclaration, wait, compress, partSize, concurrency })` | any number of records as one contribution, via the object store | yes |
 | `projects.create({ slug, title, readme, schemaDef, license?, tags?, access?, visibility? })` | a project (operator token here; on a node, a local project) | wto_ |
 | `projects.promote(slug, { from: nodeClient, to? })` | a node project's latest version → a project here | yes |
-| `keys()` · `verifyManifest(manifest, keys, { require })` · `signedStatement(manifest, origin)` | signing keys and signature checks | no |
+| `keys()` · `verifyManifest(manifest, keys, { require })` · `updatePinnedKeys(pinned, published, { force })` · `signedStatement` · `endorsementStatement` | signing keys, signature checks, key rotation | no |
 
 Options: `baseUrl` (or `WITAN_BASE_URL`), `apiKey` (or `WITAN_API_KEY`), `fetch`, `retries` (reads and keyed writes retry on 429/5xx, default 2), `timeoutMs` (default 30 s; long-polls add their wait).
 
@@ -141,6 +149,7 @@ After that, every release goes through the workflow.
 
 ## Changelog
 
+- **0.3.0** — key rotation: `verifyManifest` follows the endorsement chain in a signature from the pinned keys to a rotated key and refuses revoked keys; `updatePinnedKeys()` refreshes stored keys through endorsements (`force` to re-pin by hand); `endorsementStatement()`; `SigningKeys` carries `status` and `endorsements`.
 - **0.2.2** — published straight from the workflow, without the staging step; this README (provenance). No API change.
 - **0.2.1** — the first release built and published by the mirror's workflow (npm Trusted Publishing, staged for 2FA approval, SLSA provenance). No API change.
 - **0.2.0** — `projects.create`; `projects.push` (any number of records as one contribution through the object store: JSON lines, gzip, presigned parts); `projects.promote` (a node's local project → a project on the origin); signed manifests: `keys()`, `verifyManifest()`, `signedStatement()`, `projects.manifest(slug, { verify })` (WebCrypto Ed25519).

@@ -151,17 +151,32 @@ export interface Manifest {
   signature?: ManifestSignature;
   [key: string]: unknown;
 }
+export interface KeyRef {
+  kid: string;
+  alg: "Ed25519";
+  /** base64 of the 32-byte key */
+  publicKey: string;
+}
+/** A key the previous one vouched for: `sig` is `by`'s signature over `endorsementStatement`. */
+export interface ChainLink extends KeyRef {
+  by: string;
+  sig: string;
+}
 export interface ManifestSignature {
   alg: "Ed25519";
   kid: string;
   origin: string;
   /** base64 */
   sig: string;
+  /** After a key rotation: the endorsements that lead from earlier keys to `kid`, oldest first. */
+  chain?: ChainLink[];
 }
-/** GET /.well-known/witan-keys — the keys an origin signs version manifests with. */
+/** GET /.well-known/witan-keys — the keys an origin signs version manifests with — and, as kept by
+ * a client, the keys it pinned. */
 export interface SigningKeys {
   origin: string;
-  keys: { kid: string; alg: "Ed25519"; publicKey: string }[];
+  keys: (KeyRef & { status?: "current" | "retired" | "revoked"; endorsedBy?: string })[];
+  endorsements?: { kid: string; by: string; sig: string }[];
 }
 export interface CreateProjectInput {
   slug: string;
@@ -337,7 +352,7 @@ export class Witan {
     if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.2.2";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.3.0";
     this.projects = new Projects(this);
   }
 
@@ -421,7 +436,9 @@ export class Witan {
   }
   /**
    * The keys this origin signs version manifests with. Fetch them once where you trust the origin
-   * and keep them with your agent's config; `verifyManifest` then checks copies from anywhere.
+   * and keep them with your agent's config; `verifyManifest` then checks copies from anywhere,
+   * following a key rotation through the signature's endorsements. To refresh the stored keys
+   * later without trusting whatever the server says, pass both to `updatePinnedKeys`.
    */
   async keys(): Promise<SigningKeys> {
     const { data } = await this.request<SigningKeys>("GET", "/.well-known/witan-keys", { idempotent: true });
@@ -701,8 +718,9 @@ export class Projects {
  * Check a manifest's signature against keys pinned from `Witan.keys()` — wherever the manifest came
  * from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
  * no signature (versions written on a node are the node's own); throws `SignatureError` when it is
- * signed for another origin, with a key not among `keys`, or does not match — and, with `require`,
- * when it is unsigned. Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
+ * signed for another origin, with a key that is revoked or that neither is pinned nor is reached by
+ * the signature's endorsements from a pinned key, or does not match — and, with `require`, when it
+ * is unsigned. Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
  */
 export async function verifyManifest(
   manifest: Record<string, unknown>,
@@ -719,26 +737,143 @@ export async function verifyManifest(
   if (origin !== keys.origin.replace(/\/+$/, "")) {
     throw new SignatureError(`${what} is signed by ${origin}, and these keys are ${keys.origin}'s`);
   }
-  const key = keys.keys.find((k) => k.kid === sig.kid);
-  if (!key) throw new SignatureError(`${what} is signed with key ${sig.kid}, which is not one of ${origin}'s pinned keys`);
-  if (sig.alg !== "Ed25519" || key.alg !== "Ed25519") throw new SignatureError(`${what} uses ${sig.alg}; only Ed25519 is supported`);
+  if (sig.alg !== "Ed25519") throw new SignatureError(`${what} uses ${sig.alg}; only Ed25519 is supported`);
+  const revoked = new Set(keys.keys.filter((k) => k.status === "revoked").map((k) => k.kid));
+  if (revoked.has(sig.kid)) throw new SignatureError(`${what} is signed with key ${sig.kid}, which ${origin} revoked`);
+  const known = new Map<string, KeyRef>(keys.keys.filter((k) => k.status !== "revoked").map((k) => [k.kid, k]));
+  let key = known.get(sig.kid);
+  if (!key) {
+    const learned = await walkEndorsements(origin, Array.isArray(sig.chain) ? sig.chain : [], known, revoked, sig.kid, what);
+    key = learned.find((k) => k.kid === sig.kid);
+    if (!key) {
+      throw new SignatureError(`${what} is signed with key ${sig.kid}, which is not one of ${origin}'s pinned keys and no endorsement leads to it from one`);
+    }
+  }
+  if (!(await ed25519Verify(key.publicKey, sig.sig, signedStatement(manifest, origin)))) {
+    throw new SignatureError(`${what} does not match ${origin}'s signature — the manifest was altered or corrupted`);
+  }
+  return "verified";
+}
+
+/**
+ * Refresh keys you pinned with a fresh `keys()` document, without trusting it blindly: a new key
+ * is added only when a pinned key endorsed it (directly or through a chain); keys the origin marks
+ * revoked are marked revoked; anything else is `refused` — unless `force` (re-pinning by hand,
+ * after checking the key id with the operator). Store the returned `keys` in place of the old.
+ */
+export async function updatePinnedKeys(
+  pinned: SigningKeys,
+  published: SigningKeys,
+  opts: { force?: boolean } = {},
+): Promise<{ keys: SigningKeys; added: string[]; refused: string[]; revoked: string[] }> {
+  const origin = pinned.origin.replace(/\/+$/, "");
+  if (published.origin.replace(/\/+$/, "") !== origin) {
+    throw new SignatureError(`these keys are ${published.origin}'s, not ${origin}'s`);
+  }
+  const revokedNow = new Set(published.keys.filter((k) => k.status === "revoked").map((k) => k.kid));
+  const marked: string[] = [];
+  const entries = pinned.keys.map((k) => {
+    if (revokedNow.has(k.kid) && k.status !== "revoked") {
+      marked.push(k.kid);
+      return { ...k, status: "revoked" as const };
+    }
+    return k;
+  });
+  const revoked = new Set([...revokedNow, ...entries.filter((k) => k.status === "revoked").map((k) => k.kid)]);
+  const known = new Map<string, KeyRef>(entries.filter((k) => k.status !== "revoked").map((k) => [k.kid, k]));
+  const live = published.keys.filter((k) => k.status !== "revoked");
+  const byKid = new Map(live.map((k) => [k.kid, k]));
+  const links: ChainLink[] = (published.endorsements ?? [])
+    .filter((e) => byKid.has(e.kid))
+    .map((e) => ({ kid: e.kid, alg: "Ed25519", publicKey: byKid.get(e.kid)!.publicKey, by: e.by, sig: e.sig }));
+  const learned = await walkEndorsements(origin, links, known, revoked, null, `${origin}'s published keys`);
+  const learnedIds = new Set(learned.map((k) => k.kid));
+  let refused = live.filter((k) => !known.has(k.kid) && !learnedIds.has(k.kid));
+  const forced: KeyRef[] = [];
+  if (opts.force) {
+    for (const k of refused) {
+      if ((await kidOf(k.publicKey)) !== k.kid) throw new SignatureError(`${origin} published key ${k.kid} under the wrong id`);
+      forced.push({ kid: k.kid, alg: "Ed25519", publicKey: k.publicKey });
+    }
+    refused = [];
+  }
+  return {
+    keys: { origin, keys: [...entries, ...learned, ...forced.map((k) => ({ ...k }))] },
+    added: [...learned, ...forced].map((k) => k.kid),
+    refused: refused.map((k) => k.kid),
+    revoked: marked,
+  };
+}
+
+/** What an endorsement signs: {v, type, origin, key} in the origin's stable JSON. */
+export function endorsementStatement(origin: string, key: KeyRef): string {
+  return stableStringify({ v: 1, type: "witan-key-endorsement", origin, key: { alg: "Ed25519", kid: key.kid, publicKey: key.publicKey } });
+}
+
+async function walkEndorsements(
+  origin: string,
+  links: ChainLink[],
+  pinned: Map<string, KeyRef>,
+  revoked: Set<string>,
+  target: string | null,
+  what: string,
+): Promise<(KeyRef & { endorsedBy: string })[]> {
+  const known = new Map(pinned);
+  const learned: (KeyRef & { endorsedBy: string })[] = [];
+  let progress = true;
+  while (progress && (target === null || !known.has(target))) {
+    progress = false;
+    for (const link of links) {
+      if (!link || typeof link !== "object") continue;
+      const voucher = known.get(link.by);
+      if (known.has(link.kid) || revoked.has(link.kid) || revoked.has(link.by) || !voucher) continue;
+      if (link.alg !== "Ed25519" || (await kidOf(link.publicKey)) !== link.kid) {
+        throw new SignatureError(`${what}: the endorsement of key ${link.kid} is malformed`);
+      }
+      if (!(await ed25519Verify(voucher.publicKey, link.sig, endorsementStatement(origin, link)))) {
+        throw new SignatureError(`${what}: the endorsement of key ${link.kid} by ${link.by} does not verify — the key chain was altered`);
+      }
+      const key = { kid: link.kid, alg: "Ed25519" as const, publicKey: link.publicKey, endorsedBy: link.by };
+      known.set(key.kid, key);
+      learned.push(key);
+      progress = true;
+    }
+  }
+  return learned;
+}
+
+function webCrypto(): SubtleCrypto {
   const subtle = (globalThis as { crypto?: { subtle?: SubtleCrypto } }).crypto?.subtle;
   if (!subtle) throw new WitanError(0, "this runtime has no WebCrypto (crypto.subtle) to verify signatures with");
-  let publicKey: CryptoKey;
+  return subtle;
+}
+
+async function ed25519Verify(publicKey: string, signature: string, message: string): Promise<boolean> {
+  const subtle = webCrypto();
+  let key: CryptoKey;
   try {
-    publicKey = await subtle.importKey("raw", bytes(fromBase64(key.publicKey)), { name: "Ed25519" }, false, ["verify"]);
+    key = await subtle.importKey("raw", bytes(fromBase64(publicKey)), { name: "Ed25519" }, false, ["verify"]);
   } catch (e) {
+    if (e instanceof DOMException && e.name === "DataError") return false; // not a key at all
     throw new WitanError(0, `this runtime's WebCrypto cannot use Ed25519 keys (${String(e)})`);
   }
-  let ok = false;
   try {
-    ok = await subtle.verify({ name: "Ed25519" }, publicKey, bytes(fromBase64(sig.sig)),
-      bytes(new TextEncoder().encode(signedStatement(manifest, origin))));
+    return await subtle.verify({ name: "Ed25519" }, key, bytes(fromBase64(signature)), bytes(new TextEncoder().encode(message)));
   } catch {
-    ok = false;
+    return false;
   }
-  if (!ok) throw new SignatureError(`${what} does not match ${origin}'s signature — the manifest was altered or corrupted`);
-  return "verified";
+}
+
+async function kidOf(publicKey: string): Promise<string> {
+  let raw: Uint8Array;
+  try {
+    raw = fromBase64(publicKey);
+  } catch {
+    return "";
+  }
+  if (raw.length !== 32) return "";
+  const digest = new Uint8Array(await webCrypto().digest("SHA-256", bytes(raw)));
+  return [...digest.slice(0, 8)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /** The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON. */
