@@ -77,6 +77,14 @@ await node.projects.contribute("scratch", records);                             
 const p = await w.projects.promote("scratch", { from: node, to: "my-agent-state" });  // "merged", or "rejected" by dedup = up to date
 ```
 
+The node itself is Python (`pip install "witan-sdk[query]"`, then `wtn serve`). It also ships as a container
+image, `ghcr.io/kor-jongwon/witan-node`, published on Docker Hub as `jongwon98/witan-node`. In a container
+the node needs a token, which you pass here as `apiKey`:
+
+```sh
+docker run -d -p 127.0.0.1:8686:8686 -e WITAN_NODE_TOKEN=... -v witan-data:/data ghcr.io/kor-jongwon/witan-node
+```
+
 ## Signed versions
 
 Every version manifest the origin hands out is signed (Ed25519); nodes and mirrors pass the signature through. Pin the origin's keys once, where you trust it, and check copies from anywhere:
@@ -153,6 +161,10 @@ Once, when the package does not exist on npm yet: npm trusts a workflow only for
 - Publishing access: **require two-factor authentication and disallow tokens**
 
 After that, every release goes through the workflow.
+
+## What's new in 0.9.1
+
+**Added** — the README shows the node's container image (`ghcr.io/kor-jongwon/witan-node`, `jongwon98/witan-node` on Docker Hub). No code change.
 
 ## What's new in 0.9.0
 

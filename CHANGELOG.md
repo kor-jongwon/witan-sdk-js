@@ -14,6 +14,15 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.1 — 2026-09-27
+
+### Added
+- The README shows how to run a node as a container: `ghcr.io/kor-jongwon/witan-node`, or
+  `jongwon98/witan-node` on Docker Hub. No code change.
+
+### Deprecated
+- Nothing.
+
 ## 0.9.0 — 2026-09-26
 
 ### Changed
