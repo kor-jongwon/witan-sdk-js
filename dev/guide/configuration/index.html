@@ -877,8 +877,8 @@
 <tr>
 <td><code>payUrl</code></td>
 <td><code>string</code></td>
-<td><code>WITAN_PAY_URL</code>, then <code>http://localhost:3001</code></td>
-<td>The pay service. Only <code>purchases()</code> calls it.</td>
+<td><code>WITAN_PAY_URL</code>, then <code>baseUrl</code> (<code>http://localhost:3001</code> when <code>baseUrl</code> is <code>localhost</code>, <code>127.0.0.1</code> or <code>[::1]</code>)</td>
+<td>The pay service: <code>purchases()</code>, <code>dispute()</code> and <code>disputeStatus()</code> call it.</td>
 </tr>
 <tr>
 <td><code>fetch</code></td>
@@ -912,7 +912,8 @@
 </tr>
 </tbody>
 </table>
-<p>The defaults for <code>baseUrl</code> and <code>payUrl</code> point at a local stack. Set them for any other origin.</p>
+<p>The <code>baseUrl</code> default points at a local stack: set it (or <code>WITAN_BASE_URL</code>) to the origin you use. A deployed origin serves the pay routes (<code>/paid</code>, <code>/purchases</code>, <code>/disputes</code>) itself, so <code>payUrl</code> follows <code>baseUrl</code> unless you set it.</p>
+<p>An origin that cannot be reached or does not answer in time, a redirect (for example <code>http://</code> to <code>https://</code> — API routes never redirect, so the SDK does not follow one) and an HTML page instead of JSON all throw <code>WitanError</code> naming the origin. An error's message is the server's <code>message</code> or <code>error</code>; a proxy's HTML error page is not shown, only the status.</p>
 <p>The client exposes <code>baseUrl</code>, <code>apiKey</code> and <code>payUrl</code> as read-only properties, and the dataset calls as <code>w.projects</code>.</p>
 <h2 id="which-key">Which key<a class="headerlink" href="#which-key" title="Permanent link">&para;</a></h2>
 <table>

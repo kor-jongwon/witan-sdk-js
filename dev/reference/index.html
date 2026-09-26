@@ -970,6 +970,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#defaultpayurl" class="md-nav__link">
+    <span class="md-ellipsis">
+      defaultPayUrl()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#deprecationnotice_1" class="md-nav__link">
     <span class="md-ellipsis">
       deprecationNotice()
@@ -1590,6 +1599,15 @@
   
     <nav class="md-nav" aria-label="Functions">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#defaultpayurl" class="md-nav__link">
+    <span class="md-ellipsis">
+      defaultPayUrl()
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#deprecationnotice_1" class="md-nav__link">
@@ -4676,15 +4694,38 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">Query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
+<h3 id="defaultpayurl">defaultPayUrl()<a class="headerlink" href="#defaultpayurl" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">defaultPayUrl</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+</code></pre></div>
+<p>Where the pay routes live when <code>payUrl</code> / <code>WITAN_PAY_URL</code> is not set: a deployed origin serves
+<code>/paid</code>, <code>/purchases</code> and <code>/disputes</code> itself; the local stack runs the pay service on its own port.</p>
+<h4 id="parameters_37">Parameters<a class="headerlink" href="#parameters_37" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>baseUrl</code></td>
+<td><code>string</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="returns_42">Returns<a class="headerlink" href="#returns_42" title="Permanent link">&para;</a></h4>
+<p><code>string</code></p>
+<hr />
 <h3 id="deprecationnotice_1">deprecationNotice()<a class="headerlink" href="#deprecationnotice_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
-<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="w">   </span><span class="nx">headers</span>
-<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a><span class="w">   </span><span class="nx">headers</span>
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
 </code></pre></div>
 <p>The deprecation a response announces, if any.</p>
-<h4 id="parameters_37">Parameters<a class="headerlink" href="#parameters_37" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_38">Parameters<a class="headerlink" href="#parameters_38" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4707,15 +4748,15 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_42">Returns<a class="headerlink" href="#returns_42" title="Permanent link">&para;</a></h4>
+<h4 id="returns_43">Returns<a class="headerlink" href="#returns_43" title="Permanent link">&para;</a></h4>
 <p><a href="#deprecationnotice"><code>DeprecationNotice</code></a> | <code>undefined</code></p>
 <hr />
 <h3 id="verifymanifest">verifyManifest()<a class="headerlink" href="#verifymanifest" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
-<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Check a manifest's signature against keys pinned from <code>Witan.keys()</code> — wherever the manifest came
 from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
@@ -4724,7 +4765,7 @@ signed for another origin, with a key that is revoked (or pinned through a revok
 pinned nor reached by the signature's endorsements from a pinned key, or does not match — and,
 with <code>require</code>, when it is unsigned. A retired key still verifies what it signed.
 Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).</p>
-<h4 id="parameters_38">Parameters<a class="headerlink" href="#parameters_38" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4751,27 +4792,27 @@ Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).</p>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_43">Returns<a class="headerlink" href="#returns_43" title="Permanent link">&para;</a></h4>
+<h4 id="returns_44">Returns<a class="headerlink" href="#returns_44" title="Permanent link">&para;</a></h4>
 <p><code>Promise</code>\&lt;<code>"verified"</code> | <code>"unsigned"</code>&gt;</p>
 <hr />
 <h3 id="updatepinnedkeys">updatePinnedKeys()<a class="headerlink" href="#updatepinnedkeys" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
-<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
-<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Refresh keys you pinned with a fresh <code>keys()</code> document (which checked it is the origin's own):
 the keys it marks revoked or retired are marked so here, and a revoked key takes every key pinned
 through it along. A new key is added only when a pinned key that still counts endorsed it
 (directly or through a chain); anything else is <code>refused</code> — unless <code>force</code> (re-pinning by hand,
 after checking the key id with the operator). Store the returned <code>keys</code> in place of the old.</p>
-<h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_40">Parameters<a class="headerlink" href="#parameters_40" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4798,7 +4839,7 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 </tr>
 </tbody>
 </table>
-<h4 id="returns_44">Returns<a class="headerlink" href="#returns_44" title="Permanent link">&para;</a></h4>
+<h4 id="returns_45">Returns<a class="headerlink" href="#returns_45" title="Permanent link">&para;</a></h4>
 <p><code>Promise</code>\&lt;{
   <code>keys</code>: <a href="#signingkeys"><code>SigningKeys</code></a>;
   <code>added</code>: <code>string</code>[];
@@ -4807,10 +4848,10 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 }&gt;</p>
 <hr />
 <h3 id="endorsementstatement">endorsementStatement()<a class="headerlink" href="#endorsementstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>What an endorsement signs: {v, type, origin, key} in the origin's stable JSON.</p>
-<h4 id="parameters_40">Parameters<a class="headerlink" href="#parameters_40" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_41">Parameters<a class="headerlink" href="#parameters_41" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4829,16 +4870,16 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 </tr>
 </tbody>
 </table>
-<h4 id="returns_45">Returns<a class="headerlink" href="#returns_45" title="Permanent link">&para;</a></h4>
+<h4 id="returns_46">Returns<a class="headerlink" href="#returns_46" title="Permanent link">&para;</a></h4>
 <p><code>string</code></p>
 <hr />
 <h3 id="signedstatement">signedStatement()<a class="headerlink" href="#signedstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON.
 Left out, as the origin leaves them out: signature, urlExpiresAt, paid and part URLs — and the x402
 receipt an SDK attaches to a bought manifest.</p>
-<h4 id="parameters_41">Parameters<a class="headerlink" href="#parameters_41" title="Permanent link">&para;</a></h4>
+<h4 id="parameters_42">Parameters<a class="headerlink" href="#parameters_42" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
 <tr>
@@ -4857,7 +4898,7 @@ receipt an SDK attaches to a bought manifest.</p>
 </tr>
 </tbody>
 </table>
-<h4 id="returns_46">Returns<a class="headerlink" href="#returns_46" title="Permanent link">&para;</a></h4>
+<h4 id="returns_47">Returns<a class="headerlink" href="#returns_47" title="Permanent link">&para;</a></h4>
 <p><code>string</code></p>
 
 
