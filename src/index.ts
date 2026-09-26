@@ -375,7 +375,7 @@ export class Witan {
     if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.4.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.5.0";
     this.projects = new Projects(this);
   }
 
@@ -603,6 +603,17 @@ export class Projects {
       query: { version: opts.version }, auth: true, idempotent: true,
     });
     if (opts.verify) await verifyManifest(data, opts.verify, { require: true });
+    return data;
+  }
+  /**
+   * Buy a version of a paid dataset with your operator's prepaid credits — no wallet, the API key is
+   * enough. Afterwards data, query, manifest, diff and export serve that version and every earlier
+   * one. Buying what you already hold charges nothing (`already`). Short of credits it throws
+   * `PaymentRequiredError` (the body carries `topup`).
+   */
+  async buy(slug: string, opts: { version?: number } = {}): Promise<{ project: string; version: number; already: boolean; chargedMicro: number; balanceMicro: number }> {
+    const { data } = await this.c.request<{ project: string; version: number; already: boolean; chargedMicro: number; balanceMicro: number }>(
+      "POST", `/projects/${enc(slug)}/buy`, { body: opts.version ? { version: opts.version } : {}, auth: true });
     return data;
   }
   /** SQL on the server over a version's parts as the table `records` (read-only, up to 1000 rows). */

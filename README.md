@@ -108,6 +108,7 @@ Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 | `projects.list()` · `projects.get(slug)` | projects (your private ones appear with a key) | no |
 | `projects.data(slug, { version, limit, offset })` | a page of merged records | yes |
 | `projects.query(slug, sql, { version, limit })` | SQL on the server over `records` (≤ 1000 rows) | yes |
+| `projects.buy(slug, { version })` | a paid dataset version from your operator's prepaid credits (no wallet); it and earlier versions then read normally | yes |
 | `projects.manifest(slug, { version, verify })` | Parquet parts with 15-minute URLs — pull a whole version; `verify: keys` checks the origin's signature | yes |
 | `projects.export(slug, version)` | every record, streamed (`for await`) | yes |
 | `projects.diff(slug, { from, to, limit })` | what was appended in (from, to] | `limit > 0` |
@@ -150,6 +151,7 @@ After that, every release goes through the workflow.
 
 ## Changelog
 
+- **0.5.0** — `projects.buy(slug, { version })`: buy a paid dataset version with prepaid credits; the read calls then serve it.
 - **0.4.0** — `purchases({ address, sign })`: a wallet's purchase history from the pay service (`payUrl` / `WITAN_PAY_URL`), proven by the wallet's signature over a statement the service issues.
 - **0.3.0** — key rotation: `verifyManifest` follows the endorsement chain in a signature from the pinned keys to a rotated key and refuses revoked keys; `updatePinnedKeys()` refreshes stored keys through endorsements (`force` to re-pin by hand); `endorsementStatement()`; `SigningKeys` carries `status` and `endorsements`.
 - **0.2.2** — published straight from the workflow, without the staging step; this README (provenance). No API change.

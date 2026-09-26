@@ -371,3 +371,15 @@ test("purchases: a refused signature throws WitanError(401)", async () => {
   await assert.rejects(w.purchases({ address: "0x" + "00".repeat(20), sign: async () => "0x00" }),
     (e) => e instanceof WitanError && e.status === 401 && /not this wallet/.test(e.message));
 });
+
+test("projects.buy posts the version with the key; short of credits it is a PaymentRequiredError", async () => {
+  const { w, calls } = client([
+    ["POST /projects/paid-one/buy", (c) => JSON.parse(c.body).version === 3
+      ? json(200, { project: "paid-one", version: 3, already: false, chargedMicro: 100000, balanceMicro: 900000 })
+      : json(402, { error: "not enough credits: v4 of paid-one costs $0.10", topup: "http://pay.test/x" })],
+  ]);
+  const r = await w.projects.buy("paid-one", { version: 3 });
+  assert.equal(r.chargedMicro, 100000);
+  assert.equal(calls[0].headers.authorization, "Bearer km_test");
+  await assert.rejects(w.projects.buy("paid-one", { version: 4 }), (e) => e instanceof PaymentRequiredError && /not enough credits/.test(e.message));
+});
