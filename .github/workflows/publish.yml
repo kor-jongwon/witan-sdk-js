@@ -74,7 +74,10 @@ jobs:
           answer=$(node -p "(() => { const t = require('fs').readFileSync(process.argv[1], 'utf8'); try { const b = JSON.parse(t); return b.token ? 'a token was issued' : (b.message || b.error || t.slice(0, 300)); } catch { return t.slice(0, 300); } })()" "$RUNNER_TEMP/exchange.json")
           rm -f "$RUNNER_TEMP/exchange.json"
           echo "npm token exchange for $name: HTTP $code — $answer"
-          [ "$code" = 200 ] || { echo "::error::npm does not trust this run for $name: compare the claims above with the package's Trusted Publisher settings (user, repository, workflow file, environment) and check that its allowed actions include this kind of publish"; exit 1; }
+          case "$code" in   # the registry answers 201 Created when it issues the token
+            2??) ;;
+            *) echo "::error::npm does not trust this run for $name: compare the claims above with the package's Trusted Publisher settings (user, repository, workflow file, environment) and check that its allowed actions include this kind of publish"; exit 1 ;;
+          esac
       - name: Publish
         env:
           MODE: ${{ vars.NPM_PUBLISH || 'stage' }}
