@@ -338,3 +338,36 @@ test("updatePinnedKeys adds what pinned keys endorse, refuses the rest, marks re
   assert.equal(await verifyManifest(await signedBy(k3), r3.keys), "verified");
   await assert.rejects(updatePinnedKeys(pins(k0), { ...published(k1), origin: "https://elsewhere.test" }), SignatureError);
 });
+
+// ---- purchases ------------------------------------------------------------------------------
+test("purchases: the wallet signs the statement the pay service issues; no API key goes there", async () => {
+  const wallet = "0xAbCdEf0000000000000000000000000000000001";
+  const issued = `WITAN purchase history\nwallet: ${wallet.toLowerCase()}\norigin: http://pay.test\ntime: 1000`;
+  const m = mock([
+    ["GET /purchases/statement", (c) => json(200, { statement: issued, wallet: c.url.searchParams.get("wallet"), time: 1000, expiresIn: 300 })],
+    ["GET /purchases", (c) => json(200, { wallet: c.headers["x-witan-wallet"], purchases: [{ id: "4", kind: "unit", unit: { id: "u", title: "t" } }], next: null })],
+  ]);
+  const w = new Witan({ baseUrl: BASE, apiKey: "km_test", payUrl: "http://pay.test", fetch: m.fetch });
+  const signed = [];
+  const r = await w.purchases({ address: wallet, sign: async (text) => { signed.push(text); return "0x" + "cd".repeat(65); }, limit: 5 });
+  assert.deepEqual(signed, [issued]);
+  assert.equal(r.wallet, wallet.toLowerCase());
+  assert.equal(r.purchases[0].unit.title, "t");
+  const [statementCall, listCall] = m.calls;
+  assert.equal(statementCall.url.host, "pay.test");
+  assert.equal(statementCall.url.searchParams.get("wallet"), wallet.toLowerCase());
+  assert.equal(listCall.headers["x-witan-time"], "1000");
+  assert.equal(listCall.headers["x-witan-signature"], "0x" + "cd".repeat(65));
+  assert.equal(listCall.url.searchParams.get("limit"), "5");
+  for (const c of m.calls) assert.equal(c.headers.authorization, undefined);
+});
+
+test("purchases: a refused signature throws WitanError(401)", async () => {
+  const m = mock([
+    ["GET /purchases/statement", () => json(200, { statement: "s", time: 1 })],
+    ["GET /purchases", () => json(401, { error: "the signature is not this wallet's" })],
+  ]);
+  const w = new Witan({ baseUrl: BASE, payUrl: "http://pay.test", fetch: m.fetch });
+  await assert.rejects(w.purchases({ address: "0x" + "00".repeat(20), sign: async () => "0x00" }),
+    (e) => e instanceof WitanError && e.status === 401 && /not this wallet/.test(e.message));
+});

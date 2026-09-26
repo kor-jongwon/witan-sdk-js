@@ -14,6 +14,8 @@ export interface WitanOptions {
   baseUrl?: string;
   /** Agent key (km_...). Falls back to WITAN_API_KEY. Public reads work without one. */
   apiKey?: string;
+  /** The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then http://localhost:3001. */
+  payUrl?: string;
   /** A fetch to use instead of the global one (tests, proxies, instrumentation). */
   fetch?: typeof fetch;
   /** Retries for reads and keyed writes on network errors, 429 and 502/503/504. Default 2. */
@@ -254,6 +256,25 @@ export interface ContributeOptions {
   /** A token unique to this write; a retry with the same token replays the first result. */
   idempotencyKey?: string;
 }
+export interface Purchase {
+  id: string;
+  kind: "unit" | "dataset" | "credits";
+  /** null when the unit or project was removed since (the payment record stays) */
+  unit?: { id: string; title: string } | null;
+  dataset?: { slug: string; version: number | null } | null;
+  credits?: { operatorId: string };
+  price: string;
+  amountMicro: number;
+  network: string;
+  /** the settlement transaction — what a dispute names */
+  transaction: string | null;
+  status: "pending" | "settled" | "failed";
+  createdAt: string;
+  settledAt: string | null;
+  dispute: { id: string; status: string } | null;
+  /** while a dispute can still be opened */
+  disputeUntil: string | null;
+}
 export interface Quota {
   storage: { usedBytes: number; limitBytes: number };
   egress: { usedBytes: number; limitBytes: number; periodStart: string };
@@ -339,6 +360,7 @@ const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 export class Witan {
   readonly baseUrl: string;
   readonly apiKey: string | undefined;
+  readonly payUrl: string;
   readonly projects: Projects;
   private readonly fetchImpl: typeof fetch;
   private readonly retries: number;
@@ -348,11 +370,12 @@ export class Witan {
   constructor(opts: WitanOptions = {}) {
     this.baseUrl = (opts.baseUrl ?? env("WITAN_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
     this.apiKey = opts.apiKey ?? env("WITAN_API_KEY") ?? undefined;
+    this.payUrl = (opts.payUrl ?? env("WITAN_PAY_URL") ?? "http://localhost:3001").replace(/\/+$/, "");
     this.fetchImpl = opts.fetch ?? globalThis.fetch;
     if (typeof this.fetchImpl !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.3.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.4.0";
     this.projects = new Projects(this);
   }
 
@@ -434,6 +457,37 @@ export class Witan {
     const { data } = await this.request<Credits>("GET", "/credits", { auth: true, idempotent: true });
     return data;
   }
+  /**
+   * What a wallet bought here, newest first: units, dataset versions and credit packs, with the
+   * settlement transaction, status and dispute state. A purchase is anonymous, so the wallet proves
+   * it is the buyer: the pay service issues a short statement and `sign` — your wallet's
+   * personal_sign, e.g. viem's `account.signMessage({ message })` — signs it; only the signature is
+   * sent. Page with `before: next`.
+   */
+  async purchases(opts: { address: string; sign: (statement: string) => Promise<string>; limit?: number; before?: string }): Promise<{
+    wallet: string;
+    purchases: Purchase[];
+    next: string | null;
+  }> {
+    const address = opts.address.toLowerCase();
+    const issued = (await parseBody(await this.payFetch(`/purchases/statement?wallet=${enc(address)}`))) as { statement: string; time: number };
+    const signature = await opts.sign(issued.statement);
+    const query = new URLSearchParams({ limit: String(opts.limit ?? 50), ...(opts.before ? { before: opts.before } : {}) });
+    const res = await this.payFetch(`/purchases?${query}`, {
+      "x-witan-wallet": address,
+      "x-witan-time": String(issued.time),
+      "x-witan-signature": signature,
+    });
+    return (await parseBody(res)) as { wallet: string; purchases: Purchase[]; next: string | null };
+  }
+
+  /** A GET to the pay service — no API key there; non-2xx throws like any call. */
+  private async payFetch(path: string, headers: Record<string, string> = {}): Promise<Response> {
+    const res = await this.fetchImpl(this.payUrl + path, { headers: { accept: "application/json", ...headers }, signal: timeoutSignal(this.timeoutMs) });
+    if (!res.ok) throw await toError(res);
+    return res;
+  }
+
   /**
    * The keys this origin signs version manifests with. Fetch them once where you trust the origin
    * and keep them with your agent's config; `verifyManifest` then checks copies from anywhere,

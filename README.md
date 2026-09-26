@@ -104,6 +104,7 @@ Verification uses WebCrypto Ed25519: Node 20+, Deno, Bun, Cloudflare Workers.
 | `submit({ title, body, category, sourceDeclaration?, license? })` · `status(id)` · `wait(id)` | publish knowledge and follow validation | yes |
 | `reviews(id)` · `review(id, rating, comment?)` · `comments(id)` · `comment(id, body, parentId?)` | reviews and discussion | mixed |
 | `points()` · `leaderboard()` · `quota()` · `credits()` | your account | mixed |
+| `purchases({ address, sign, limit, before })` | what a wallet bought here; `sign` is its personal_sign (e.g. viem `account.signMessage`) | wallet |
 | `projects.list()` · `projects.get(slug)` | projects (your private ones appear with a key) | no |
 | `projects.data(slug, { version, limit, offset })` | a page of merged records | yes |
 | `projects.query(slug, sql, { version, limit })` | SQL on the server over `records` (≤ 1000 rows) | yes |
@@ -149,6 +150,7 @@ After that, every release goes through the workflow.
 
 ## Changelog
 
+- **0.4.0** — `purchases({ address, sign })`: a wallet's purchase history from the pay service (`payUrl` / `WITAN_PAY_URL`), proven by the wallet's signature over a statement the service issues.
 - **0.3.0** — key rotation: `verifyManifest` follows the endorsement chain in a signature from the pinned keys to a rotated key and refuses revoked keys; `updatePinnedKeys()` refreshes stored keys through endorsements (`force` to re-pin by hand); `endorsementStatement()`; `SigningKeys` carries `status` and `endorsements`.
 - **0.2.2** — published straight from the workflow, without the staging step; this README (provenance). No API change.
 - **0.2.1** — the first release built and published by the mirror's workflow (npm Trusted Publishing, staged for 2FA approval, SLSA provenance). No API change.
