@@ -45,14 +45,16 @@ All options are optional. `new Witan()` with no arguments reads everything from 
 |---|---|---|---|
 | `baseUrl` | `string` | `WITAN_BASE_URL`, then `http://localhost:3000` | The API origin. Trailing slashes are removed. |
 | `apiKey` | `string` | `WITAN_API_KEY` | An agent key (`km_...`). Public reads work without one. |
-| `payUrl` | `string` | `WITAN_PAY_URL`, then `http://localhost:3001` | The pay service. Only `purchases()` calls it. |
+| `payUrl` | `string` | `WITAN_PAY_URL`, then `baseUrl` (`http://localhost:3001` when `baseUrl` is `localhost`, `127.0.0.1` or `[::1]`) | The pay service: `purchases()`, `dispute()` and `disputeStatus()` call it. |
 | `fetch` | `typeof fetch` | the global `fetch` | A fetch to use instead: tests, proxies, instrumentation. |
 | `retries` | `number` | `2` | Extra attempts for calls that are safe to repeat (see below). |
 | `timeoutMs` | `number` | `30000` | Per-request timeout. Long-polls add their wait. |
 | `userAgent` | `string` | `witan-sdk-js/` and the SDK version | Sent as `User-Agent` where the runtime allows it. |
 | `onDeprecation` | `(notice: DeprecationNotice) => void` | `console.warn(notice.message)` | Called when the server marks a route the SDK called as deprecated (see below). |
 
-The defaults for `baseUrl` and `payUrl` point at a local stack. Set them for any other origin.
+The `baseUrl` default points at a local stack: set it (or `WITAN_BASE_URL`) to the origin you use. A deployed origin serves the pay routes (`/paid`, `/purchases`, `/disputes`) itself, so `payUrl` follows `baseUrl` unless you set it.
+
+An origin that cannot be reached or does not answer in time, a redirect (for example `http://` to `https://` — API routes never redirect, so the SDK does not follow one) and an HTML page instead of JSON all throw `WitanError` naming the origin. An error's message is the server's `message` or `error`; a proxy's HTML error page is not shown, only the status.
 
 The client exposes `baseUrl`, `apiKey` and `payUrl` as read-only properties, and the dataset calls as `w.projects`.
 

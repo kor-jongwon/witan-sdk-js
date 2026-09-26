@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  PaymentRequiredError, SignatureError, Witan, WitanError, deprecationNotice, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
+  PaymentRequiredError, SignatureError, Witan, WitanError, defaultPayUrl, deprecationNotice, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
 } from "../dist/index.js";
 
 const BASE = "http://api.test";
@@ -163,6 +163,40 @@ test("errors: 404 is WitanError, 402 is PaymentRequiredError with the pay URL", 
   ]);
   await assert.rejects(w.projects.get("missing"), (e) => e instanceof WitanError && e.status === 404 && e.message === "project not found");
   await assert.rejects(w.projects.data("paid"), (e) => e instanceof PaymentRequiredError && e.pay === "http://pay.test/x" && e.price === "$0.10");
+});
+
+test("the pay URL follows the base URL; a local stack keeps its own pay port", () => {
+  assert.equal(defaultPayUrl("https://witan.example"), "https://witan.example");
+  for (const local of ["http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000"]) {
+    assert.equal(defaultPayUrl(local), "http://localhost:3001");
+  }
+  const f = async () => json(200, {});
+  assert.equal(new Witan({ baseUrl: "https://witan.example/", fetch: f }).payUrl, "https://witan.example");
+  assert.equal(new Witan({ baseUrl: "https://witan.example", payUrl: "https://pay.example/", fetch: f }).payUrl, "https://pay.example");
+});
+
+test("an unreachable origin, a redirect and a web page are named, not thrown raw", async () => {
+  const refused = new Witan({ baseUrl: BASE, fetch: async () => { throw new TypeError("fetch failed", { cause: { code: "ECONNREFUSED" } }); }, retries: 0 });
+  await assert.rejects(refused.projects.list(), (e) => e instanceof WitanError && e.message.startsWith("cannot reach http://api.test: ECONNREFUSED"));
+  const slow = new Witan({ baseUrl: BASE, fetch: async () => { throw Object.assign(new Error("aborted"), { name: "TimeoutError" }); }, retries: 0, timeoutMs: 5000 });
+  await assert.rejects(slow.projects.list(), (e) => e instanceof WitanError && e.message === "http://api.test did not answer within 5s");
+  const seen = [];
+  const moved = new Witan({ baseUrl: "http://witan.example", fetch: async (u, init) => { seen.push(init.redirect); return new Response(null, { status: 301, headers: { location: "https://witan.example/projects" } }); } });
+  await assert.rejects(moved.projects.list(), (e) => e instanceof WitanError && e.status === 301 && e.message.includes("redirected to https://witan.example/projects"));
+  assert.deepEqual(seen, ["manual"]); // not followed: a POST would silently turn into a GET
+  const parked = new Witan({ baseUrl: BASE, fetch: async () => new Response("<!doctype html><p>parked", { status: 200, headers: { "content-type": "text/html; charset=utf-8" } }) });
+  await assert.rejects(parked.projects.list(), (e) => e instanceof WitanError && e.message.includes("answered with text/html, not JSON"));
+  const payDown = new Witan({ baseUrl: "https://witan.example", fetch: async () => { throw new TypeError("fetch failed", { cause: { code: "ENOTFOUND" } }); } });
+  await assert.rejects(payDown.purchases({ address: "0x" + "00".repeat(20), sign: async () => "0x" }), (e) => e instanceof WitanError && e.message.startsWith("cannot reach https://witan.example: ENOTFOUND"));
+});
+
+test("error messages: the schema detail over the phrase, never a proxy's HTML page", async () => {
+  const { w } = client([
+    ["POST /projects/p/contribute", () => json(400, { statusCode: 400, error: "Bad Request", message: "body/records must NOT have fewer than 1 items" })],
+    ["GET /projects/down", () => new Response("<!doctype html><html>" + "cloudflare ".repeat(500) + "</html>", { status: 502, statusText: "Bad Gateway", headers: { "content-type": "text/html" } })],
+  ], { retries: 0 });
+  await assert.rejects(w.projects.contribute("p", [{ k: 1 }]), (e) => e.status === 400 && e.message === "body/records must NOT have fewer than 1 items");
+  await assert.rejects(w.projects.get("down"), (e) => e.status === 502 && e.message === "502 Bad Gateway" && e.body.length <= 500);
 });
 
 test("fetch is called unbound: Workers and browsers refuse another `this`", async () => {

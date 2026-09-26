@@ -392,6 +392,38 @@ export interface RequestInit2 {
 
 const RETRY_STATUS = new Set([429, 502, 503, 504]);
 const DEFAULT_BASE_URL = "http://localhost:3000";
+const LOCAL_PAY_URL = "http://localhost:3001"; // the local stack's pay service; a deployed origin serves it itself
+
+/**
+ * Where the pay routes live when `payUrl` / `WITAN_PAY_URL` is not set: a deployed origin serves
+ * `/paid`, `/purchases` and `/disputes` itself; the local stack runs the pay service on its own port.
+ */
+export function defaultPayUrl(baseUrl: string): string {
+  let host = "";
+  try {
+    host = new URL(baseUrl).hostname;
+  } catch {
+    return baseUrl;
+  }
+  return ["localhost", "127.0.0.1", "[::1]", "::1"].includes(host) ? LOCAL_PAY_URL : baseUrl;
+}
+
+/** A readable error message: a proxy's HTML page (a 502, Cloudflare's 530) is not one. */
+function brief(text: unknown): string | undefined {
+  if (typeof text !== "string" || !text.trim() || text.trimStart().startsWith("<")) return undefined;
+  const t = text.split(/\s+/).join(" ").trim();
+  return t.length <= 300 ? t : `${t.slice(0, 297)}...`;
+}
+
+/** A fetch that failed before any answer, as a WitanError naming the origin. */
+function unreachable(origin: string, e: unknown, timeoutMs: number): WitanError {
+  const err = e as { name?: string; message?: string; cause?: { code?: string; message?: string } } | undefined;
+  if (err?.name === "TimeoutError" || err?.name === "AbortError") {
+    return new WitanError(0, `${origin} did not answer within ${timeoutMs / 1000}s`);
+  }
+  const why = err?.cause?.code ?? err?.cause?.message ?? err?.message ?? String(e);
+  return new WitanError(0, `cannot reach ${origin}: ${why} — check the URL (WITAN_BASE_URL / WITAN_PAY_URL) and your network`);
+}
 const MIN_PART_SIZE = 5 * 1024 * 1024; // S3 multipart rule for every part but the last
 const MAX_PARTS = 1000;
 
@@ -452,14 +484,14 @@ export class Witan {
   constructor(opts: WitanOptions = {}) {
     this.baseUrl = (opts.baseUrl ?? env("WITAN_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
     this.apiKey = opts.apiKey ?? env("WITAN_API_KEY") ?? undefined;
-    this.payUrl = (opts.payUrl ?? env("WITAN_PAY_URL") ?? "http://localhost:3001").replace(/\/+$/, "");
+    this.payUrl = (opts.payUrl ?? env("WITAN_PAY_URL") ?? defaultPayUrl(this.baseUrl)).replace(/\/+$/, "");
     const f = opts.fetch ?? globalThis.fetch;
     if (typeof f !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
     // Called unbound: Workers and browsers throw "Illegal invocation" when fetch runs with another `this`.
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.8.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.9.0";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }
@@ -605,12 +637,17 @@ export class Witan {
   /** A call to the pay service (GET, or POST with a JSON body) — no API key there; non-2xx throws like any call. */
   private async payFetch(path: string, headers: Record<string, string> = {}, body?: unknown): Promise<Response> {
     const method = body === undefined ? "GET" : "POST";
-    const res = await this.fetchImpl(this.payUrl + path, {
-      method,
-      headers: { accept: "application/json", ...(body === undefined ? {} : { "content-type": "application/json" }), ...headers },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal: timeoutSignal(this.timeoutMs),
-    });
+    let res: Response;
+    try {
+      res = await this.fetchImpl(this.payUrl + path, {
+        method,
+        headers: { accept: "application/json", ...(body === undefined ? {} : { "content-type": "application/json" }), ...headers },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: timeoutSignal(this.timeoutMs),
+      });
+    } catch (e) {
+      throw unreachable(this.payUrl, e, this.timeoutMs);
+    }
     this.noteDeprecation(method, this.payUrl + path, res);
     if (!res.ok) throw await toError(res);
     return res;
@@ -639,6 +676,10 @@ export class Witan {
   /** One request, parsed. Throws WitanError / PaymentRequiredError on non-2xx. */
   async request<T>(method: string, path: string, init: RequestInit2 = {}): Promise<{ data: T; headers: Headers }> {
     const res = await this.send(method, path, init);
+    if ((res.headers.get("content-type") ?? "").startsWith("text/html")) {
+      // a parked domain, a login wall, some other site: not an answer from WITAN
+      throw new WitanError(res.status, `${this.baseUrl} answered with text/html, not JSON — is baseUrl the WITAN origin?`);
+    }
     const data = (await parseBody(res)) as T;
     return { data, headers: res.headers };
   }
@@ -669,10 +710,16 @@ export class Witan {
           headers,
           body: init.body === undefined ? undefined : JSON.stringify(init.body),
           signal: timeoutSignal(timeoutMs),
+          // an API route never redirects: a redirect means the base URL is wrong (http:// for https://)
+          redirect: "manual",
         });
       } catch (e) {
-        lastError = e;
+        lastError = unreachable(this.baseUrl, e, timeoutMs);
         continue;
+      }
+      if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) {
+        const to = res.headers.get("location");
+        throw new WitanError(res.status, `${this.baseUrl} redirected${to ? ` to ${to}` : ""} — set baseUrl (WITAN_BASE_URL) to the origin it names (usually https://)`);
       }
       this.noteDeprecation(method, url, res);
       if (res.ok) return res;
@@ -1243,6 +1290,7 @@ async function toError(res: Response): Promise<WitanError> {
   const body = await parseBody(res);
   const record = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
   if (res.status === 402) return new PaymentRequiredError(record);
-  const message = typeof record.error === "string" ? record.error : `${res.status} ${res.statusText}`;
-  return new WitanError(res.status, message, body);
+  // WITAN's errors are {error}; fastify's schema errors put the phrase in `error` and the detail in `message`
+  const message = brief(record.message) ?? brief(record.error) ?? brief(body) ?? `${res.status} ${res.statusText}`.trim();
+  return new WitanError(res.status, message, typeof body === "string" ? body.slice(0, 500) : body);
 }

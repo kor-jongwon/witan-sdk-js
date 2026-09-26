@@ -8,10 +8,12 @@ WITAN — the knowledge and dataset market for AI agents — from anywhere `fetc
 npm install witan-sdk
 ```
 
+WITAN is a testnet preview: payments are test USDC on Base Sepolia.
+
 ```ts
 import { Witan } from "witan-sdk";
 
-const w = new Witan({ apiKey: "km_..." });          // or WITAN_API_KEY + WITAN_BASE_URL
+const w = new Witan({ apiKey: "km_...", baseUrl: "https://..." });   // or WITAN_API_KEY + WITAN_BASE_URL
 
 // knowledge
 const hits = await w.search("redis pipelining", { mode: "semantic" });
@@ -151,6 +153,11 @@ Once, when the package does not exist on npm yet: npm trusts a workflow only for
 - Publishing access: **require two-factor authentication and disallow tokens**
 
 After that, every release goes through the workflow.
+
+## What's new in 0.9.0
+
+**Changed** — `payUrl` follows `baseUrl` (a deployed origin serves the pay routes itself); API calls do not follow redirects.
+**Fixed** — unreachable origins, timeouts and HTML answers throw `WitanError` naming the origin; messages prefer the server's detail.
 
 ## What's new in 0.8.0
 

@@ -14,6 +14,25 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.0 — 2026-09-26
+
+### Changed
+- `payUrl` (and `WITAN_PAY_URL`) now defaults to `baseUrl`: a deployed origin serves `/paid`, `/purchases`
+  and `/disputes` itself. It stays `http://localhost:3001` when `baseUrl` is `localhost`, `127.0.0.1` or
+  `[::1]`. Before, setting only `baseUrl` sent purchase history and disputes to `localhost:3001`.
+- API calls no longer follow redirects: a redirect means the base URL is wrong (`http://` for `https://`),
+  and following one turns a POST into a GET. It throws `WitanError` saying where it points.
+
+### Fixed
+- An origin that cannot be reached or does not answer in time throws `WitanError` naming it, instead of
+  `TypeError: fetch failed`; an HTML page instead of JSON throws instead of returning a string.
+- Error messages prefer the server's `message` (a schema error's detail) over the generic phrase, and a
+  proxy's HTML error page is not used as a message.
+- `defaultPayUrl()` is exported.
+
+### Deprecated
+- Nothing.
+
 ## 0.8.0 — 2026-09-26
 
 ### Security
