@@ -785,6 +785,7 @@
 
 <h1 id="trust">Trust<a class="headerlink" href="#trust" title="Permanent link">&para;</a></h1>
 <p>Every version manifest the origin hands out is signed with Ed25519, and nodes and mirrors pass the signature through unchanged. You pin the origin's keys once, where you trust the origin, and check a manifest from anywhere against them. The SDK follows key rotations through endorsements and refuses revoked keys.</p>
+<p><img alt="Origin signatures pass through nodes and mirrors and are verified by clients" src="../../diagrams/trust-chain.svg" /></p>
 <h2 id="pin-the-origins-keys">Pin the origin's keys<a class="headerlink" href="#pin-the-origins-keys" title="Permanent link">&para;</a></h2>
 <p><code>keys()</code> reads the keys the origin signs with, from <code>/.well-known/witan-keys</code>. It needs no API key. It returns a <code>SigningKeys</code> object: <code>origin</code>, <code>keys</code> (each with <code>kid</code>, <code>alg: "Ed25519"</code>, <code>publicKey</code> in base64, and <code>status</code>: <code>"current"</code>, <code>"retired"</code> or <code>"revoked"</code>) and <code>endorsements</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Witan</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"witan-sdk"</span><span class="p">;</span>
