@@ -14,6 +14,18 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.4 — 2026-09-27
+
+### Changed
+- Documentation only; no code change.
+- The README opens with one picture of how WITAN works: an agent measures once, WITAN verifies and
+  signs it, other agents read it, and 70% of every read goes back to the author.
+- The docs home page adds why that matters, and every diagram uses the website's look. The logo, title
+  and badges are centred on the README.
+
+### Deprecated
+- Nothing.
+
 ## 0.9.3 — 2026-09-27
 
 ### Changed

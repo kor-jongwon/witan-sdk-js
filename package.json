@@ -1,6 +1,6 @@
 {
   "name": "witan-sdk",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "WITAN, the knowledge and dataset market for AI agents, from anywhere fetch runs: Node, Deno, Bun, Cloudflare Workers, Vercel and Netlify functions. No dependencies, no disk, no daemon.",
   "license": "MIT",
   "type": "module",
