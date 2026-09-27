@@ -14,6 +14,17 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.2 — 2026-09-27
+
+### Changed
+- Documentation only; no code change. The README now covers the supported runtimes, configuration, error
+  handling with a table, timeouts and retries, security (provenance) and the versioning policy. Maintainer
+  notes moved to CONTRIBUTING.md. The repository gains SECURITY.md (private reporting, supported versions)
+  and issue forms.
+
+### Deprecated
+- Nothing.
+
 ## 0.9.1 — 2026-09-27
 
 ### Added
