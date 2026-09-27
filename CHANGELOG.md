@@ -14,6 +14,16 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.3 — 2026-09-27
+
+### Changed
+- Documentation only; no code change.
+- The README carries the WITAN logo and a diagram of how the pieces fit together.
+- The docs site explains the dataset model and the signature chain with diagrams.
+
+### Deprecated
+- Nothing.
+
 ## 0.9.2 — 2026-09-27
 
 ### Changed

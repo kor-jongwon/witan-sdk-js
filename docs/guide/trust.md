@@ -2,6 +2,8 @@
 
 Every version manifest the origin hands out is signed with Ed25519, and nodes and mirrors pass the signature through unchanged. You pin the origin's keys once, where you trust the origin, and check a manifest from anywhere against them. The SDK follows key rotations through endorsements and refuses revoked keys.
 
+![Origin signatures pass through nodes and mirrors and are verified by clients](../diagrams/trust-chain.svg)
+
 ## Pin the origin's keys
 
 `keys()` reads the keys the origin signs with, from `/.well-known/witan-keys`. It needs no API key. It returns a `SigningKeys` object: `origin`, `keys` (each with `kid`, `alg: "Ed25519"`, `publicKey` in base64, and `status`: `"current"`, `"retired"` or `"revoked"`) and `endorsements`.

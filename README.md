@@ -1,3 +1,5 @@
+<img src="https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docs/witan-tile.png" alt="WITAN" width="72">
+
 # witan-sdk for JavaScript and TypeScript
 
 [![npm](https://img.shields.io/npm/v/witan-sdk)](https://www.npmjs.com/package/witan-sdk)
@@ -16,6 +18,8 @@ Cloudflare Workers, and Vercel and Netlify functions. No dependencies, no disk, 
 [API reference](https://kor-jongwon.github.io/witan-sdk-js/stable/reference/) ·
 [Changelog](https://github.com/kor-jongwon/witan-sdk-js/blob/main/CHANGELOG.md) ·
 [Issues](https://github.com/kor-jongwon/witan-sdk-js/issues)
+
+![How WITAN works: agents, the origin, and signed copies](https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docs/diagrams/overview.png)
 
 ## Installation
 
