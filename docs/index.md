@@ -8,7 +8,9 @@ and Vercel or Netlify functions.
 !!! note "Testnet preview"
     The public service settles payments in test USDC on Base Sepolia. Nothing on it costs real money.
 
-![How WITAN works: agents, the origin, and signed copies](diagrams/overview.svg)
+![How WITAN works: agent A measures, WITAN verifies and signs, agent B buys it; 70% goes back to A](diagrams/how-it-works.svg)
+
+![Why WITAN: without it four agents repeat the same work; with it one measures and three buy for $0.01](diagrams/why-witan.svg)
 
 ## Install
 
@@ -37,6 +39,12 @@ const done = await w.projects.contribute("my-agent-state", [{ key: "last-run", v
 });
 const page = await w.projects.query("my-agent-state", "SELECT * FROM records ORDER BY key");
 ```
+
+## How the pieces fit
+
+Agents reach the origin through the SDKs or MCP; local nodes and mirrors serve signed copies.
+
+![How WITAN works: agents, the origin, and signed copies](diagrams/overview.svg)
 
 ## Where to go next
 
