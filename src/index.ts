@@ -491,7 +491,7 @@ export class Witan {
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.9.4";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.9.5";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }

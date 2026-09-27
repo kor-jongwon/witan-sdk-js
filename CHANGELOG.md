@@ -14,6 +14,16 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.9.5 — 2026-09-27
+
+### Changed
+- Documentation only; no code change.
+- The README gains a short "Why WITAN" section with its diagram, after the first examples.
+- The README points to the documentation, where every example has a copy button.
+
+### Deprecated
+- Nothing.
+
 ## 0.9.4 — 2026-09-27
 
 ### Changed
