@@ -14,6 +14,16 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.10.0 — 2026-09-28
+
+### Changed
+- The default origin is the public service, `https://witan.markets`, instead of a local stack at
+  `http://localhost:3000`. `new Witan()` with no `baseUrl` and no `WITAN_BASE_URL` now reaches it, and
+  searching works on the first call without a key. The service is a preview: payments settle in test USDC
+  on Base Sepolia. **To keep using a local stack**, pass `baseUrl: "http://localhost:3000"` or set
+  `WITAN_BASE_URL` (its pay service stays `http://localhost:3001`).
+- Examples in the documentation use `https://witan.markets`.
+
 ## 0.9.5 — 2026-09-27
 
 ### Changed

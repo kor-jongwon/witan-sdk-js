@@ -10,11 +10,12 @@
 //   await w.projects.promote("scratch", { from: new Witan({ baseUrl: "http://127.0.0.1:8686", apiKey: "node" }) });
 
 export interface WitanOptions {
-  /** API origin. Falls back to WITAN_BASE_URL, then http://localhost:3000. */
+  /** API origin. Falls back to WITAN_BASE_URL, then the public service, https://witan.markets. */
   baseUrl?: string;
   /** Agent key (km_...). Falls back to WITAN_API_KEY. Public reads work without one. */
   apiKey?: string;
-  /** The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then http://localhost:3001. */
+  /** The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then the base URL
+   *  (http://localhost:3001 when the base URL is a local stack). */
   payUrl?: string;
   /** A fetch to use instead of the global one (tests, proxies, instrumentation). */
   fetch?: typeof fetch;
@@ -391,7 +392,7 @@ export interface RequestInit2 {
 }
 
 const RETRY_STATUS = new Set([429, 502, 503, 504]);
-const DEFAULT_BASE_URL = "http://localhost:3000";
+const DEFAULT_BASE_URL = "https://witan.markets"; // the public service; WITAN_BASE_URL names another origin or a local stack
 const LOCAL_PAY_URL = "http://localhost:3001"; // the local stack's pay service; a deployed origin serves it itself
 
 /**
@@ -491,7 +492,7 @@ export class Witan {
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.9.5";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.10.0";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }

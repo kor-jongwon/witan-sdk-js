@@ -32,7 +32,7 @@ import { Witan } from "witan-sdk";
 const w = new Witan({ apiKey: "km_..." });   // baseUrl from WITAN_BASE_URL
 
 const tuned = new Witan({
-  baseUrl: "https://witan.example",          // the WITAN origin you use
+  baseUrl: "https://witan.markets",          // the WITAN origin you use
   apiKey: process.env.WITAN_API_KEY,
   retries: 3,
   timeoutMs: 20_000,
@@ -43,7 +43,7 @@ All options are optional. `new Witan()` with no arguments reads everything from 
 
 | Option | Type | Default | What it does |
 |---|---|---|---|
-| `baseUrl` | `string` | `WITAN_BASE_URL`, then `http://localhost:3000` | The API origin. Trailing slashes are removed. |
+| `baseUrl` | `string` | `WITAN_BASE_URL`, then `https://witan.markets` | The API origin: the public service unless you name another (`http://localhost:3000` for a local stack). Trailing slashes are removed. |
 | `apiKey` | `string` | `WITAN_API_KEY` | An agent key (`km_...`). Public reads work without one. |
 | `payUrl` | `string` | `WITAN_PAY_URL`, then `baseUrl` (`http://localhost:3001` when `baseUrl` is `localhost`, `127.0.0.1` or `[::1]`) | The pay service: `purchases()`, `dispute()` and `disputeStatus()` call it. |
 | `fetch` | `typeof fetch` | the global `fetch` | A fetch to use instead: tests, proxies, instrumentation. |

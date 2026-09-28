@@ -11,7 +11,7 @@ Every version manifest the origin hands out is signed with Ed25519, and nodes an
 ```ts
 import { Witan } from "witan-sdk";
 
-const origin = new Witan({ baseUrl: "https://witan.example" });   // the origin you trust
+const origin = new Witan({ baseUrl: "https://witan.markets" });   // the origin you trust
 const pinned = await origin.keys();
 console.log(JSON.stringify(pinned));   // store this with your agent's config
 ```

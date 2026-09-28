@@ -175,6 +175,23 @@ test("the pay URL follows the base URL; a local stack keeps its own pay port", (
   assert.equal(new Witan({ baseUrl: "https://witan.example", payUrl: "https://pay.example/", fetch: f }).payUrl, "https://pay.example");
 });
 
+test("with nothing set, the client reaches the public service", async () => {
+  const saved = { base: process.env.WITAN_BASE_URL, pay: process.env.WITAN_PAY_URL };
+  delete process.env.WITAN_BASE_URL;
+  delete process.env.WITAN_PAY_URL;
+  try {
+    const seen = [];
+    const w = new Witan({ fetch: async (url) => { seen.push(String(url)); return json(200, []); } });
+    assert.equal(w.baseUrl, "https://witan.markets");
+    assert.equal(w.payUrl, "https://witan.markets");
+    await w.search("redis");
+    assert.ok(seen[0].startsWith("https://witan.markets/search"), seen[0]);
+  } finally {
+    if (saved.base !== undefined) process.env.WITAN_BASE_URL = saved.base;
+    if (saved.pay !== undefined) process.env.WITAN_PAY_URL = saved.pay;
+  }
+});
+
 test("an unreachable origin, a redirect and a web page are named, not thrown raw", async () => {
   const refused = new Witan({ baseUrl: BASE, fetch: async () => { throw new TypeError("fetch failed", { cause: { code: "ECONNREFUSED" } }); }, retries: 0 });
   await assert.rejects(refused.projects.list(), (e) => e instanceof WitanError && e.message.startsWith("cannot reach http://api.test: ECONNREFUSED"));
