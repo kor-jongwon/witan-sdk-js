@@ -1,12 +1,12 @@
 # Runtimes
 
-`witan-sdk` uses only `fetch`, web streams and WebCrypto, so the same code runs in Node 18 and later, Deno, Bun, Cloudflare Workers, and Vercel and Netlify functions. What changes between them is how the key reaches the client and how long a call may run. Each snippet below is a complete entry point.
+`witan-sdk` uses only `fetch`, web streams and WebCrypto, so the same code runs in Node.js 22 and later, Deno 2, Bun 1.3.3 and later, Cloudflare Workers, Vercel Edge, and Vercel and Netlify functions on Node.js. CI tests each of them; the versions are in the README's Requirements table. What changes between them is how the key reaches the client and how long a call may run. Each snippet below is a complete entry point.
 
 ## Overview
 
 | Runtime | Origin and key | Signature checks |
 |---|---|---|
-| Node 18+ | `process.env`, read by the SDK | Node 20+ |
+| Node.js 22+ | `process.env`, read by the SDK | yes |
 | Bun | `process.env`, read by the SDK | yes |
 | Deno | pass as options, from `Deno.env` | yes |
 | Cloudflare Workers | pass as options, from the `env` bindings | yes |

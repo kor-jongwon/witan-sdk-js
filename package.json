@@ -15,14 +15,19 @@
   },
   "files": ["dist", "README.md", "LICENSE", "SECURITY.md"],
   "sideEffects": false,
-  "engines": { "node": ">=18" },
+  "engines": { "node": ">=22" },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "npm run build",
     "test": "node --test test/unit.mjs",
-    "test:e2e": "node test/e2e.mjs"
+    "test:e2e": "node test/e2e.mjs",
+    "test:edge": "node test/edge.mjs",
+    "test:types": "sh test/types.sh"
   },
   "devDependencies": {
+    "edge-runtime": "^4.0.1",
+    "esbuild": "^0.28.2",
+    "miniflare": "^4.20260730.0",
     "typescript": "^5.7.0"
   },
   "repository": { "type": "git", "url": "git+https://github.com/kor-jongwon/witan-sdk-js.git" },

@@ -25,6 +25,15 @@ least two minor releases — see
 - Examples in the documentation use `https://witan.markets`.
 - The README and the configuration guide show how to run a local node with the official Compose file and
   point a client at it (`baseUrl: "http://127.0.0.1:8686"`, the node token as `apiKey`).
+- The Requirements table lists the versions CI tests, and CI now tests every one of them before a release:
+  Node.js 22, 24 and 26; Deno 2.0.0 and the newest 2.x; Bun 1.3.3 and the newest; Cloudflare Workers
+  (workerd, through miniflare); Vercel Edge (edge-runtime); and the published types with TypeScript 5.7.
+  Bun before 1.3.3 has no `CompressionStream`, and edge-runtime has none either: there `push` uploads
+  uncompressed and `export` is unavailable.
+
+### Removed
+- Node.js 18 and 20, both past their upstream end of life. `engines` is now `>=22`. **To upgrade**, move to
+  Node.js 22 or newer; 0.9.5 stays on npm for older runtimes.
 
 ## 0.9.5 — 2026-09-27
 

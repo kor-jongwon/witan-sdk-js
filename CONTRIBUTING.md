@@ -27,7 +27,7 @@ Security. Anything under Changed says what users must do.
 ## Releases
 
 A maintainer bumps `version` in `package.json` and the User-Agent in `src/index.ts`, then tags `vX.Y.Z` here.
-[`publish.yml`](.github/workflows/publish.yml) tests on Node 20, 22 and 24. It then publishes through npm
+[`publish.yml`](.github/workflows/publish.yml) tests on Node 22, 24 and 26, Deno, Bun, workerd and edge-runtime, and compiles the types with TypeScript 5.7. It then publishes through npm
 Trusted Publishing, with provenance. Only a `v*` tag, through the `npm` environment, can publish, and the
 package accepts no tokens.
 

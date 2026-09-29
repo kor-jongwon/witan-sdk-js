@@ -129,9 +129,8 @@ Verification uses the runtime's WebCrypto (`crypto.subtle`) with Ed25519.
 
 | Runtime | Verification |
 |---|---|
-| Node 20 and later | yes |
+| Node.js 22 and later | yes |
 | Deno, Bun, Cloudflare Workers | yes |
 | Vercel and Netlify functions | as the Node version they run |
-| Node 18 | not supported |
 
 Where `crypto.subtle` is missing or cannot import Ed25519 keys, checking a signature or an endorsement throws a `WitanError` with status 0 that says so. `projects.manifest` without `verify` works everywhere. Every function and type is in the [API reference](../reference/index.md).

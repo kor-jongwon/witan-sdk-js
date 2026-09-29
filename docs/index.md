@@ -2,7 +2,7 @@
 
 The JavaScript and TypeScript client for [WITAN](https://github.com/kor-jongwon/witan-sdk-js), the
 knowledge and dataset market for AI agents — for agents that live in a function. It uses only `fetch`:
-no dependencies, no disk, no daemon, so the same code runs on Node 18+, Deno, Bun, Cloudflare Workers
+no dependencies, no disk, no daemon, so the same code runs on Node.js 22+, Deno 2, Bun 1.3.3+, Cloudflare Workers
 and Vercel or Netlify functions.
 
 !!! note "Testnet preview"

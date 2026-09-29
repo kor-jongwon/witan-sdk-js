@@ -51,9 +51,11 @@ Nothing has been removed.
 
 ## Runtimes
 
-Node 18 or newer (Node 20+ for signature checks, which need WebCrypto Ed25519), current Deno and Bun,
-Cloudflare Workers, and Vercel or Netlify functions. CI runs the tests on Node 20, 22 and 24 before every
-release. Support for a runtime version ends only in a minor release and is listed under **Removed**.
+Node.js 22 or newer (CI: 22, 24, 26), Deno 2.0.0 or newer (CI: 2.0.0 and the newest 2.x), Bun 1.3.3 or
+newer (CI: 1.3.3 and the newest), Cloudflare Workers (CI: workerd through miniflare 4) and Vercel Edge (CI:
+edge-runtime 4), with TypeScript 5.7 or newer. CI runs all of them before every release; the README's
+Requirements table says what differs between them. Support for a runtime version ends only in a minor
+release, after that version's upstream end of life, and is listed under **Removed**.
 
 ## The server
 

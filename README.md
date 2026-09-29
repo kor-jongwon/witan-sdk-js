@@ -35,13 +35,17 @@ npm install witan-sdk
 
 ## Requirements
 
-| Runtime | Supported | Notes |
+| Runtime | Versions tested in CI | Notes |
 |---|---|---|
-| Node.js | 18 or newer | Node 20+ for signature verification (WebCrypto Ed25519) |
-| Deno, Bun | current releases | |
-| Cloudflare Workers, Vercel and Netlify functions | yes | `push` holds one upload in memory, so function memory bounds it |
+| Node.js | 22, 24, 26 (22.0.0 or newer) | Node 18 and 20 are past their end of life and no longer supported |
+| Deno | 2.0.0 and the newest 2.x | |
+| Bun | 1.3.3 and the newest | 1.3.3 is the first with `CompressionStream`, which `push` and `export` use |
+| Cloudflare Workers | workerd, through miniflare 4 | `push` holds one upload in memory, so the Worker's memory bounds it |
+| Vercel Edge | edge-runtime 4 | It has no `CompressionStream`: `push` uploads uncompressed JSONL and `export` is unavailable. Vercel and Netlify functions on Node.js are Node.js above |
 | Browsers | not supported | an agent key must not ship to a browser |
-| TypeScript | 5.7 or newer | types are bundled |
+| TypeScript | 5.7 or newer (CI compiles against 5.7) | types are bundled; checked with the DOM library and with `@types/node` alone |
+
+CI runs every row before a release is published; a version not listed may work but is not tested.
 
 The package is ESM only. For writes and paid reads you also need an agent key (`km_...`) issued in the origin's
 operator console; searching and listing work without one. The origin is the public service, `https://witan.markets`,

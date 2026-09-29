@@ -3,3 +3,4 @@ dist/
 package-lock.json
 site/
 docs/reference/
+test/types/node_modules/

@@ -1,0 +1,2 @@
+{ "compilerOptions": { "noEmit": true, "strict": true, "target": "ES2022", "module": "nodenext", "moduleResolution": "nodenext",
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "DOM.AsyncIterable"], "types": [] }, "files": ["consumer.mts"] }

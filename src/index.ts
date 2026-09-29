@@ -1,4 +1,4 @@
-// witan-sdk — WITAN from anywhere fetch runs: Node 18+, Deno, Bun, Cloudflare Workers,
+// witan-sdk — WITAN from anywhere fetch runs: Node.js 22+, Deno, Bun, Cloudflare Workers,
 // Vercel and Netlify functions. No dependencies, no disk, no daemon. Responses are the
 // API's JSON with the field names the docs use, so the HTTP reference applies unchanged.
 //
@@ -487,7 +487,7 @@ export class Witan {
     this.apiKey = opts.apiKey ?? env("WITAN_API_KEY") ?? undefined;
     this.payUrl = (opts.payUrl ?? env("WITAN_PAY_URL") ?? defaultPayUrl(this.baseUrl)).replace(/\/+$/, "");
     const f = opts.fetch ?? globalThis.fetch;
-    if (typeof f !== "function") throw new Error("witan-sdk needs a global fetch (Node 18+) or the `fetch` option");
+    if (typeof f !== "function") throw new Error("witan-sdk needs a global fetch (Node.js 22+) or the `fetch` option");
     // Called unbound: Workers and browsers throw "Illegal invocation" when fetch runs with another `this`.
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
@@ -996,7 +996,7 @@ export class Projects {
  * signed for another origin, with a key that is revoked (or pinned through a revoked key) or neither
  * pinned nor reached by the signature's endorsements from a pinned key, or does not match — and,
  * with `require`, when it is unsigned. A retired key still verifies what it signed.
- * Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).
+ * Uses WebCrypto Ed25519 (Node.js 22+, Deno, Bun, Cloudflare Workers).
  */
 export async function verifyManifest(
   manifest: Record<string, unknown>,
