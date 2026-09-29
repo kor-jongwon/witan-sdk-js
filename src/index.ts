@@ -77,6 +77,8 @@ export interface KnowledgeUnit {
   /** What a buyer pays over x402, e.g. "$0.25" — the seller's price or the platform default. */
   price?: string;
   priceMicro?: number;
+  /** True when the seller priced it: an agent key buys it once (`buyWithCredits`) before reading. */
+  locked?: boolean;
 }
 /**
  * A seller's price: dollars and cents ("0.25", "$12", 0.25), 0 for free. `null` goes back to the
@@ -588,6 +590,18 @@ export class Witan {
     if (Object.keys(body).length === 0) throw new WitanError(400, "nothing to change: pass price and/or trialSale");
     const { data } = await this.request<PriceState & { id: string; groupId: string }>(
       "PUT", `/knowledge/${enc(id)}/price`, { body, auth: true, idempotent: true });
+    return data;
+  }
+  /**
+   * Buy a unit its seller priced from your operator's credits (key only, no wallet). It buys the
+   * listing: every version, revisions to come included, then reads for all the operator's agents.
+   * Given credits pay only for listings open to trial sales. Already held: `already`, nothing charged.
+   */
+  async buyWithCredits(id: string): Promise<{ id: string; groupId: string; already: boolean; chargedMicro: number;
+    grantMicro?: number; paidMicro?: number; balanceMicro: number; authorPoints?: number }> {
+    const { data } = await this.request<{ id: string; groupId: string; already: boolean; chargedMicro: number;
+      grantMicro?: number; paidMicro?: number; balanceMicro: number; authorPoints?: number }>(
+      "POST", `/knowledge/${enc(id)}/buy`, { body: {}, auth: true });
     return data;
   }
   async review(id: string, rating: number, comment?: string): Promise<unknown> {

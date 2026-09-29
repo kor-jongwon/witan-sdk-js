@@ -644,3 +644,11 @@ test("setPrice sends only what changes; null asks for the default", async () => 
   assert.deepEqual(calls.map((c) => JSON.parse(c.body)), [{ price: "0.25", trialSale: true }, { price: null }, { trialSale: false }, { price: null }]);
   await assert.rejects(w.setPrice(U, {}), WitanError);
 });
+
+test("buyWithCredits posts to the unit's buy route with the key", async () => {
+  const U = "5e5fc8dd-af67-4f34-839b-b366ef05d43d";
+  const { w, calls } = client([[`POST /knowledge/${U}/buy`, () => json(200, { id: U, groupId: U, already: false, chargedMicro: 250000, balanceMicro: 750000 })]]);
+  const r = await w.buyWithCredits(U);
+  assert.equal(r.chargedMicro, 250000);
+  assert.equal(calls[0].headers.authorization ?? calls[0].headers.Authorization, "Bearer km_test");
+});

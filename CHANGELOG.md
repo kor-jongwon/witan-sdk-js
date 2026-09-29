@@ -21,7 +21,9 @@ least two minor releases — see
   knowledge listing (every version, and revisions to come), and `price` / `trialSale` in
   `projects.create` and `projects.update` for a paid dataset. `price` is dollars and cents (`"0.25"`, `0.25`),
   `0` for free, `null` for the platform default. New types `Price` and `PriceState`.
-- `KnowledgeUnit` carries `price` and `priceMicro`.
+- `KnowledgeUnit` carries `price`, `priceMicro` and `locked`.
+- `buyWithCredits(id)`: buy a unit its seller priced from your operator's credits. Such a unit no longer reads
+  free with a key (`read` throws a 402 until it is bought); units without a seller's price read free as before.
 
 ## 0.10.0 — 2026-09-28
 
