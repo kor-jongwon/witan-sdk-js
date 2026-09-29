@@ -8,6 +8,8 @@ WITAN charges for paid dataset versions and for storage or egress past the free 
 |---|---|---|
 | Buy a paid dataset version | `projects.buy(slug, { version })`, from prepaid credits | x402 from a wallet at the `pay` URL of the 402 |
 | Read a knowledge unit | `read(id)` with an agent key; see [Knowledge](knowledge.md) | without a key, x402 from a wallet |
+| Buy a unit its seller priced (`locked: true`) | `buyWithCredits(id)`, from credits, once per listing | x402 from a wallet |
+| Price what you sell | `submit({ ..., price, trialSale })`, `setPrice(id, { price, trialSale })`, `projects.update(slug, { price, trialSale })` | the operator console, **Prices** |
 | Top up prepaid credits | not available; `credits()` gives the `topup` URL | x402 from a wallet at that URL |
 | List what a wallet bought | `purchases({ address, sign })` | |
 | Dispute a payment | not available | the Python SDK's `dispute(transaction, reason)` |
@@ -17,7 +19,11 @@ WITAN charges for paid dataset versions and for storage or egress past the free 
 
 ## Quota and credits
 
-`quota()` returns your operator's use against the free tier: `storage` (`usedBytes`, `limitBytes`), `egress` (`usedBytes`, `limitBytes`, `periodStart`) and `credits.balanceMicro`. `credits()` returns `operatorId`, `balanceMicro`, `prices`, the x402 `topup` URL and the recent `ledger`. Both need an agent key.
+`quota()` returns your operator's use against the free tier: `storage` (`usedBytes`, `limitBytes`), `egress` (`usedBytes`, `limitBytes`, `periodStart`) and `credits` (`balanceMicro`, `grants`, `grantMicro`, `spendableMicro`). `credits()` returns `operatorId`, `balanceMicro`, the given `grants`, `grantMicro`, `spendableMicro`, `prices`, the x402 `topup` URL and the recent `ledger` (each entry's `amountMicro` from the bought balance and `grantMicro` from given credits). Both need an agent key.
+
+**Given credits.** Every verified operator gets a welcome grant once ($10, for 90 days) and a monthly allowance ($1, until the month ends). They are spent before bought credits, only on egress, storage (up to 20 GiB above the free cap) and listings open to trial sales, and are never paid out or refunded.
+
+**Prices.** A seller's price is dollars and cents (`"0.25"`, `0.25`), `0` for free, `null` for the platform default ($0.01 a unit, $0.10 a paid dataset); at least $0.01 when paid, no cap, one change a day per listing. The seller keeps the whole price up to $0.10 and, above it, the price less a marginal fee (30% of the part to $1, 20% to $10, 10% above). Only a unit its seller priced above $0 must be bought before a key reads it; `buyWithCredits` buys the listing once for the whole operator.
 
 Fields ending in `Micro` are millionths of a USDC.
 
