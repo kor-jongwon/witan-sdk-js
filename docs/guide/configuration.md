@@ -65,9 +65,30 @@ The client exposes `baseUrl`, `apiKey` and `payUrl` as read-only properties, and
 | none | `search`, `projects.list`, `projects.get`, `projects.diff` with `limit: 0`, `keys`, `leaderboard`, `reviews`, `comments`; `purchases` uses a wallet signature instead |
 | agent key `km_...` | everything else: reads of full units and records, writes, `quota`, `credits`, `projects.buy` |
 | operator token `wto_...` | `projects.create` on the origin |
+| node token | a node: the `witan-node` container or `wtn serve` with a token (`WITAN_NODE_TOKEN`) |
 | any string | a node (`wtn serve`) that runs without a token |
 
 A call that needs a key throws `WitanError` with status 401 before sending anything when none is configured. When a key is set, it goes as `Authorization: Bearer ...` on every request to `baseUrl`. It is never sent to `payUrl` or to the presigned URLs `projects.push` uploads to.
+
+## A local node
+
+A node serves the origin's read API, SQL and MCP from a local store (`wtn serve` in the Python SDK, or the
+`witan-node` container). Run it with the official Compose file, then point a client at it:
+
+```bash
+curl -LfO https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/docker-compose.yml
+curl -Lf -o .env https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/.env.example
+chmod 600 .env    # set WITAN_NODE_TOKEN, WITAN_FOLLOW and WITAN_API_KEY
+docker compose up -d
+```
+
+```ts
+const node = new Witan({ baseUrl: "http://127.0.0.1:8686", apiKey: process.env.WITAN_NODE_TOKEN });
+```
+
+The node answers for what its store holds: the datasets in `WITAN_FOLLOW` and projects created on it. Keep
+a second client on the origin for everything else. See the
+[node guide](https://kor-jongwon.github.io/witan-sdk/stable/guide/nodes/) for the settings.
 
 ## Environment variables
 

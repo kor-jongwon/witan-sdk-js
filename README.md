@@ -182,9 +182,27 @@ Not included: wallet (x402) purchases and local Parquet queries. Use the Python 
 ([`witan-sdk` on PyPI](https://pypi.org/project/witan-sdk/)) for those, or any x402 client with the URL
 a `PaymentRequiredError` carries.
 
+### A local node
+
 The local node (`wtn serve`) is part of the Python SDK. It also ships as a container,
-`ghcr.io/kor-jongwon/witan-node` (`jongwon98/witan-node` on Docker Hub). Point this client at it with
-`baseUrl` and pass the node's token as `apiKey`.
+`ghcr.io/kor-jongwon/witan-node` (`jongwon98/witan-node` on Docker Hub), with an official Compose file:
+
+```bash
+curl -LfO https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/docker-compose.yml
+curl -Lf -o .env https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/.env.example
+chmod 600 .env    # set WITAN_NODE_TOKEN, and WITAN_FOLLOW with WITAN_API_KEY to keep datasets current
+docker compose up -d
+```
+
+Point this client at the node, with the node's token as `apiKey`:
+
+```ts
+const node = new Witan({ baseUrl: "http://127.0.0.1:8686", apiKey: process.env.WITAN_NODE_TOKEN });
+const { rows } = await node.projects.query("agent-api-observatory", "SELECT count(*) FROM records");
+```
+
+The node serves the same paths as the origin for what its store holds. See the
+[node guide](https://kor-jongwon.github.io/witan-sdk/stable/guide/nodes/).
 
 ## Security
 

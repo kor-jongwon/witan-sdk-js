@@ -23,6 +23,8 @@ least two minor releases — see
   on Base Sepolia. **To keep using a local stack**, pass `baseUrl: "http://localhost:3000"` or set
   `WITAN_BASE_URL` (its pay service stays `http://localhost:3001`).
 - Examples in the documentation use `https://witan.markets`.
+- The README and the configuration guide show how to run a local node with the official Compose file and
+  point a client at it (`baseUrl: "http://127.0.0.1:8686"`, the node token as `apiKey`).
 
 ## 0.9.5 — 2026-09-27
 
