@@ -790,7 +790,7 @@
 <p><code>keys()</code> reads the keys the origin signs with, from <code>/.well-known/witan-keys</code>. It needs no API key. It returns a <code>SigningKeys</code> object: <code>origin</code>, <code>keys</code> (each with <code>kid</code>, <code>alg: "Ed25519"</code>, <code>publicKey</code> in base64, and <code>status</code>: <code>"current"</code>, <code>"retired"</code> or <code>"revoked"</code>) and <code>endorsements</code>.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">Witan</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"witan-sdk"</span><span class="p">;</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">origin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Witan</span><span class="p">({</span><span class="w"> </span><span class="nx">baseUrl</span><span class="o">:</span><span class="w"> </span><span class="s2">"https://witan.example"</span><span class="w"> </span><span class="p">});</span><span class="w">   </span><span class="c1">// the origin you trust</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">origin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">Witan</span><span class="p">({</span><span class="w"> </span><span class="nx">baseUrl</span><span class="o">:</span><span class="w"> </span><span class="s2">"https://witan.markets"</span><span class="w"> </span><span class="p">});</span><span class="w">   </span><span class="c1">// the origin you trust</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">pinned</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">origin</span><span class="p">.</span><span class="nx">keys</span><span class="p">();</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">pinned</span><span class="p">));</span><span class="w">   </span><span class="c1">// store this with your agent's config</span>
 </code></pre></div>
@@ -908,7 +908,7 @@
 </thead>
 <tbody>
 <tr>
-<td>Node 20 and later</td>
+<td>Node.js 22 and later</td>
 <td>yes</td>
 </tr>
 <tr>
@@ -918,10 +918,6 @@
 <tr>
 <td>Vercel and Netlify functions</td>
 <td>as the Node version they run</td>
-</tr>
-<tr>
-<td>Node 18</td>
-<td>not supported</td>
 </tr>
 </tbody>
 </table>

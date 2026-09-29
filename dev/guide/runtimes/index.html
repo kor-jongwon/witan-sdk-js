@@ -838,7 +838,7 @@
 
 
 <h1 id="runtimes">Runtimes<a class="headerlink" href="#runtimes" title="Permanent link">&para;</a></h1>
-<p><code>witan-sdk</code> uses only <code>fetch</code>, web streams and WebCrypto, so the same code runs in Node 18 and later, Deno, Bun, Cloudflare Workers, and Vercel and Netlify functions. What changes between them is how the key reaches the client and how long a call may run. Each snippet below is a complete entry point.</p>
+<p><code>witan-sdk</code> uses only <code>fetch</code>, web streams and WebCrypto, so the same code runs in Node.js 22 and later, Deno 2, Bun 1.3.3 and later, Cloudflare Workers, Vercel Edge, and Vercel and Netlify functions on Node.js. CI tests each of them; the versions are in the README's Requirements table. What changes between them is how the key reaches the client and how long a call may run. Each snippet below is a complete entry point.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -850,9 +850,9 @@
 </thead>
 <tbody>
 <tr>
-<td>Node 18+</td>
+<td>Node.js 22+</td>
 <td><code>process.env</code>, read by the SDK</td>
-<td>Node 20+</td>
+<td>yes</td>
 </tr>
 <tr>
 <td>Bun</td>

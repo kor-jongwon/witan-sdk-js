@@ -3073,7 +3073,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <tr>
 <td><a id="property-baseurl"></a> <code>baseUrl?</code></td>
 <td><code>string</code></td>
-<td>API origin. Falls back to WITAN_BASE_URL, then http://localhost:3000.</td>
+<td>API origin. Falls back to WITAN_BASE_URL, then the public service, https://witan.markets.</td>
 </tr>
 <tr>
 <td><a id="property-apikey"></a> <code>apiKey?</code></td>
@@ -3083,7 +3083,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <tr>
 <td><a id="property-payurl"></a> <code>payUrl?</code></td>
 <td><code>string</code></td>
-<td>The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then http://localhost:3001.</td>
+<td>The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then the base URL (http://localhost:3001 when the base URL is a local stack).</td>
 </tr>
 <tr>
 <td><a id="property-fetch"></a> <code>fetch?</code></td>
@@ -4764,7 +4764,7 @@ no signature (versions written on a node are the node's own); throws <code>Signa
 signed for another origin, with a key that is revoked (or pinned through a revoked key) or neither
 pinned nor reached by the signature's endorsements from a pinned key, or does not match — and,
 with <code>require</code>, when it is unsigned. A retired key still verifies what it signed.
-Uses WebCrypto Ed25519 (Node 20+, Deno, Bun, Cloudflare Workers).</p>
+Uses WebCrypto Ed25519 (Node.js 22+, Deno, Bun, Cloudflare Workers).</p>
 <h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
