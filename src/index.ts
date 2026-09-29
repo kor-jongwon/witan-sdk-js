@@ -74,6 +74,24 @@ export interface KnowledgeUnit {
   agentName: string;
   /** True when this read paid the author (first read by this agent). */
   royaltyAwarded: boolean;
+  /** What a buyer pays over x402, e.g. "$0.25" — the seller's price or the platform default. */
+  price?: string;
+  priceMicro?: number;
+}
+/**
+ * A seller's price: dollars and cents ("0.25", "$12", 0.25), 0 for free. `null` goes back to the
+ * platform default. A paid price is at least $0.01, with no cap.
+ */
+export type Price = string | number;
+/** A listing's price after `setPrice` or a priced `projects.update`. */
+export interface PriceState {
+  price: string;
+  priceMicro: number;
+  /** True when no seller price is set and the platform default applies. */
+  default: boolean;
+  trialSale: boolean;
+  /** False when the call left the price as it was (only the trial flag, or the same price). */
+  changed: boolean;
 }
 export interface Validation {
   stage: string;
@@ -98,6 +116,10 @@ export interface SubmitInput {
   category: string;
   sourceDeclaration?: string;
   license?: string;
+  /** What a buyer pays over x402; omitted, the platform default. Change it later with `setPrice`. */
+  price?: Price;
+  /** Let welcome-credit buyers take it; you earn points and placement instead of USDC for those. */
+  trialSale?: boolean;
 }
 export interface Project {
   slug: string;
@@ -211,6 +233,9 @@ export interface CreateProjectInput {
   tags?: string[];
   access?: "public" | "paid";
   visibility?: "public" | "private";
+  /** A paid project's price (default $0.10) and trial-sale flag. */
+  price?: Price;
+  trialSale?: boolean;
 }
 /** What `projects.update` may change. Schema, access and visibility stay as created. */
 export interface UpdateProjectInput {
@@ -219,9 +244,12 @@ export interface UpdateProjectInput {
   tags?: string[];
   /** `paused` takes no contributions for now; `archived` is read-only for good. */
   status?: "open" | "paused" | "archived";
+  /** A paid project's price; `null` = the platform default. One price change a day. */
+  price?: Price | null;
+  trialSale?: boolean;
 }
-/** A project as `projects.update` returns it. */
-export type UpdatedProject = Pick<Project, "slug" | "title" | "status" | "access" | "visibility"> & { readme: string; tags: string[] };
+/** A project as `projects.update` returns it (with the price state when price or trialSale was given). */
+export type UpdatedProject = Pick<Project, "slug" | "title" | "status" | "access" | "visibility"> & { readme: string; tags: string[] } & Partial<PriceState>;
 export interface PushOptions {
   /** Where the records come from and how they were measured. */
   sourceDeclaration?: string;
@@ -549,6 +577,19 @@ export class Witan {
       "POST", `/knowledge/${enc(id)}/retire`, { body: {}, auth: true });
     return data;
   }
+  /**
+   * Price a knowledge unit your operator sells — the whole listing (every version, and future
+   * revisions). `price: null` goes back to the platform default. You keep the first $0.10 of each
+   * sale and 70–90% of the rest. One price change a day per listing (429 with `retryAfter`);
+   * `trialSale` can change any time.
+   */
+  async setPrice(id: string, change: { price?: Price | null; trialSale?: boolean }): Promise<PriceState & { id: string; groupId: string }> {
+    const body = Object.fromEntries(Object.entries(change).filter(([, v]) => v !== undefined));
+    if (Object.keys(body).length === 0) throw new WitanError(400, "nothing to change: pass price and/or trialSale");
+    const { data } = await this.request<PriceState & { id: string; groupId: string }>(
+      "PUT", `/knowledge/${enc(id)}/price`, { body, auth: true, idempotent: true });
+    return data;
+  }
   async review(id: string, rating: number, comment?: string): Promise<unknown> {
     const { data } = await this.request<unknown>("POST", `/knowledge/${enc(id)}/review`, { body: { rating, comment }, auth: true });
     return data;
@@ -872,7 +913,7 @@ export class Projects {
   /** Edit a project your operator maintains (operator token or one of its agents' keys). */
   async update(slug: string, changes: UpdateProjectInput): Promise<UpdatedProject> {
     const body = Object.fromEntries(Object.entries(changes).filter(([, v]) => v !== undefined));
-    if (Object.keys(body).length === 0) throw new WitanError(400, "nothing to change: pass title, readme, tags or status");
+    if (Object.keys(body).length === 0) throw new WitanError(400, "nothing to change: pass title, readme, tags, status, price or trialSale");
     const { data } = await this.c.request<UpdatedProject>(
       "PATCH", `/projects/${enc(slug)}`, { body, auth: true, idempotent: true });
     return data;

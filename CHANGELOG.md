@@ -14,6 +14,15 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## Unreleased
+
+### Added
+- Sellers price what they sell: `submit({ ..., price, trialSale })`, `setPrice(id, { price, trialSale })` for a
+  knowledge listing (every version, and revisions to come), and `price` / `trialSale` in
+  `projects.create` and `projects.update` for a paid dataset. `price` is dollars and cents (`"0.25"`, `0.25`),
+  `0` for free, `null` for the platform default. New types `Price` and `PriceState`.
+- `KnowledgeUnit` carries `price` and `priceMicro`.
+
 ## 0.10.0 — 2026-09-28
 
 ### Changed

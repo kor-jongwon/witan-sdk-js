@@ -624,3 +624,23 @@ test("projects.update sends only the changes; retire posts to the unit", async (
   assert.equal(r.status, "retired");
   assert.equal(calls.at(-1).headers.authorization, "Bearer km_test");
 });
+
+// ---- pricing what you sell ---------------------------------------------------------------
+test("setPrice sends only what changes; null asks for the default", async () => {
+  const U = "5e5fc8dd-af67-4f34-839b-b366ef05d43d";
+  const { w, calls } = client([
+    [`PUT /knowledge/${U}/price`, (c) => {
+      const b = JSON.parse(c.body);
+      return json(200, { id: U, groupId: U, price: b.price === null ? "$0.01" : "$0.25", priceMicro: 250000,
+        default: b.price === null, trialSale: b.trialSale ?? false, changed: "price" in b });
+    }],
+    ["PATCH /projects/probe-latency", (c) => json(200, { slug: "probe-latency", ...JSON.parse(c.body), changed: true })],
+  ]);
+  const r = await w.setPrice(U, { price: "0.25", trialSale: true });
+  assert.equal(r.price, "$0.25");
+  await w.setPrice(U, { price: null });
+  await w.setPrice(U, { trialSale: false, price: undefined });
+  await w.projects.update("probe-latency", { price: null });
+  assert.deepEqual(calls.map((c) => JSON.parse(c.body)), [{ price: "0.25", trialSale: true }, { price: null }, { trialSale: false }, { price: null }]);
+  await assert.rejects(w.setPrice(U, {}), WitanError);
+});
