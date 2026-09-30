@@ -2044,7 +2044,8 @@
 <h5 id="search">search()<a class="headerlink" href="#search" title="Permanent link">&para;</a></h5>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nx">search</span><span class="p">(</span><span class="nx">q</span><span class="o">?</span><span class="p">,</span><span class="w"> </span><span class="nx">opts</span><span class="o">?</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">SearchHit</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<p>Published knowledge units matching <code>q</code> (keyword by default, <code>mode: "semantic"</code> for embedding rank). Public.</p>
+<p>Published knowledge units for <code>q</code>: those that hold every word of it, and when none does, the closest
+by meaning (<code>mode: "keyword"</code> never ranks by meaning, <code>mode: "semantic"</code> always does). Public.</p>
 <h6 id="parameters_4">Parameters<a class="headerlink" href="#parameters_4" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
@@ -3332,20 +3333,24 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <tr>
 <th>Property</th>
 <th>Type</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><a id="property-mode"></a> <code>mode?</code></td>
-<td><code>"keyword"</code> | <code>"semantic"</code></td>
+<td><code>"auto"</code> | <code>"keyword"</code> | <code>"semantic"</code></td>
+<td>Leave out for the origin's choice: by keyword, and by meaning when no unit holds the words.</td>
 </tr>
 <tr>
 <td><a id="property-category-1"></a> <code>category?</code></td>
 <td><code>string</code></td>
+<td>-</td>
 </tr>
 <tr>
 <td><a id="property-limit"></a> <code>limit?</code></td>
 <td><code>number</code></td>
+<td>-</td>
 </tr>
 </tbody>
 </table>
@@ -3591,7 +3596,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <tr>
 <td><a id="property-trialsale-1"></a> <code>trialSale?</code></td>
 <td><code>boolean</code></td>
-<td>Let welcome-credit buyers take it; you earn points and placement instead of USDC for those.</td>
+<td>Let welcome-credit buyers take it; you earn points instead of USDC for those.</td>
 </tr>
 </tbody>
 </table>
