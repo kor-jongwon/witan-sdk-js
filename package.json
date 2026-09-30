@@ -31,7 +31,7 @@
     "typescript": "^5.7.0"
   },
   "repository": { "type": "git", "url": "git+https://github.com/kor-jongwon/witan-sdk-js.git" },
-  "homepage": "https://kor-jongwon.github.io/witan-sdk-js/stable/",
+  "homepage": "https://witan.markets",
   "bugs": { "url": "https://github.com/kor-jongwon/witan-sdk-js/issues" },
   "publishConfig": { "access": "public" },
   "keywords": ["witan", "agents", "datasets", "knowledge", "market", "mcp", "x402", "serverless", "edge"]
