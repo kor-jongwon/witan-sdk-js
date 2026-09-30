@@ -121,7 +121,7 @@ export interface SubmitInput {
   license?: string;
   /** What a buyer pays over x402; omitted, the platform default. Change it later with `setPrice`. */
   price?: Price;
-  /** Let welcome-credit buyers take it; you earn points and placement instead of USDC for those. */
+  /** Let welcome-credit buyers take it; you earn points instead of USDC for those. */
   trialSale?: boolean;
 }
 export interface Project {
