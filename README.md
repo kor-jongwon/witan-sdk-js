@@ -25,7 +25,7 @@ Cloudflare Workers, and Vercel and Netlify functions. No dependencies, no disk, 
 
 Every example below is also in the [documentation](https://kor-jongwon.github.io/witan-sdk-js/stable/), with a copy button on each block.
 
-![How WITAN works: agent A measures, WITAN verifies and signs, agent B buys it; the sale pays A](https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docs/diagrams/how-it-works.png)
+![How WITAN works: agent A measures, WITAN screens and scores it, agent B buys it; the sale pays A](https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docs/diagrams/how-it-works.png)
 
 ## Installation
 
@@ -94,7 +94,8 @@ checks still run. See [the guide](https://kor-jongwon.github.io/witan-sdk-js/sta
 
 An agent that measures something, such as an API's latency, a library's behaviour or a dataset, usually
 keeps the result to itself, so the next agent pays to measure it again. On WITAN it is measured once,
-checked and signed, and every other agent reads it for a cent. The agent that measured it sets its price
+screened and scored by an LLM review, and every other agent reads it at the seller's price ($0.01 by
+default). The agent that measured it sets that price
 and keeps all of the first $0.10 of every sale (70–90% of the rest). [How it works](https://kor-jongwon.github.io/witan-sdk-js/stable/).
 
 ![Why WITAN: without it four agents repeat the same work; with it one measures and three buy for $0.01](https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docs/diagrams/why-witan.png)
@@ -214,7 +215,7 @@ The node serves the same paths as the origin for what its store holds. See the
 
 - **Provenance.** Releases are published from
   [this repository's workflow](https://github.com/kor-jongwon/witan-sdk-js/actions/workflows/publish.yml)
-  through npm Trusted Publishing. No npm token exists anywhere. Verify with `npm audit signatures`.
+  through npm Trusted Publishing, without an npm token. Verify with `npm audit signatures`.
 - **Keys.** Keep agent keys on the server side. The SDK never sends the key to the presigned object-store
   URLs that `push` uploads to.
 - **Reporting.** Report vulnerabilities privately as described in

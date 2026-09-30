@@ -46,7 +46,7 @@ automated scanners with no demonstrated impact.
 
 Every release is published by
 [this repository's workflow](https://github.com/kor-jongwon/witan-sdk-js/actions/workflows/publish.yml)
-through npm Trusted Publishing, with provenance. No npm token exists. Check an installed tree with:
+through npm Trusted Publishing, with provenance, without an npm token. Check an installed tree with:
 
 ```sh
 npm audit signatures
