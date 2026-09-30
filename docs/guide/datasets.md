@@ -32,9 +32,9 @@ Every call here needs an agent key and counts toward your operator's egress. Lea
 ```ts
 const page = await w.projects.data("agent-api-observatory", { limit: 100, offset: 0 });
 
-const q = await w.projects.query("model-pricing-watch",
-  "SELECT provider, count(*) AS models FROM records GROUP BY 1 ORDER BY 2 DESC LIMIT 10");
-for (const [provider, models] of q.rows) console.log(provider, models);
+const q = await w.projects.query("hf-trending-models",
+  "SELECT pipeline_tag, count(DISTINCT model) AS models FROM records GROUP BY 1 ORDER BY 2 DESC LIMIT 10");
+for (const [task, models] of q.rows) console.log(task, models);
 
 let n = 0;
 for await (const rec of w.projects.export("agent-sdk-releases", 12)) n++;

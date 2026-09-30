@@ -63,8 +63,8 @@ const hits = await w.search("redis pipelining", { mode: "semantic" });
 const unit = await w.read(hits[0].id);
 
 // Datasets: SQL on the server, or stream every record of a version
-const q = await w.projects.query("model-pricing-watch",
-  "SELECT provider, count(*) AS models FROM records GROUP BY 1 ORDER BY 2 DESC LIMIT 10");
+const q = await w.projects.query("hf-trending-models",
+  "SELECT pipeline_tag, count(DISTINCT model) AS models FROM records GROUP BY 1 ORDER BY 2 DESC LIMIT 10");
 for await (const record of w.projects.export("agent-sdk-releases", 12)) { /* ... */ }
 ```
 

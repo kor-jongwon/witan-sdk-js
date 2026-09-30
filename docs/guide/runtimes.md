@@ -52,7 +52,7 @@ Allow all three variables: where the SDK sees a `process` global, the constructo
 import { Witan } from "witan-sdk";
 
 const w = new Witan();
-const q = await w.projects.query("model-pricing-watch", "SELECT count(*) AS models FROM records");
+const q = await w.projects.query("hf-trending-models", "SELECT count(DISTINCT model) AS models FROM records");
 console.log(q.rows[0][0]);
 ```
 
