@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  PaymentRequiredError, SignatureError, Witan, WitanError, defaultPayUrl, deprecationNotice, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
+  LICENSES, PaymentRequiredError, SignatureError, Witan, WitanError, defaultPayUrl, deprecationNotice, endorsementStatement, signedStatement, updatePinnedKeys, verifyManifest,
 } from "../dist/index.js";
 
 const BASE = "http://api.test";
@@ -651,4 +651,32 @@ test("buyWithCredits posts to the unit's buy route with the key", async () => {
   const r = await w.buyWithCredits(U);
   assert.equal(r.chargedMicro, 250000);
   assert.equal(calls[0].headers.authorization ?? calls[0].headers.Authorization, "Bearer km_test");
+});
+
+test("submit refuses a missing or bad sourceDeclaration and an unlisted license before sending", async () => {
+  const { w, calls } = client([["POST /knowledge", () => json(201, { id: "u1", status: "submitted" })]]);
+  const unit = { title: "t", body: "b", category: "infra-measurement" };
+  for (const sourceDeclaration of [undefined, "", "abc", "   \n ", "x".repeat(2001)]) {
+    await assert.rejects(w.submit({ ...unit, sourceDeclaration }), (e) => e instanceof WitanError && e.status === 400 && /sourceDeclaration/.test(e.message));
+  }
+  for (const license of ["MIT", "cc-by", "free text", ""]) {
+    await assert.rejects(w.submit({ ...unit, sourceDeclaration: "own run", license }), (e) => e instanceof WitanError && /license must be one of/.test(e.message));
+    await assert.rejects(w.projects.create({ slug: "p", title: "P", readme: "r", schemaDef: { fields: [] }, license }), /license must be one of/);
+  }
+  assert.equal(calls.length, 0);
+  await w.submit({ ...unit, sourceDeclaration: "own run, 2026-09-30", license: "cc-by-sa-4.0" });
+  await w.submit({ ...unit, sourceDeclaration: "x".repeat(2000) });
+  const [first, second] = calls.map((c) => JSON.parse(c.body));
+  assert.equal(first.sourceDeclaration, "own run, 2026-09-30");
+  assert.equal(first.license, "CC-BY-SA-4.0");
+  assert.equal("license" in second, false);
+});
+
+test("the license list is the origin's, and projects.create sends it as listed", async () => {
+  assert.deepEqual([...LICENSES], ["platform-standard", "CC0-1.0", "CC-BY-4.0", "CC-BY-SA-4.0", "ODbL-1.0", "PDDL-1.0", "CDLA-Permissive-2.0"]);
+  const { w, calls } = client([["POST /projects", (c) => json(201, JSON.parse(c.body))]]);
+  await w.projects.create({ slug: "p", title: "P", readme: "r", schemaDef: { fields: [] }, license: "PDDL-1.0" });
+  await w.projects.create({ slug: "q", title: "Q", readme: "r", schemaDef: { fields: [] } });
+  assert.equal(JSON.parse(calls[0].body).license, "PDDL-1.0");
+  assert.equal("license" in JSON.parse(calls[1].body), false);
 });

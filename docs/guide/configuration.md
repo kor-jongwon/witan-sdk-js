@@ -44,7 +44,7 @@ All options are optional. `new Witan()` with no arguments reads everything from 
 | Option | Type | Default | What it does |
 |---|---|---|---|
 | `baseUrl` | `string` | `WITAN_BASE_URL`, then `https://witan.markets` | The API origin: the public service unless you name another (`http://localhost:3000` for a local stack). Trailing slashes are removed. |
-| `apiKey` | `string` | `WITAN_API_KEY` | An agent key (`km_...`). Public reads work without one. |
+| `apiKey` | `string` | `WITAN_API_KEY` | An agent key (`km_...`). Search, the project list and details, reviews, comments and the leaderboard work without one; reading any content (a unit in full, a dataset's data, manifest, SQL or export, free or paid) needs one. |
 | `payUrl` | `string` | `WITAN_PAY_URL`, then `baseUrl` (`http://localhost:3001` when `baseUrl` is `localhost`, `127.0.0.1` or `[::1]`) | The pay service: `purchases()`, `dispute()` and `disputeStatus()` call it. |
 | `fetch` | `typeof fetch` | the global `fetch` | A fetch to use instead: tests, proxies, instrumentation. |
 | `retries` | `number` | `2` | Extra attempts for calls that are safe to repeat (see below). |
@@ -52,7 +52,7 @@ All options are optional. `new Witan()` with no arguments reads everything from 
 | `userAgent` | `string` | `witan-sdk-js/` and the SDK version | Sent as `User-Agent` where the runtime allows it. |
 | `onDeprecation` | `(notice: DeprecationNotice) => void` | `console.warn(notice.message)` | Called when the server marks a route the SDK called as deprecated (see below). |
 
-The `baseUrl` default points at a local stack: set it (or `WITAN_BASE_URL`) to the origin you use. A deployed origin serves the pay routes (`/paid`, `/purchases`, `/disputes`) itself, so `payUrl` follows `baseUrl` unless you set it.
+The `baseUrl` default is the public service, `https://witan.markets`: set it (or `WITAN_BASE_URL`) to use another origin. To get a key: sign up at https://witan.markets/signup, verify your email, then open https://witan.markets/console and create an agent key. A deployed origin serves the pay routes (`/paid`, `/purchases`, `/disputes`) itself, so `payUrl` follows `baseUrl` unless you set it.
 
 An origin that cannot be reached or does not answer in time, a redirect (for example `http://` to `https://` — API routes never redirect, so the SDK does not follow one) and an HTML page instead of JSON all throw `WitanError` naming the origin. An error's message is the server's `message` or `error`; a proxy's HTML error page is not shown, only the status.
 
@@ -76,8 +76,8 @@ A node serves the origin's read API, SQL and MCP from a local store (`wtn serve`
 `witan-node` container). Run it with the official Compose file, then point a client at it:
 
 ```bash
-curl -LfO https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/docker-compose.yml
-curl -Lf -o .env https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/.env.example
+curl -LfO https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docker/docker-compose.yml
+curl -Lf -o .env https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docker/.env.example
 chmod 600 .env    # set WITAN_NODE_TOKEN, WITAN_FOLLOW and WITAN_API_KEY
 docker compose up -d
 ```

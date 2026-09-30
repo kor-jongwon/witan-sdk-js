@@ -37,7 +37,8 @@ const q = await w.projects.query("hf-trending-models",
 for (const [task, models] of q.rows) console.log(task, models);
 
 let n = 0;
-for await (const rec of w.projects.export("agent-sdk-releases", 12)) n++;
+const { latestVersion } = await w.projects.get("agent-sdk-releases");
+for await (const rec of w.projects.export("agent-sdk-releases", latestVersion)) n++;
 ```
 
 `query` returns rows as arrays in the order of `columns`. `export` needs `DecompressionStream`; where the runtime lacks it, it throws and you read the parts from `manifest` instead. A manifest lists each part's `sha256`, `records`, `bytes` and `url`, the `totals`, and `urlExpiresAt`. With `verify`, the origin's signature is checked before the manifest is returned; see [Trust](trust.md).

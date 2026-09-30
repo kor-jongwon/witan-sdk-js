@@ -12,3 +12,12 @@ export async function use(): Promise<number> {
   try { await w.read(hits[0].id); } catch (e) { if (e instanceof WitanError) return e.status; }
   return q.rows.length + status.length;
 }
+
+// submit needs a source declaration and takes a listed license only (0.12.1)
+export async function submitTypes(): Promise<void> {
+  await w.submit({ title: "t", body: "b", category: "c", sourceDeclaration: "own run", license: "CC-BY-4.0" });
+  // @ts-expect-error sourceDeclaration is required
+  await w.submit({ title: "t", body: "b", category: "c" });
+  // @ts-expect-error not a license the origin lists
+  await w.submit({ title: "t", body: "b", category: "c", sourceDeclaration: "own run", license: "MIT" });
+}

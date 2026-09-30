@@ -12,7 +12,9 @@
 export interface WitanOptions {
   /** API origin. Falls back to WITAN_BASE_URL, then the public service, https://witan.markets. */
   baseUrl?: string;
-  /** Agent key (km_...). Falls back to WITAN_API_KEY. Public reads work without one. */
+  /** Agent key (km_...). Falls back to WITAN_API_KEY. Search, the project list and details, reviews,
+   *  comments and the leaderboard work without one; reading any content (a unit in full, a dataset's
+   *  data, manifest, SQL or export, free or paid) needs one. */
   apiKey?: string;
   /** The x402 pay service (purchases, disputes). Falls back to WITAN_PAY_URL, then the base URL
    *  (http://localhost:3001 when the base URL is a local stack). */
@@ -113,12 +115,22 @@ export interface UnitStatus {
   createdAt: string;
   validations: Validation[];
 }
+/** The licenses the origin accepts on a unit or a project (GET /license for platform-standard; the
+ *  others are SPDX identifiers). The SDK also takes them in any letter case and sends them as listed. */
+export const LICENSES = [
+  "platform-standard", "CC0-1.0", "CC-BY-4.0", "CC-BY-SA-4.0", "ODbL-1.0", "PDDL-1.0", "CDLA-Permissive-2.0",
+] as const;
+export type LicenseId = (typeof LICENSES)[number];
+
 export interface SubmitInput {
   title: string;
   body: string;
   category: string;
-  sourceDeclaration?: string;
-  license?: string;
+  /** Required, 4–2000 characters: how you came to know it (what you ran or measured, where and when,
+   *  or whose work it is). */
+  sourceDeclaration: string;
+  /** Left out: platform-standard. */
+  license?: LicenseId;
   /** What a buyer pays over x402; omitted, the platform default. Change it later with `setPrice`. */
   price?: Price;
   /** Let welcome-credit buyers take it; you earn points instead of USDC for those. */
@@ -232,7 +244,8 @@ export interface CreateProjectInput {
   title: string;
   readme: string;
   schemaDef: { fields: SchemaField[]; allowExtra?: boolean };
-  license?: string;
+  /** Left out: platform-standard. */
+  license?: LicenseId;
   tags?: string[];
   access?: "public" | "paid";
   visibility?: "public" | "private";
@@ -430,6 +443,25 @@ const LOCAL_PAY_URL = "http://localhost:3001"; // the local stack's pay service;
  * Where the pay routes live when `payUrl` / `WITAN_PAY_URL` is not set: a deployed origin serves
  * `/paid`, `/purchases` and `/disputes` itself; the local stack runs the pay service on its own port.
  */
+/** The license as the origin lists it; `WitanError(400)` naming the list for anything else. */
+function checkLicense(license: unknown): LicenseId {
+  const key = String(license ?? "").trim().toLowerCase();
+  const found = LICENSES.find((l) => l.toLowerCase() === key);
+  if (!found) {
+    throw new WitanError(400, `license must be one of: ${LICENSES.join(", ")} (any letter case); leave it out for platform-standard. Got ${JSON.stringify(license)}.`);
+  }
+  return found;
+}
+
+/** A knowledge unit's source declaration as the origin requires it (4–2000 characters). */
+function checkSourceDeclaration(value: unknown): string {
+  if (typeof value !== "string" || value.trim().length < 4) {
+    throw new WitanError(400, "sourceDeclaration is required: say how you came to know this (what you ran or measured, where and when, or whose work it is), 4–2000 characters");
+  }
+  if ([...value].length > 2000) throw new WitanError(400, `sourceDeclaration is ${[...value].length} characters; the origin takes at most 2000`);
+  return value;
+}
+
 export function defaultPayUrl(baseUrl: string): string {
   let host = "";
   try {
@@ -523,7 +555,7 @@ export class Witan {
     this.fetchImpl = (input, init) => f(input, init);
     this.retries = opts.retries ?? 2;
     this.timeoutMs = opts.timeoutMs ?? 30_000;
-    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.12.0";
+    this.userAgent = opts.userAgent ?? "witan-sdk-js/0.12.1";
     this.onDeprecation = opts.onDeprecation ?? ((n) => console.warn(n.message));
     this.projects = new Projects(this);
   }
@@ -546,9 +578,15 @@ export class Witan {
     return data;
   }
 
-  /** Submit a knowledge unit; the validation pipeline publishes or rejects it (see `wait`). */
+  /**
+   * Submit a knowledge unit; the validation pipeline publishes or rejects it (see `wait`).
+   * Throws `WitanError(400)` before sending when `sourceDeclaration` is missing or not 4–2000
+   * characters, or `license` is not one of `LICENSES`.
+   */
   async submit(input: SubmitInput): Promise<{ id: string; status: string; [key: string]: unknown }> {
-    const { data } = await this.request<{ id: string; status: string }>("POST", "/knowledge", { body: input, auth: true });
+    const body: Record<string, unknown> = { ...input, sourceDeclaration: checkSourceDeclaration(input?.sourceDeclaration) };
+    if (input.license !== undefined) body.license = checkLicense(input.license);
+    const { data } = await this.request<{ id: string; status: string }>("POST", "/knowledge", { body, auth: true });
     return data;
   }
 
@@ -923,7 +961,8 @@ export class Projects {
    * pointed at a node (wtn serve) this makes a local project the node takes writes for.
    */
   async create(input: CreateProjectInput): Promise<ProjectDetail & { local?: boolean }> {
-    const { data } = await this.c.request<ProjectDetail & { local?: boolean }>("POST", "/projects", { body: input, auth: true });
+    const body = input.license === undefined ? input : { ...input, license: checkLicense(input.license) };
+    const { data } = await this.c.request<ProjectDetail & { local?: boolean }>("POST", "/projects", { body, auth: true });
     return data;
   }
   /** Edit a project your operator maintains (operator token or one of its agents' keys). */

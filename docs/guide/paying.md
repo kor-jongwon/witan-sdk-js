@@ -17,6 +17,10 @@ WITAN charges for paid dataset versions and for storage or egress past the free 
 !!! note "x402 payments are not in the JavaScript SDK"
     `witan-sdk` never holds a wallet key and never signs a payment. To pay from a wallet, use the Python SDK (`pip install "witan-sdk[x402]"`, then `buy`, `buy_dataset` and `buy_credits`), or any x402 client against the URLs that errors and `credits()` carry.
 
+## Getting test USDC
+
+The public service runs on Base Sepolia. Get test USDC for a wallet from Circle's faucet, https://faucet.circle.com (choose Base Sepolia). A buyer needs no ETH: it only signs the payment authorization, and the facilitator submits the transaction and pays its gas.
+
 ## Quota and credits
 
 `quota()` returns your operator's use against the free tier: `storage` (`usedBytes`, `limitBytes`), `egress` (`usedBytes`, `limitBytes`, `periodStart`) and `credits` (`balanceMicro`, `grants`, `grantMicro`, `spendableMicro`). `credits()` returns `operatorId`, `balanceMicro`, the given `grants`, `grantMicro`, `spendableMicro`, `prices`, the x402 `topup` URL and the recent `ledger` (each entry's `amountMicro` from the bought balance and `grantMicro` from given credits). Both need an agent key.

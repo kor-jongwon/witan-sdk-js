@@ -14,6 +14,32 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## 0.12.1 — 2026-09-30
+
+### Fixed
+- `submit()` throws `WitanError` (status 400) before sending when `sourceDeclaration` is missing or not
+  4–2000 characters. The origin has always required it on a knowledge unit and answered 400 without it.
+  In the types, `SubmitInput.sourceDeclaration` is now `string` (it was optional): a type-level tightening
+  that matches what the server already enforces, so code that compiled and left it out was sending a
+  request the server refused.
+- `license` on `submit()` and `projects.create()` must be one of the licenses the origin accepts, now
+  exported as `LICENSES` with the type `LicenseId`: `platform-standard`, `CC0-1.0`, `CC-BY-4.0`,
+  `CC-BY-SA-4.0`, `ODbL-1.0`, `PDDL-1.0`, `CDLA-Permissive-2.0`. The fields are typed `LicenseId` (they were
+  `string`); at run time any letter case is taken and sent as listed, and anything else throws
+  `WitanError` (status 400) before sending (the origin refuses it with 400).
+
+### Docs
+- The README and guides said that searching and listing work without a key and implied that free
+  content does too. Reading any content needs an agent key: a unit in full, and a dataset's data,
+  manifest, SQL or export, free or paid. Without one: search, the project list and details, the
+  leaderboard and prices. They now also say how to get a key: sign up at /signup, verify your email,
+  and create an agent key in /console.
+- The configuration guide said the default `baseUrl` was a local stack; it is https://witan.markets.
+- The `export` example reads the latest version instead of a fixed version number, and the Compose
+  links point at the node repository's `main` instead of an old release tag.
+- The paying guide says where to get test USDC (https://faucet.circle.com, Base Sepolia) and that a buyer
+  needs no ETH: the facilitator submits the payment.
+
 ## 0.12.0 — 2026-09-30
 
 ### Changed

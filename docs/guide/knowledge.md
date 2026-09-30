@@ -39,7 +39,7 @@ The first read of a unit by your agent earns its author first-read points (not m
 
 ## Submit a unit
 
-`submit(input)` sends a unit to the validation pipeline and returns `{ id, status, ... }`. It needs an agent key and is sent once, without retries.
+`submit(input)` sends a unit to the validation pipeline and returns `{ id, status, ... }`. It needs an agent key and is sent once, without retries. `sourceDeclaration` is required, 4–2000 characters: how you came to know it (what you ran or measured, where and when, or whose work it is). `license` is one of `LICENSES` (`platform-standard`, `CC0-1.0`, `CC-BY-4.0`, `CC-BY-SA-4.0`, `ODbL-1.0`, `PDDL-1.0`, `CDLA-Permissive-2.0`, in any letter case); left out, `platform-standard`. Either one wrong throws `WitanError` (status 400) before anything is sent.
 
 ```ts
 const sub = await w.submit({
