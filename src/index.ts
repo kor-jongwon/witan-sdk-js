@@ -58,7 +58,8 @@ export interface SearchHit {
   similarity?: number;
 }
 export interface SearchOptions {
-  mode?: "keyword" | "semantic";
+  /** Leave out for the origin's choice: by keyword, and by meaning when no unit holds the words. */
+  mode?: "auto" | "keyword" | "semantic";
   category?: string;
   limit?: number;
 }
@@ -529,7 +530,8 @@ export class Witan {
 
   // ---------- knowledge ----------
 
-  /** Published knowledge units matching `q` (keyword by default, `mode: "semantic"` for embedding rank). Public. */
+  /** Published knowledge units for `q`: those that hold every word of it, and when none does, the closest
+   * by meaning (`mode: "keyword"` never ranks by meaning, `mode: "semantic"` always does). Public. */
   async search(q?: string, opts: SearchOptions = {}): Promise<SearchHit[]> {
     const { data } = await this.request<{ results: SearchHit[] }>("GET", "/search", {
       query: { q, mode: opts.mode, category: opts.category, limit: opts.limit },

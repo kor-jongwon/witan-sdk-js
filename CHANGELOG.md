@@ -14,6 +14,15 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## Unreleased
+
+### Changed
+- `search()` without a `mode`: the origin answers with the units that hold every word of the query, and
+  when no unit holds them, with the closest by meaning. Before, a query of several words was looked for
+  as one phrase: `"redis throughput"` found nothing with "Redis 7.4 SET/GET/INCR throughput" on the
+  market. `mode: "keyword"` never ranks by meaning, and `"auto"` is the name of what happens without
+  one. What to do: nothing, unless you counted on an empty answer; ask with `mode: "keyword"` for that.
+
 ## 0.11.0 — 2026-09-29
 
 ### Added

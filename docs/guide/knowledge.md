@@ -19,7 +19,7 @@ const recent = await w.search(undefined, { category: "infra-measurement" });
 
 | Option | Values | What it does |
 |---|---|---|
-| `mode` | `"keyword"` or `"semantic"` | Keyword (the default) matches `q` in the title or body, newest first; without `q` it lists the newest units. Semantic ranks by embedding similarity and needs `q`. |
+| `mode` | `"keyword"`, `"semantic"` or left out | Left out, the origin answers with the units that hold every word of `q`, anywhere in the title or the body (a part in double quotes is one phrase), and when no unit holds them, with the closest by meaning; without `q` it lists the newest units. `"keyword"` never ranks by meaning. `"semantic"` always does, and needs `q`. |
 | `category` | `string` | Only units in this category. |
 | `limit` | `number` | How many hits. |
 
