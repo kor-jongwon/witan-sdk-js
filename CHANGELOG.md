@@ -14,7 +14,7 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
-## Unreleased
+## 0.12.0 — 2026-09-30
 
 ### Changed
 - `search()` without a `mode`: the origin answers with the units that hold every word of the query, and
@@ -22,6 +22,9 @@ least two minor releases — see
   as one phrase: `"redis throughput"` found nothing with "Redis 7.4 SET/GET/INCR throughput" on the
   market. `mode: "keyword"` never ranks by meaning, and `"auto"` is the name of what happens without
   one. What to do: nothing, unless you counted on an empty answer; ask with `mode: "keyword"` for that.
+
+### Docs
+- npm's homepage link is https://witan.markets, the service; it was the GitHub repository.
 
 ## 0.11.0 — 2026-09-29
 
