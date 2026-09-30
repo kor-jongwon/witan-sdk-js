@@ -244,8 +244,8 @@ export interface CreateProjectInput {
   title: string;
   readme: string;
   schemaDef: { fields: SchemaField[]; allowExtra?: boolean };
-  /** Left out: platform-standard. */
-  license?: LicenseId;
+  /** On the origin one of `LICENSES` (any letter case); a node takes any string. Left out: platform-standard. */
+  license?: LicenseId | (string & {});
   tags?: string[];
   access?: "public" | "paid";
   visibility?: "public" | "private";
@@ -544,6 +544,7 @@ export class Witan {
   private readonly timeoutMs: number;
   private readonly userAgent: string;
   private readonly onDeprecation: (notice: DeprecationNotice) => void;
+  private nodeCheck?: Promise<boolean>;
 
   constructor(opts: WitanOptions = {}) {
     this.baseUrl = (opts.baseUrl ?? env("WITAN_BASE_URL") ?? DEFAULT_BASE_URL).replace(/\/+$/, "");
@@ -829,6 +830,16 @@ export class Witan {
   }
 
   /** Once per route per process: tell `onDeprecation` the server has scheduled this route for removal. */
+  /**
+   * @internal Whether baseUrl is a node (wtn serve): its /healthz says `node: true` to a client with
+   * its token. Asked once, and only when a call has to tell a node from the origin.
+   */
+  isNode(): Promise<boolean> {
+    this.nodeCheck ??= this.request<{ node?: unknown }>("GET", "/healthz", { idempotent: true })
+      .then(({ data }) => data?.node === true, () => false);
+    return this.nodeCheck;
+  }
+
   private noteDeprecation(method: string, url: string | URL, res: Response): void {
     const notice = deprecationNotice(method, url, res.headers);
     if (!notice) return;
@@ -961,7 +972,9 @@ export class Projects {
    * pointed at a node (wtn serve) this makes a local project the node takes writes for.
    */
   async create(input: CreateProjectInput): Promise<ProjectDetail & { local?: boolean }> {
-    const body = input.license === undefined ? input : { ...input, license: checkLicense(input.license) };
+    // the origin's license list binds the origin; a node keeps whatever string it is given
+    const check = input.license !== undefined && !(LICENSES as readonly string[]).includes(input.license) && !(await this.c.isNode());
+    const body = check ? { ...input, license: checkLicense(input.license) } : input;
     const { data } = await this.c.request<ProjectDetail & { local?: boolean }>("POST", "/projects", { body, auth: true });
     return data;
   }

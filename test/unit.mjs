@@ -663,7 +663,8 @@ test("submit refuses a missing or bad sourceDeclaration and an unlisted license 
     await assert.rejects(w.submit({ ...unit, sourceDeclaration: "own run", license }), (e) => e instanceof WitanError && /license must be one of/.test(e.message));
     await assert.rejects(w.projects.create({ slug: "p", title: "P", readme: "r", schemaDef: { fields: [] }, license }), /license must be one of/);
   }
-  assert.equal(calls.length, 0);
+  assert.equal(calls.filter((c) => c.method === "POST").length, 0);
+  calls.length = 0;
   await w.submit({ ...unit, sourceDeclaration: "own run, 2026-09-30", license: "cc-by-sa-4.0" });
   await w.submit({ ...unit, sourceDeclaration: "x".repeat(2000) });
   const [first, second] = calls.map((c) => JSON.parse(c.body));
@@ -679,4 +680,18 @@ test("the license list is the origin's, and projects.create sends it as listed",
   await w.projects.create({ slug: "q", title: "Q", readme: "r", schemaDef: { fields: [] } });
   assert.equal(JSON.parse(calls[0].body).license, "PDDL-1.0");
   assert.equal("license" in JSON.parse(calls[1].body), false);
+});
+
+test("a node takes any project license as given; the origin is asked only for an unlisted one", async () => {
+  const origin = client([["GET /healthz", () => json(200, { ok: true })], ["POST /projects", (c) => json(201, JSON.parse(c.body))]]);
+  await origin.w.projects.create({ slug: "p", title: "P", readme: "r", schemaDef: { fields: [] }, license: "CC0-1.0" });
+  assert.deepEqual(origin.calls.map((c) => c.url.pathname), ["/projects"]);
+  await origin.w.projects.create({ slug: "q", title: "Q", readme: "r", schemaDef: { fields: [] }, license: "cc0-1.0" });
+  assert.equal(JSON.parse(origin.calls.at(-1).body).license, "CC0-1.0");
+  const node = client([["GET /healthz", () => json(200, { ok: true, node: true })], ["POST /projects", (c) => json(201, { ...JSON.parse(c.body), local: true })]]);
+  await node.w.projects.create({ slug: "p", title: "P", readme: "r", schemaDef: { fields: [] }, license: "MIT" });
+  await node.w.projects.create({ slug: "q", title: "Q", readme: "r", schemaDef: { fields: [] }, license: "cc-by-4.0" });
+  const posted = node.calls.filter((c) => c.method === "POST").map((c) => JSON.parse(c.body).license);
+  assert.deepEqual(posted, ["MIT", "cc-by-4.0"]);
+  assert.equal(node.calls.filter((c) => c.url.pathname === "/healthz").length, 1);
 });

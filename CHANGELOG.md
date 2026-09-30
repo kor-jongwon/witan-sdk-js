@@ -22,11 +22,15 @@ least two minor releases — see
   In the types, `SubmitInput.sourceDeclaration` is now `string` (it was optional): a type-level tightening
   that matches what the server already enforces, so code that compiled and left it out was sending a
   request the server refused.
-- `license` on `submit()` and `projects.create()` must be one of the licenses the origin accepts, now
-  exported as `LICENSES` with the type `LicenseId`: `platform-standard`, `CC0-1.0`, `CC-BY-4.0`,
-  `CC-BY-SA-4.0`, `ODbL-1.0`, `PDDL-1.0`, `CDLA-Permissive-2.0`. The fields are typed `LicenseId` (they were
-  `string`); at run time any letter case is taken and sent as listed, and anything else throws
-  `WitanError` (status 400) before sending (the origin refuses it with 400).
+- `license` on `submit()` and `projects.create()` sent to the origin must be one of the licenses it
+  accepts, now exported as `LICENSES` with the type `LicenseId`: `platform-standard`, `CC0-1.0`,
+  `CC-BY-4.0`, `CC-BY-SA-4.0`, `ODbL-1.0`, `PDDL-1.0`, `CDLA-Permissive-2.0`. At run time any letter case
+  is taken and sent as listed, and anything else throws `WitanError` (status 400) before sending (the
+  origin refuses it with 400). `SubmitInput.license` is typed `LicenseId` (it was `string`);
+  `CreateProjectInput.license` still takes any string, because a project created on a node
+  (`wtn serve`) is unchanged: the node takes any license string and gets it as given. To tell the two
+  apart, `projects.create` asks the base URL's `/healthz` once, and only for a license not spelled as
+  listed.
 
 ### Docs
 - The README and guides said that searching and listing work without a key and implied that free

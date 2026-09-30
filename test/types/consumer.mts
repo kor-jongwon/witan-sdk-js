@@ -20,4 +20,6 @@ export async function submitTypes(): Promise<void> {
   await w.submit({ title: "t", body: "b", category: "c" });
   // @ts-expect-error not a license the origin lists
   await w.submit({ title: "t", body: "b", category: "c", sourceDeclaration: "own run", license: "MIT" });
+  // a node takes any project license
+  await w.projects.create({ slug: "s", title: "t", readme: "r", schemaDef: { fields: [] }, license: "MIT" });
 }
