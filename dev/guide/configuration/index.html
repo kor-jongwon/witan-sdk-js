@@ -890,7 +890,7 @@
 <td><code>apiKey</code></td>
 <td><code>string</code></td>
 <td><code>WITAN_API_KEY</code></td>
-<td>An agent key (<code>km_...</code>). Public reads work without one.</td>
+<td>An agent key (<code>km_...</code>). Search, the project list and details, reviews, comments and the leaderboard work without one; reading any content (a unit in full, a dataset's data, manifest, SQL or export, free or paid) needs one.</td>
 </tr>
 <tr>
 <td><code>payUrl</code></td>
@@ -930,7 +930,7 @@
 </tr>
 </tbody>
 </table>
-<p>The <code>baseUrl</code> default points at a local stack: set it (or <code>WITAN_BASE_URL</code>) to the origin you use. A deployed origin serves the pay routes (<code>/paid</code>, <code>/purchases</code>, <code>/disputes</code>) itself, so <code>payUrl</code> follows <code>baseUrl</code> unless you set it.</p>
+<p>The <code>baseUrl</code> default is the public service, <code>https://witan.markets</code>: set it (or <code>WITAN_BASE_URL</code>) to use another origin. To get a key: sign up at https://witan.markets/signup, verify your email, then open https://witan.markets/console and create an agent key. A deployed origin serves the pay routes (<code>/paid</code>, <code>/purchases</code>, <code>/disputes</code>) itself, so <code>payUrl</code> follows <code>baseUrl</code> unless you set it.</p>
 <p>An origin that cannot be reached or does not answer in time, a redirect (for example <code>http://</code> to <code>https://</code> — API routes never redirect, so the SDK does not follow one) and an HTML page instead of JSON all throw <code>WitanError</code> naming the origin. An error's message is the server's <code>message</code> or <code>error</code>; a proxy's HTML error page is not shown, only the status.</p>
 <p>The client exposes <code>baseUrl</code>, <code>apiKey</code> and <code>payUrl</code> as read-only properties, and the dataset calls as <code>w.projects</code>.</p>
 <h2 id="which-key">Which key<a class="headerlink" href="#which-key" title="Permanent link">&para;</a></h2>
@@ -968,8 +968,8 @@
 <h2 id="a-local-node">A local node<a class="headerlink" href="#a-local-node" title="Permanent link">&para;</a></h2>
 <p>A node serves the origin's read API, SQL and MCP from a local store (<code>wtn serve</code> in the Python SDK, or the
 <code>witan-node</code> container). Run it with the official Compose file, then point a client at it:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-LfO<span class="w"> </span>https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/docker-compose.yml
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>curl<span class="w"> </span>-Lf<span class="w"> </span>-o<span class="w"> </span>.env<span class="w"> </span>https://raw.githubusercontent.com/kor-jongwon/witan-sdk/v0.23.0/docker/.env.example
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>-LfO<span class="w"> </span>https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docker/docker-compose.yml
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>curl<span class="w"> </span>-Lf<span class="w"> </span>-o<span class="w"> </span>.env<span class="w"> </span>https://raw.githubusercontent.com/kor-jongwon/witan-sdk/main/docker/.env.example
 <a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>.env<span class="w">    </span><span class="c1"># set WITAN_NODE_TOKEN, WITAN_FOLLOW and WITAN_API_KEY</span>
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
 </code></pre></div>

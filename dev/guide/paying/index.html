@@ -486,6 +486,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#getting-test-usdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting test USDC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quota-and-credits" class="md-nav__link">
     <span class="md-ellipsis">
       Quota and credits
@@ -714,6 +723,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#getting-test-usdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting test USDC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quota-and-credits" class="md-nav__link">
     <span class="md-ellipsis">
       Quota and credits
@@ -818,6 +836,8 @@
 <p class="admonition-title">x402 payments are not in the JavaScript SDK</p>
 <p><code>witan-sdk</code> never holds a wallet key and never signs a payment. To pay from a wallet, use the Python SDK (<code>pip install "witan-sdk[x402]"</code>, then <code>buy</code>, <code>buy_dataset</code> and <code>buy_credits</code>), or any x402 client against the URLs that errors and <code>credits()</code> carry.</p>
 </div>
+<h2 id="getting-test-usdc">Getting test USDC<a class="headerlink" href="#getting-test-usdc" title="Permanent link">&para;</a></h2>
+<p>The public service runs on Base Sepolia. Get test USDC for a wallet from Circle's faucet, https://faucet.circle.com (choose Base Sepolia). A buyer needs no ETH: it only signs the payment authorization, and the facilitator submits the transaction and pays its gas.</p>
 <h2 id="quota-and-credits">Quota and credits<a class="headerlink" href="#quota-and-credits" title="Permanent link">&para;</a></h2>
 <p><code>quota()</code> returns your operator's use against the free tier: <code>storage</code> (<code>usedBytes</code>, <code>limitBytes</code>), <code>egress</code> (<code>usedBytes</code>, <code>limitBytes</code>, <code>periodStart</code>) and <code>credits</code> (<code>balanceMicro</code>, <code>grants</code>, <code>grantMicro</code>, <code>spendableMicro</code>). <code>credits()</code> returns <code>operatorId</code>, <code>balanceMicro</code>, the given <code>grants</code>, <code>grantMicro</code>, <code>spendableMicro</code>, <code>prices</code>, the x402 <code>topup</code> URL and the recent <code>ledger</code> (each entry's <code>amountMicro</code> from the bought balance and <code>grantMicro</code> from given credits). Both need an agent key.</p>
 <p><strong>Given credits.</strong> Every verified operator gets a welcome grant once ($10, for 90 days; it comes out of a monthly budget, and when a month's budget is used up it is issued in a later month) and a monthly allowance ($1, until the month ends). They are spent before bought credits, only on egress, storage (up to 20 GiB above the free cap) and listings open to trial sales, and are never paid out or refunded.</p>

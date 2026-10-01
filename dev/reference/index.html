@@ -937,6 +937,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#licenseid" class="md-nav__link">
+    <span class="md-ellipsis">
+      LicenseId
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pinnedkey" class="md-nav__link">
     <span class="md-ellipsis">
       PinnedKey
@@ -967,6 +976,30 @@
   <a href="#query_1" class="md-nav__link">
     <span class="md-ellipsis">
       Query
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      LICENSES
     </span>
   </a>
   
@@ -1586,6 +1619,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#licenseid" class="md-nav__link">
+    <span class="md-ellipsis">
+      LicenseId
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#pinnedkey" class="md-nav__link">
     <span class="md-ellipsis">
       PinnedKey
@@ -1616,6 +1658,30 @@
   <a href="#query_1" class="md-nav__link">
     <span class="md-ellipsis">
       Query
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      LICENSES
     </span>
   </a>
   
@@ -2095,7 +2161,9 @@ by meaning (<code>mode: "keyword"</code> never ranks by meaning, <code>mode: "se
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
-<p>Submit a knowledge unit; the validation pipeline publishes or rejects it (see <code>wait</code>).</p>
+<p>Submit a knowledge unit; the validation pipeline publishes or rejects it (see <code>wait</code>).
+Throws <code>WitanError(400)</code> before sending when <code>sourceDeclaration</code> is missing or not 4–2000
+characters, or <code>license</code> is not one of <code>LICENSES</code>.</p>
 <h6 id="parameters_6">Parameters<a class="headerlink" href="#parameters_6" title="Permanent link">&para;</a></h6>
 <table>
 <thead>
@@ -3192,7 +3260,7 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <tr>
 <td><a id="property-apikey"></a> <code>apiKey?</code></td>
 <td><code>string</code></td>
-<td>Agent key (km_...). Falls back to WITAN_API_KEY. Public reads work without one.</td>
+<td>Agent key (km_...). Falls back to WITAN_API_KEY. Search, the project list and details, reviews, comments and the leaderboard work without one; reading any content (a unit in full, a dataset's data, manifest, SQL or export, free or paid) needs one.</td>
 </tr>
 <tr>
 <td><a id="property-payurl"></a> <code>payUrl?</code></td>
@@ -3579,14 +3647,14 @@ promoting again sends only what is new (all duplicates → rejected by the dedup
 <td>-</td>
 </tr>
 <tr>
-<td><a id="property-sourcedeclaration-1"></a> <code>sourceDeclaration?</code></td>
+<td><a id="property-sourcedeclaration-1"></a> <code>sourceDeclaration</code></td>
 <td><code>string</code></td>
-<td>-</td>
+<td>Required, 4–2000 characters: how you came to know it (what you ran or measured, where and when, or whose work it is).</td>
 </tr>
 <tr>
 <td><a id="property-license-2"></a> <code>license?</code></td>
-<td><code>string</code></td>
-<td>-</td>
+<td>| <code>"platform-standard"</code> | <code>"CC0-1.0"</code> | <code>"CC-BY-4.0"</code> | <code>"CC-BY-SA-4.0"</code> | <code>"ODbL-1.0"</code> | <code>"PDDL-1.0"</code> | <code>"CDLA-Permissive-2.0"</code></td>
+<td>Left out: platform-standard.</td>
 </tr>
 <tr>
 <td><a id="property-price-2"></a> <code>price?</code></td>
@@ -4176,8 +4244,8 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 </tr>
 <tr>
 <td><a id="property-license-5"></a> <code>license?</code></td>
-<td><code>string</code></td>
-<td>-</td>
+<td>| <code>"platform-standard"</code> | <code>"CC0-1.0"</code> | <code>"CC-BY-4.0"</code> | <code>"CC-BY-SA-4.0"</code> | <code>"ODbL-1.0"</code> | <code>"PDDL-1.0"</code> | <code>"CDLA-Permissive-2.0"</code> | <code>string</code> &amp; <code>object</code></td>
+<td>On the origin one of <code>LICENSES</code> (any letter case); a node takes any string. Left out: platform-standard.</td>
 </tr>
 <tr>
 <td><a id="property-tags"></a> <code>tags?</code></td>
@@ -4865,8 +4933,12 @@ revoked key counts for nothing, and neither does a key pinned through it (<code>
 <p>A seller's price: dollars and cents ("0.25", "$12", 0.25), 0 for free. <code>null</code> goes back to the
 platform default. A paid price is at least $0.01, with no cap.</p>
 <hr />
+<h3 id="licenseid">LicenseId<a class="headerlink" href="#licenseid" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">LicenseId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">typeof</span><span class="w"> </span><span class="nx">LICENSES</span><span class="p">[</span><span class="kt">number</span><span class="p">];</span>
+</code></pre></div>
+<hr />
 <h3 id="pinnedkey">PinnedKey<a class="headerlink" href="#pinnedkey" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">PinnedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">KeyRef</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">PinnedKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">KeyRef</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="p">;</span>
 </code></pre></div>
 <h4 id="type-declaration">Type Declaration<a class="headerlink" href="#type-declaration" title="Permanent link">&para;</a></h4>
 <table>
@@ -4889,7 +4961,7 @@ platform default. A paid price is at least $0.01, with no cap.</p>
 </table>
 <hr />
 <h3 id="updatedproject">UpdatedProject<a class="headerlink" href="#updatedproject" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">UpdatedProject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">Project</span><span class="p">,</span><span class="w"> </span><span class="s2">"slug"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"title"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"status"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"access"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"visibility"</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">PriceState</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">UpdatedProject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Pick</span><span class="o">&lt;</span><span class="nx">Project</span><span class="p">,</span><span class="w"> </span><span class="s2">"slug"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"title"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"status"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"access"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"visibility"</span><span class="o">&gt;</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">object</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="nx">Partial</span><span class="o">&lt;</span><span class="nx">PriceState</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>A project as <code>projects.update</code> returns it (with the price state when price or trialSale was given).</p>
 <h4 id="type-declaration_1">Type Declaration<a class="headerlink" href="#type-declaration_1" title="Permanent link">&para;</a></h4>
@@ -4913,18 +4985,22 @@ platform default. A paid price is at least $0.01, with no cap.</p>
 </table>
 <hr />
 <h3 id="contributionstatus">ContributionStatus<a class="headerlink" href="#contributionstatus" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">ContributionStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"submitted"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"validating"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"merged"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">ContributionStatus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"submitted"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"validating"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"merged"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"rejected"</span><span class="p">;</span>
 </code></pre></div>
 <hr />
 <h3 id="query_1">Query<a class="headerlink" href="#query_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">Query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kr">type</span><span class="w"> </span><span class="nx">Query</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">Record</span><span class="o">&lt;</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">null</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
+<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">&para;</a></h2>
+<h3 id="licenses">LICENSES<a class="headerlink" href="#licenses" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">LICENSES</span><span class="o">:</span><span class="w"> </span><span class="kt">readonly</span><span class="w"> </span><span class="p">[</span><span class="s2">"platform-standard"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CC0-1.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CC-BY-4.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CC-BY-SA-4.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"ODbL-1.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"PDDL-1.0"</span><span class="p">,</span><span class="w"> </span><span class="s2">"CDLA-Permissive-2.0"</span><span class="p">];</span>
+</code></pre></div>
+<p>The licenses the origin accepts on a unit or a project (GET /license for platform-standard; the
+ others are SPDX identifiers). The SDK also takes them in any letter case and sends them as listed.</p>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">&para;</a></h2>
 <h3 id="defaultpayurl">defaultPayUrl()<a class="headerlink" href="#defaultpayurl" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">defaultPayUrl</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">defaultPayUrl</span><span class="p">(</span><span class="nx">baseUrl</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
-<p>Where the pay routes live when <code>payUrl</code> / <code>WITAN_PAY_URL</code> is not set: a deployed origin serves
-<code>/paid</code>, <code>/purchases</code> and <code>/disputes</code> itself; the local stack runs the pay service on its own port.</p>
 <h4 id="parameters_39">Parameters<a class="headerlink" href="#parameters_39" title="Permanent link">&para;</a></h4>
 <table>
 <thead>
@@ -4944,11 +5020,11 @@ platform default. A paid price is at least $0.01, with no cap.</p>
 <p><code>string</code></p>
 <hr />
 <h3 id="deprecationnotice_1">deprecationNotice()<a class="headerlink" href="#deprecationnotice_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
-<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="w">   </span><span class="nx">headers</span>
-<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">deprecationNotice</span><span class="p">(</span>
+<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a><span class="w">   </span><span class="nx">method</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a><span class="w">   </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="w">   </span><span class="nx">headers</span>
+<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nx">DeprecationNotice</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="kc">undefined</span><span class="p">;</span>
 </code></pre></div>
 <p>The deprecation a response announces, if any.</p>
 <h4 id="parameters_40">Parameters<a class="headerlink" href="#parameters_40" title="Permanent link">&para;</a></h4>
@@ -4978,11 +5054,11 @@ platform default. A paid price is at least $0.01, with no cap.</p>
 <p><a href="#deprecationnotice"><code>DeprecationNotice</code></a> | <code>undefined</code></p>
 <hr />
 <h3 id="verifymanifest">verifyManifest()<a class="headerlink" href="#verifymanifest" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
-<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">verifyManifest</span><span class="p">(</span>
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a><span class="w">   </span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a><span class="w">   </span><span class="nx">keys</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="s2">"verified"</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s2">"unsigned"</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Check a manifest's signature against keys pinned from <code>Witan.keys()</code> — wherever the manifest came
 from (the origin, a node, a mirror of a mirror). Resolves "verified", or "unsigned" when it carries
@@ -5022,16 +5098,16 @@ Uses WebCrypto Ed25519 (Node.js 22+, Deno, Bun, Cloudflare Workers).</p>
 <p><code>Promise</code>\&lt;<code>"verified"</code> | <code>"unsigned"</code>&gt;</p>
 <hr />
 <h3 id="updatepinnedkeys">updatePinnedKeys()<a class="headerlink" href="#updatepinnedkeys" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
-<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
-<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
-<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
-<a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
-<a id="__codelineno-56-7" name="__codelineno-56-7" href="#__codelineno-56-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-56-8" name="__codelineno-56-8" href="#__codelineno-56-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-56-9" name="__codelineno-56-9" href="#__codelineno-56-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
-<a id="__codelineno-56-10" name="__codelineno-56-10" href="#__codelineno-56-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">updatePinnedKeys</span><span class="p">(</span>
+<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a><span class="w">   </span><span class="nx">pinned</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a><span class="w">   </span><span class="nx">published</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a><span class="w">   </span><span class="nx">opts</span><span class="o">?</span>
+<a id="__codelineno-58-5" name="__codelineno-58-5" href="#__codelineno-58-5"></a><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+<a id="__codelineno-58-6" name="__codelineno-58-6" href="#__codelineno-58-6"></a><span class="w">  </span><span class="nx">keys</span><span class="o">:</span><span class="w"> </span><span class="kt">SigningKeys</span><span class="p">;</span>
+<a id="__codelineno-58-7" name="__codelineno-58-7" href="#__codelineno-58-7"></a><span class="w">  </span><span class="nx">added</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-58-8" name="__codelineno-58-8" href="#__codelineno-58-8"></a><span class="w">  </span><span class="nx">refused</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-58-9" name="__codelineno-58-9" href="#__codelineno-58-9"></a><span class="w">  </span><span class="nx">revoked</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[];</span>
+<a id="__codelineno-58-10" name="__codelineno-58-10" href="#__codelineno-58-10"></a><span class="p">}</span><span class="o">&gt;</span><span class="p">;</span>
 </code></pre></div>
 <p>Refresh keys you pinned with a fresh <code>keys()</code> document (which checked it is the origin's own):
 the keys it marks revoked or retired are marked so here, and a revoked key takes every key pinned
@@ -5074,7 +5150,7 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 }&gt;</p>
 <hr />
 <h3 id="endorsementstatement">endorsementStatement()<a class="headerlink" href="#endorsementstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">endorsementStatement</span><span class="p">(</span><span class="nx">origin</span><span class="p">,</span><span class="w"> </span><span class="nx">key</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>What an endorsement signs: {v, type, origin, key} in the origin's stable JSON.</p>
 <h4 id="parameters_43">Parameters<a class="headerlink" href="#parameters_43" title="Permanent link">&para;</a></h4>
@@ -5100,7 +5176,7 @@ after checking the key id with the operator). Store the returned <code>keys</cod
 <p><code>string</code></p>
 <hr />
 <h3 id="signedstatement">signedStatement()<a class="headerlink" href="#signedstatement" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="kd">function</span><span class="w"> </span><span class="nx">signedStatement</span><span class="p">(</span><span class="nx">manifest</span><span class="p">,</span><span class="w"> </span><span class="nx">origin</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 </code></pre></div>
 <p>The bytes an origin signs: {v, origin, manifest} with the manifest as published (no URLs), in stable JSON.
 Left out, as the origin leaves them out: signature, urlExpiresAt, paid and part URLs — and the x402
