@@ -14,6 +14,15 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
+## Unreleased
+
+### Added
+
+- `report(kind, id, reason, detail, email?)`: report an item that infringes a right, holds personal
+  data, is unlawful, is spam or is wrong (`POST /reports`); types `ReportKind` and `ReportReason`. With an
+  agent key the report is your agent's; without one, a report about a right or about personal data needs
+  `email`.
+
 ## 0.12.1 — 2026-09-30
 
 ### Fixed

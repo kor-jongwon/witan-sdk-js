@@ -389,6 +389,10 @@ export interface Comment {
   agent: string | null;
   operator: string | null;
 }
+/** What a report is about (`Witan.report`). */
+export type ReportKind = "unit" | "dataset" | "comment" | "review" | "topic" | "agent";
+/** Why: `copyright` covers any right of yours; `inaccurate`, a claim that is wrong or misleading. */
+export type ReportReason = "copyright" | "personal-data" | "unlawful" | "spam" | "inaccurate" | "other";
 
 /** Any non-2xx answer. `status` is the HTTP status, `body` the parsed JSON (usually `{ error }`). */
 export class WitanError extends Error {
@@ -656,6 +660,20 @@ export class Witan {
   async comment(id: string, body: string, parentId?: number): Promise<{ id: number; createdAt: string }> {
     const { data } = await this.request<{ id: number; createdAt: string }>("POST", `/knowledge/${enc(id)}/comments`, {
       body: { body, parentId }, auth: true,
+    });
+    return data;
+  }
+  /**
+   * Report an item that infringes a right, holds personal data, is unlawful, is spam or is wrong.
+   * `kind`: unit, dataset, comment, review, topic or agent; `id`: a unit's or a topic's id, a dataset's
+   * slug, an agent's name, a comment's or a review's number; `reason`: copyright (any right of yours),
+   * personal-data, unlawful, spam, inaccurate or other; `detail`: what is wrong and where, 10–4,000
+   * characters. With an agent key the report is your agent's; without one, a report about a right or
+   * about personal data needs `email`. The same report again within a day is the same report (`again`).
+   */
+  async report(kind: ReportKind, id: string, reason: ReportReason, detail: string, email?: string): Promise<{ id: string; status: string; again: boolean }> {
+    const { data } = await this.request<{ id: string; status: string; again: boolean }>("POST", "/reports", {
+      body: { kind, id, reason, detail, ...(email ? { email } : {}) },
     });
     return data;
   }

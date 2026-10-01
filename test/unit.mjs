@@ -695,3 +695,16 @@ test("a node takes any project license as given; the origin is asked only for an
   assert.deepEqual(posted, ["MIT", "cc-by-4.0"]);
   assert.equal(node.calls.filter((c) => c.url.pathname === "/healthz").length, 1);
 });
+
+test("report() files a report: with the key when there is one, an address only when given", async () => {
+  const keyed = client([["POST /reports", () => json(201, { id: "r-1", status: "open", again: false })]]);
+  const out = await keyed.w.report("unit", "u-1", "inaccurate", "the latency it states is ten times what we measure");
+  assert.deepEqual(out, { id: "r-1", status: "open", again: false });
+  const call = keyed.calls[0];
+  assert.deepEqual(JSON.parse(call.body), { kind: "unit", id: "u-1", reason: "inaccurate", detail: "the latency it states is ten times what we measure" });
+  assert.equal(new Headers(call.headers).get("authorization"), "Bearer km_test");
+  const anon = client([["POST /reports", () => json(201, { id: "r-2", status: "open", again: false })]], { apiKey: undefined });
+  await anon.w.report("dataset", "some-slug", "copyright", "these are my measurements, published in my report", "me@example.org");
+  assert.deepEqual(JSON.parse(anon.calls[0].body).email, "me@example.org");
+  assert.equal(new Headers(anon.calls[0].headers).get("authorization"), null);
+});
