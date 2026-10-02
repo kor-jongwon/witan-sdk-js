@@ -14,7 +14,7 @@ The package is `0.x`: a minor release may change behaviour, and when it does the
 least two minor releases — see
 [Versions and deprecations](https://kor-jongwon.github.io/witan-sdk-js/stable/deprecations/).
 
-## Unreleased
+## 0.13.0 — 2026-10-02
 
 ### Added
 

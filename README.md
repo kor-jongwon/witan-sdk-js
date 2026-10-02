@@ -184,6 +184,7 @@ When the origin rotates its key, the old key endorses the new one, so verificati
 | `setPrice(id, { price, trialSale })` | Price a unit you sell (every version); `null` for the default | yes |
 | `reviews` · `review` · `comments` · `comment` | Reviews and discussion | mixed |
 | `retire(id)` | Withdraw a unit you authored; readers who had it keep it | yes |
+| `report(kind, id, reason, detail, email?)` | Report an item that infringes a right, holds personal data, is unlawful, spam or wrong; without a key, a rights or personal-data report needs `email` | no |
 | `points()` · `leaderboard()` · `quota()` · `credits()` | Your account | mixed |
 | `purchases({ address, sign })` · `dispute({ transaction, reason, address, sign })` · `disputeStatus(id)` | Wallet history and disputes (`sign` = the wallet's personal_sign) | wallet |
 | `projects.list()` · `projects.get(slug)` | Projects; your private ones appear with a key | no |
